@@ -1,0 +1,1 @@
+/opt/local64/PsN/bin/execute Executable_MTP-GPDI.mod -dir=Executable_MTP-GPDI

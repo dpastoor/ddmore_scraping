@@ -1,0 +1,155 @@
+khan_2015_dat = dataObj {
+    SOURCE {
+        srcfile : {file="cipro202.csv", inputFormat is nonmemFormat}
+    }
+
+    DECLARED_VARIABLES {
+        Y
+    }
+
+    DATA_INPUT_VARIABLES {
+        STR : {use is covariate}
+        ID : {use is id}
+        MIC : {use is ignore}
+        xMIC : {use is ignore}
+        CAB : {use is covariate}
+        TIME : {use is idv}
+        TUBE : {use is covariate}
+        CMT : {use is cmt}
+        EVID : {use is covariate}
+        DV : {use is dv, variable=Y}
+        AMT : {use is ignore}
+        REPL : {use is ignore}
+        BLOQ : {use is ignore}
+        BASE : {use is covariate}
+        L2 : {use is ignore}
+        BOBS : {use is ignore}
+    }
+}
+
+khan_2015_par = parObj {
+    STRUCTURAL {
+        POP_KGS1 : {lo=1, value=1.84039}
+        POP_KK : {fix=true, value=0.179}
+        POP_EMAX : {lo=0, value=7.30424}
+        POP_EC50_202 : {lo=0, value=0.0727951}
+        POP_GAM : {lo=0, value=2.26032}
+        POP_PROPC : {lo=0, value=0.0137109}
+        POP_KGS2 : {fix=true, value=0.344}
+        POP_EC50_2 : {fix=true, value=1.25}
+        POP_MUT : {fix=true, value=0.81}
+        POP_KSNC_MAX : {fix=true, value=5.83}
+        POP_SFNCS : {lo=0, value=0.0499026}
+        POP_HILL : {lo=0, fix=true, value=20}
+        POP_TR50 : {lo=0, value=0.177508}
+        POP_KSNC_TIME : {lo=2, fix=true, value=5.47869}
+        RUV_ADD : {lo=0, value=1.04413}
+    }
+}
+
+khan_2015_mdl = mdlObj {
+    OBSERVATION {
+        Y = additiveError(eps=EPS_Y, prediction=LN_ATOT, additive=RUV_ADD)
+    }
+
+    VARIABILITY_LEVELS {
+        ID : {level=2, type is parameter}
+        DV : {level=1, type is observation}
+    }
+
+    IDV {
+        T
+    }
+
+    COVARIATES {
+        STR
+        CAB
+        BASE
+    }
+
+    STRUCTURAL_PARAMETERS {
+        POP_KGS1
+        POP_KK
+        POP_EMAX
+        POP_EC50_202
+        POP_GAM
+        POP_PROPC
+        POP_KGS2
+        POP_EC50_2
+        POP_MUT
+        POP_KSNC_MAX
+        POP_SFNCS
+        POP_HILL
+        POP_TR50
+        POP_KSNC_TIME
+        RUV_ADD
+    }
+
+    RANDOM_VARIABLE_DEFINITION(level=DV) {
+        EPS_Y ~ Normal(var=1, mean=0)
+    }
+
+    GROUP_VARIABLES {
+        log_k = 10
+    }
+
+    MODEL_PREDICTION {
+        SUS_RES1 = PROPC*(SUS1+RES1+SUS2+NON1+RES2+NON2)
+        SUS_RES2 = SUS_RES1
+        RES_SUS1 = 0
+        RES_SUS2 = 0
+        DRUGS1 = if (CAB>(1.0E-11)) then EMAX*CAB^GAM/(EC50_1^GAM+CAB^GAM) else 0
+        DRUGS2 = if (CAB>(1.0E-11)) then EMAX*CAB^GAM/(EC50_2^GAM+CAB^GAM) else 0
+        FLAG = if (T<KSNC_TIME) then 1 else 0
+    DEQ {
+        SUS1 : {deriv=(KGS1*SUS1-(KK+DRUGS1)*SUS1-SUS_RES1*SUS1+RES_SUS1*RES1+KNCS1*NON1-KSNC1*SUS1*FLAG), init=SUS1_INIT, x0=0}
+        RES1 : {deriv=(-KK*RES1+SUS_RES1*SUS1-RES_SUS1*RES1), init=0, x0=0}
+        SUS2 : {deriv=(KGS2*SUS2-(KK+DRUGS2)*SUS2-SUS_RES2*SUS2+RES_SUS2*RES2+KNCS2*NON2-KSNC2*SUS2*FLAG), init=SUS2_INIT, x0=0}
+        NON1 : {deriv=(KSNC1*SUS1*FLAG-KNCS1*NON1-(KK+DRUGS1)*NON1), init=0, x0=0}
+        RES2 : {deriv=(-KK*RES2+SUS_RES2*SUS2), init=0, x0=0}
+        NON2 : {deriv=(KSNC2*SUS2*FLAG-KNCS2*NON2-(KK+DRUGS2)*NON2), init=0, x0=0}
+    }
+
+        ATOT = SUS1+RES1+SUS2+RES2
+        LN_ATOT = ln(ATOT+1.0E-8)
+    }
+
+    INDIVIDUAL_VARIABLES {
+        KGS1 = POP_KGS1
+        KK = POP_KK
+        EMAX = POP_EMAX
+        EC50_1 = POP_EC50_202
+        GAM = POP_GAM
+        PROPC = POP_PROPC*1.0E-7
+        SBASE = exp(BASE)
+        KGS2 = POP_KGS2
+        EC50_2 = POP_EC50_2
+        MUT = POP_MUT
+        KSNC_MAX = POP_KSNC_MAX
+        SFNCS = POP_SFNCS
+        HILL = POP_HILL
+        TR50 = POP_TR50
+        KSNC_TIME = POP_KSNC_TIME
+        SUS1_INIT = SBASE*(1-MUT*1.0E-6)
+        SUS2_INIT = MUT*1.0E-6*SBASE
+        KSNC1 = KSNC_MAX*(CAB/EC50_1)^HILL/((CAB/EC50_1)^HILL+TR50^HILL)
+        KSNC2 = KSNC_MAX*(CAB/EC50_2)^HILL/((CAB/EC50_2)^HILL+TR50^HILL)
+        KNCS1 = SFNCS*EC50_1/(CAB+1.0E-10)
+        KNCS2 = SFNCS*EC50_2/(CAB+1.0E-10)
+    }
+}
+
+khan_2015_task = taskObj {
+    ESTIMATE {
+        set algo is focei
+    }
+}
+
+outputMog = mogObj {
+    OBJECTS {
+        khan_2015_dat : {type is dataObj}
+        khan_2015_par : {type is parObj}
+        khan_2015_mdl : {type is mdlObj}
+        khan_2015_task : {type is taskObj}
+    }
+}

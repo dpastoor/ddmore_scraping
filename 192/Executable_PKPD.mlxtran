@@ -1,0 +1,50 @@
+; this script is generated automatically
+
+DESCRIPTION: 
+Executable_PKPD.mlxtran
+
+DATA: 
+    path = "%MLXPROJECT%/",
+    file  ="Simulated_PKPD.txt",
+    headers = {ID,TIME,Y,EVID,MDV,AMT,YTYPE},
+    columnDelimiter = "\t"
+
+INDIVIDUAL: 
+    C50 = {distribution=logNormal, iiv=yes},
+    Cl = {distribution=logNormal, iiv=yes},
+    V = {distribution=logNormal, iiv=yes},
+    ka = {distribution=logNormal, iiv=no},
+    kout = {distribution=logNormal, iiv=yes}
+
+STRUCTURAL_MODEL: 
+    file = "mlxt:pkpd_model",
+    path = "%MLXPROJECT%",
+    output = {Cc,E}
+
+
+OBSERVATIONS: 
+    y1 = {type=continuous, prediction=Cc, error=proportional},
+    y2 = {type=continuous, prediction=E, error=constant}
+
+TASKS: 
+    ; settings
+    globalSettings={
+        withVariance=no,
+        settingsAlgorithms="%MLXPROJECT%/Executable_PKPD_algorithms.xmlx",
+        resultFolder="%MLXPROJECT%/Output_simulated_PKPD"},
+    ; workflow
+    estimatePopulationParameters(
+        initialValues={
+            pop_C50 = 0.3,
+            pop_Cl = 40,
+            pop_V = 100,
+            pop_ka = 2,
+            pop_kout = 2,
+            b_y1 = 0.2,
+            a_y2 = 0.2,
+            omega_C50 = 0.7,
+            omega_Cl = 0.7,
+            omega_V = 0.7,
+            omega_kout = 0.7
+            } ),
+

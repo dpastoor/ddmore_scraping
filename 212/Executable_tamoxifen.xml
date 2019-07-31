@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mml:PharmML xmlns:ds="http://www.pharmml.org/pharmml/0.6/Dataset" xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes" xmlns:td="http://www.pharmml.org/pharmml/0.6/TrialDesign" xmlns:uncert="http://www.uncertml.org/3.0" xmlns:mml="http://www.pharmml.org/pharmml/0.6/PharmML" xmlns:msteps="http://www.pharmml.org/pharmml/0.6/ModellingSteps" xmlns:mdef="http://www.pharmml.org/pharmml/0.6/ModelDefinition" writtenVersion="0.6.1" metadataFile="DDMODEL00000212.rdf" id="i1">
+    <ct:Name id="i2">TerHeine_2014_PK_Tamoxifen_ActiveMetabolite_CYP2D6</ct:Name>
+    <ct:Description id="i3">Population pharmacokinetic model of tamoxifen and active metabolite endoxifen in breast cancer patients considering the impact of CYP2D6 and CYP3A4/5 phenotypes on PK. The model implemented a hypothetical liver compartment to account for the fraction of tamoxifen directly metabolised to endoxifen.</ct:Description>
+    <mml:IndependentVariable symbId="T" id="i4"/>
+    <ct:FunctionDefinition symbolType="real" symbId="proportionalError" id="i5">
+        <ct:Description id="i6">Proportional or constant CV (CVV)</ct:Description>
+        <ct:FunctionArgument symbolType="real" symbId="proportional" id="i7"/>
+        <ct:FunctionArgument symbolType="real" symbId="f" id="i8"/>
+        <ct:Definition id="i9">
+            <math:Equation id="i10">
+                <math:Binop op="times" id="i11">
+                    <ct:SymbRef symbIdRef="proportional" id="i12"/>
+                    <ct:SymbRef symbIdRef="f" id="i13"/>
+                </math:Binop>
+            </math:Equation>
+        </ct:Definition>
+    </ct:FunctionDefinition>
+    <mdef:ModelDefinition id="i14">
+        <mdef:VariabilityModel type="residualError" blkId="vm_err" id="i15">
+            <mdef:Level referenceLevel="false" symbId="DV" id="i16"/>
+        </mdef:VariabilityModel>
+        <mdef:VariabilityModel type="parameterVariability" blkId="vm_mdl" id="i17">
+            <mdef:Level referenceLevel="true" symbId="ID" id="i18"/>
+        </mdef:VariabilityModel>
+        <mdef:CovariateModel blkId="cm" id="i19">
+            <mdef:Covariate symbId="CYP2D6" id="i20">
+                <mdef:Continuous id="i21">
+                    <mdef:Transformation id="i22">
+                        <mdef:TransformedCovariate symbId="logPHENO2D6" id="i23"/>
+                        <math:Equation id="i24">
+                            <math:Uniop op="log" id="i25">
+<math:Binop op="divide" id="i26">
+    <ct:SymbRef blkIdRef="cm" symbIdRef="CYP2D6" id="i27"/>
+    <ct:Int id="i28">1560</ct:Int>
+</math:Binop>
+                            </math:Uniop>
+                        </math:Equation>
+                    </mdef:Transformation>
+                </mdef:Continuous>
+            </mdef:Covariate>
+            <mdef:Covariate symbId="CYP3A4" id="i29">
+                <mdef:Continuous id="i30">
+                    <mdef:Transformation id="i31">
+                        <mdef:TransformedCovariate symbId="logPHENO3A4" id="i32"/>
+                        <math:Equation id="i33">
+                            <math:Uniop op="log" id="i34">
+<math:Binop op="divide" id="i35">
+    <ct:SymbRef blkIdRef="cm" symbIdRef="CYP3A4" id="i36"/>
+    <ct:Real id="i37">44.7</ct:Real>
+</math:Binop>
+                            </math:Uniop>
+                        </math:Equation>
+                    </mdef:Transformation>
+                </mdef:Continuous>
+            </mdef:Covariate>
+        </mdef:CovariateModel>
+        <mdef:ParameterModel blkId="pm" id="i38">
+            <mdef:SimpleParameter symbId="POP_CL20" id="i39"/>
+            <mdef:SimpleParameter symbId="POP_V2" id="i40"/>
+            <mdef:SimpleParameter symbId="POP_K12" id="i41"/>
+            <mdef:SimpleParameter symbId="POP_CL23" id="i42"/>
+            <mdef:SimpleParameter symbId="POP_Q1" id="i43"/>
+            <mdef:SimpleParameter symbId="POP_ALAG1" id="i44"/>
+            <mdef:SimpleParameter symbId="BETA_CL23_PHENO2D6" id="i45"/>
+            <mdef:SimpleParameter symbId="BETA_CL23_PHENO3A4" id="i46"/>
+            <mdef:SimpleParameter symbId="RUV_TAM" id="i47"/>
+            <mdef:SimpleParameter symbId="RUV_ENDX" id="i48"/>
+            <mdef:SimpleParameter symbId="PPV_CL20" id="i49"/>
+            <mdef:SimpleParameter symbId="PPV_V2" id="i50"/>
+            <mdef:SimpleParameter symbId="PPV_CL23" id="i51"/>
+            <mdef:RandomVariable symbId="ETA_CL20" id="i52">
+                <ct:VariabilityReference id="i53">
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID" id="i54"/>
+                </ct:VariabilityReference>
+                <uncert:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+                    <uncert:mean>
+                        <uncert:rVal>0.0</uncert:rVal>
+                    </uncert:mean>
+                    <uncert:stddev>
+                        <uncert:var varId="PPV_CL20"/>
+                    </uncert:stddev>
+                </uncert:NormalDistribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="ETA_V2" id="i55">
+                <ct:VariabilityReference id="i56">
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID" id="i57"/>
+                </ct:VariabilityReference>
+                <uncert:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+                    <uncert:mean>
+                        <uncert:rVal>0.0</uncert:rVal>
+                    </uncert:mean>
+                    <uncert:stddev>
+                        <uncert:var varId="PPV_V2"/>
+                    </uncert:stddev>
+                </uncert:NormalDistribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="ETA_CL23" id="i58">
+                <ct:VariabilityReference id="i59">
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID" id="i60"/>
+                </ct:VariabilityReference>
+                <uncert:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+                    <uncert:mean>
+                        <uncert:rVal>0.0</uncert:rVal>
+                    </uncert:mean>
+                    <uncert:stddev>
+                        <uncert:var varId="PPV_CL23"/>
+                    </uncert:stddev>
+                </uncert:NormalDistribution>
+            </mdef:RandomVariable>
+            <mdef:IndividualParameter symbId="CL20" id="i61">
+                <mdef:GaussianModel id="i62">
+                    <mdef:Transformation>log</mdef:Transformation>
+                    <mdef:LinearCovariate id="i63">
+                        <mdef:PopulationParameter id="i64">
+                            <ct:Assign id="i65">
+<math:Equation id="i66">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_CL20" id="i67"/>
+</math:Equation>
+                            </ct:Assign>
+                        </mdef:PopulationParameter>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects id="i68">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="ETA_CL20" id="i69"/>
+                    </mdef:RandomEffects>
+                </mdef:GaussianModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="V2" id="i70">
+                <mdef:GaussianModel id="i71">
+                    <mdef:Transformation>log</mdef:Transformation>
+                    <mdef:LinearCovariate id="i72">
+                        <mdef:PopulationParameter id="i73">
+                            <ct:Assign id="i74">
+<math:Equation id="i75">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_V2" id="i76"/>
+</math:Equation>
+                            </ct:Assign>
+                        </mdef:PopulationParameter>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects id="i77">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="ETA_V2" id="i78"/>
+                    </mdef:RandomEffects>
+                </mdef:GaussianModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="K12" id="i79">
+                <ct:Assign id="i80">
+                    <math:Equation id="i81">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="POP_K12" id="i82"/>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="CL23" id="i83">
+                <mdef:GaussianModel id="i84">
+                    <mdef:Transformation>log</mdef:Transformation>
+                    <mdef:LinearCovariate id="i85">
+                        <mdef:PopulationParameter id="i86">
+                            <ct:Assign id="i87">
+<math:Equation id="i88">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_CL23" id="i89"/>
+</math:Equation>
+                            </ct:Assign>
+                        </mdef:PopulationParameter>
+                        <mdef:Covariate id="i90">
+                            <ct:SymbRef blkIdRef="cm" symbIdRef="logPHENO2D6" id="i91"/>
+                            <mdef:FixedEffect id="i92">
+<ct:SymbRef blkIdRef="pm" symbIdRef="BETA_CL23_PHENO2D6" id="i93"/>
+                            </mdef:FixedEffect>
+                        </mdef:Covariate>
+                        <mdef:Covariate id="i94">
+                            <ct:SymbRef blkIdRef="cm" symbIdRef="logPHENO3A4" id="i95"/>
+                            <mdef:FixedEffect id="i96">
+<ct:SymbRef blkIdRef="pm" symbIdRef="BETA_CL23_PHENO3A4" id="i97"/>
+                            </mdef:FixedEffect>
+                        </mdef:Covariate>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects id="i98">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="ETA_CL23" id="i99"/>
+                    </mdef:RandomEffects>
+                </mdef:GaussianModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="Q1" id="i100">
+                <ct:Assign id="i101">
+                    <math:Equation id="i102">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="POP_Q1" id="i103"/>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="ALAG1" id="i104">
+                <ct:Assign id="i105">
+                    <math:Equation id="i106">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="POP_ALAG1" id="i107"/>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:SimpleParameter symbId="Mtam" id="i108">
+                <ct:Assign id="i109">
+                    <math:Equation id="i110">
+                        <ct:Real id="i111">371.51456</ct:Real>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:SimpleParameter>
+            <mdef:SimpleParameter symbId="Mendx" id="i112">
+                <ct:Assign id="i113">
+                    <math:Equation id="i114">
+                        <ct:Real id="i115">373.48738</ct:Real>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:SimpleParameter>
+            <mdef:SimpleParameter symbId="V3" id="i116">
+                <ct:Assign id="i117">
+                    <math:Equation id="i118">
+                        <ct:Int id="i119">400</ct:Int>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:SimpleParameter>
+            <mdef:SimpleParameter symbId="CL30" id="i120">
+                <ct:Assign id="i121">
+                    <math:Equation id="i122">
+                        <ct:Real id="i123">5.1</ct:Real>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:SimpleParameter>
+            <mdef:SimpleParameter symbId="K30" id="i124">
+                <ct:Assign id="i125">
+                    <math:Equation id="i126">
+                        <math:Binop op="divide" id="i127">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="CL30" id="i128"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="V3" id="i129"/>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </mdef:SimpleParameter>
+            <mdef:RandomVariable symbId="EPS_TAM" id="i130">
+                <ct:VariabilityReference id="i131">
+                    <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV" id="i132"/>
+                </ct:VariabilityReference>
+                <uncert:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+                    <uncert:mean>
+                        <uncert:rVal>0.0</uncert:rVal>
+                    </uncert:mean>
+                    <uncert:variance>
+                        <uncert:prVal>1.0</uncert:prVal>
+                    </uncert:variance>
+                </uncert:NormalDistribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="EPS_ENDX" id="i133">
+                <ct:VariabilityReference id="i134">
+                    <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV" id="i135"/>
+                </ct:VariabilityReference>
+                <uncert:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+                    <uncert:mean>
+                        <uncert:rVal>0.0</uncert:rVal>
+                    </uncert:mean>
+                    <uncert:variance>
+                        <uncert:prVal>1.0</uncert:prVal>
+                    </uncert:variance>
+                </uncert:NormalDistribution>
+            </mdef:RandomVariable>
+            <mdef:Correlation id="i136">
+                <ct:VariabilityReference id="i137">
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID" id="i138"/>
+                </ct:VariabilityReference>
+                <mdef:Pairwise id="i139">
+                    <mdef:RandomVariable1 id="i140">
+                        <ct:SymbRef symbIdRef="ETA_CL20" id="i141"/>
+                    </mdef:RandomVariable1>
+                    <mdef:RandomVariable2 id="i142">
+                        <ct:SymbRef symbIdRef="ETA_V2" id="i143"/>
+                    </mdef:RandomVariable2>
+                    <mdef:Covariance id="i144">
+                        <math:Equation id="i145">
+                            <ct:Real id="i146">0.01</ct:Real>
+                        </math:Equation>
+                    </mdef:Covariance>
+                </mdef:Pairwise>
+            </mdef:Correlation>
+        </mdef:ParameterModel>
+        <mdef:StructuralModel blkId="sm" id="i147">
+            <ct:Variable symbolType="real" symbId="SC2" id="i148">
+                <ct:Assign id="i149">
+                    <math:Equation id="i150">
+                        <math:Binop op="divide" id="i151">
+                            <math:Binop op="times" id="i152">
+<ct:SymbRef blkIdRef="pm" symbIdRef="V2" id="i153"/>
+<ct:SymbRef blkIdRef="pm" symbIdRef="Mtam" id="i154"/>
+                            </math:Binop>
+                            <math:Binop op="power" id="i155">
+<ct:Int id="i156">10</ct:Int>
+<ct:Int id="i157">6</ct:Int>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="SC3" id="i158">
+                <ct:Assign id="i159">
+                    <math:Equation id="i160">
+                        <math:Binop op="divide" id="i161">
+                            <math:Binop op="times" id="i162">
+<ct:SymbRef blkIdRef="pm" symbIdRef="V3" id="i163"/>
+<ct:SymbRef blkIdRef="pm" symbIdRef="Mendx" id="i164"/>
+                            </math:Binop>
+                            <math:Binop op="power" id="i165">
+<ct:Int id="i166">10</ct:Int>
+<ct:Int id="i167">6</ct:Int>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="C2" id="i168">
+                <ct:Assign id="i169">
+                    <math:Equation id="i170">
+                        <math:Binop op="divide" id="i171">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="CMT_TAM" id="i172"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="V2" id="i173"/>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="RATEIN" id="i174">
+                <ct:Assign id="i175">
+                    <math:Equation id="i176">
+                        <math:Piecewise>
+                            <math:Piece id="i177">
+<math:Binop op="times" id="i178">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="GUT" id="i179"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="K12" id="i180"/>
+</math:Binop>
+<math:Condition id="i181">
+    <math:LogicBinop op="geq" id="i182">
+        <ct:SymbRef symbIdRef="T" id="i183"/>
+        <ct:SymbRef blkIdRef="pm" symbIdRef="ALAG1" id="i184"/>
+    </math:LogicBinop>
+</math:Condition>
+                            </math:Piece>
+                            <math:Piece id="i185">
+<ct:Int id="i186">0</ct:Int>
+<math:Condition id="i187">
+    <math:Otherwise/>
+</math:Condition>
+                            </math:Piece>
+                        </math:Piecewise>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="C_HEP" id="i188">
+                <ct:Assign id="i189">
+                    <math:Equation id="i190">
+                        <math:Binop op="divide" id="i191">
+                            <math:Binop op="plus" id="i192">
+<ct:SymbRef blkIdRef="sm" symbIdRef="RATEIN" id="i193"/>
+<math:Binop op="times" id="i194">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="Q1" id="i195"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="C2" id="i196"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="plus" id="i197">
+<ct:SymbRef blkIdRef="pm" symbIdRef="Q1" id="i198"/>
+<ct:SymbRef blkIdRef="pm" symbIdRef="CL23" id="i199"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="GUT" id="i200">
+                <ct:Assign id="i201">
+                    <math:Equation id="i202">
+                        <math:Uniop op="minus" id="i203">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="RATEIN" id="i204"/>
+                        </math:Uniop>
+                    </math:Equation>
+                </ct:Assign>
+                <ct:IndependentVariable id="i205">
+                    <ct:SymbRef symbIdRef="T" id="i206"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition id="i207">
+                    <ct:InitialValue id="i208">
+                        <ct:Assign id="i209">
+                            <math:Equation id="i210">
+<ct:Int id="i211">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime id="i212">
+                        <ct:Assign id="i213">
+                            <math:Equation id="i214">
+<ct:Int id="i215">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="CMT_TAM" id="i216">
+                <ct:Assign id="i217">
+                    <math:Equation id="i218">
+                        <math:Binop op="minus" id="i219">
+                            <math:Binop op="minus" id="i220">
+<math:Binop op="times" id="i221">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="Q1" id="i222"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="C_HEP" id="i223"/>
+</math:Binop>
+<math:Binop op="times" id="i224">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="Q1" id="i225"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="C2" id="i226"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times" id="i227">
+<ct:SymbRef blkIdRef="pm" symbIdRef="CL20" id="i228"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="C2" id="i229"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+                <ct:IndependentVariable id="i230">
+                    <ct:SymbRef symbIdRef="T" id="i231"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition id="i232">
+                    <ct:InitialValue id="i233">
+                        <ct:Assign id="i234">
+                            <math:Equation id="i235">
+<ct:Int id="i236">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime id="i237">
+                        <ct:Assign id="i238">
+                            <math:Equation id="i239">
+<ct:Int id="i240">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="CMT_ENDX" id="i241">
+                <ct:Assign id="i242">
+                    <math:Equation id="i243">
+                        <math:Binop op="minus" id="i244">
+                            <math:Binop op="times" id="i245">
+<ct:SymbRef blkIdRef="pm" symbIdRef="CL23" id="i246"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="C_HEP" id="i247"/>
+                            </math:Binop>
+                            <math:Binop op="times" id="i248">
+<ct:SymbRef blkIdRef="pm" symbIdRef="K30" id="i249"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="CMT_ENDX" id="i250"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+                <ct:IndependentVariable id="i251">
+                    <ct:SymbRef symbIdRef="T" id="i252"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition id="i253">
+                    <ct:InitialValue id="i254">
+                        <ct:Assign id="i255">
+                            <math:Equation id="i256">
+<ct:Int id="i257">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime id="i258">
+                        <ct:Assign id="i259">
+                            <math:Equation id="i260">
+<ct:Int id="i261">0</ct:Int>
+                            </math:Equation>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:Variable symbolType="real" symbId="CTAM" id="i262">
+                <ct:Assign id="i263">
+                    <math:Equation id="i264">
+                        <math:Binop op="divide" id="i265">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="CMT_TAM" id="i266"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="SC2" id="i267"/>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="CENDX" id="i268">
+                <ct:Assign id="i269">
+                    <math:Equation id="i270">
+                        <math:Binop op="divide" id="i271">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="CMT_ENDX" id="i272"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="SC3" id="i273"/>
+                        </math:Binop>
+                    </math:Equation>
+                </ct:Assign>
+            </ct:Variable>
+        </mdef:StructuralModel>
+        <mdef:ObservationModel blkId="om1" id="i274">
+            <mdef:ContinuousData id="i275">
+                <mdef:Standard symbId="TAM_OBS" id="i276">
+                    <mdef:Output>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="CTAM" id="i277"/>
+                    </mdef:Output>
+                    <mdef:ErrorModel>
+                        <ct:Assign id="i278">
+                            <math:Equation id="i279">
+<math:FunctionCall id="i280">
+    <ct:SymbRef symbIdRef="proportionalError" id="i281"/>
+    <math:FunctionArgument symbId="proportional">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="RUV_TAM" id="i282"/>
+    </math:FunctionArgument>
+    <math:FunctionArgument symbId="f">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="CTAM" id="i283"/>
+    </math:FunctionArgument>
+</math:FunctionCall>
+                            </math:Equation>
+                        </ct:Assign>
+                    </mdef:ErrorModel>
+                    <mdef:ResidualError>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="EPS_TAM" id="i284"/>
+                    </mdef:ResidualError>
+                </mdef:Standard>
+            </mdef:ContinuousData>
+        </mdef:ObservationModel>
+        <mdef:ObservationModel blkId="om2" id="i285">
+            <mdef:ContinuousData id="i286">
+                <mdef:Standard symbId="ENDX_OBS" id="i287">
+                    <mdef:Output>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="CENDX" id="i288"/>
+                    </mdef:Output>
+                    <mdef:ErrorModel>
+                        <ct:Assign id="i289">
+                            <math:Equation id="i290">
+<math:FunctionCall id="i291">
+    <ct:SymbRef symbIdRef="proportionalError" id="i292"/>
+    <math:FunctionArgument symbId="proportional">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="RUV_ENDX" id="i293"/>
+    </math:FunctionArgument>
+    <math:FunctionArgument symbId="f">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="CENDX" id="i294"/>
+    </math:FunctionArgument>
+</math:FunctionCall>
+                            </math:Equation>
+                        </ct:Assign>
+                    </mdef:ErrorModel>
+                    <mdef:ResidualError>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="EPS_ENDX" id="i295"/>
+                    </mdef:ResidualError>
+                </mdef:Standard>
+            </mdef:ContinuousData>
+        </mdef:ObservationModel>
+    </mdef:ModelDefinition>
+    <msteps:ModellingSteps id="i296">
+        <msteps:ExternalDataSet toolName="NONMEM" oid="nm_ds" id="i297">
+            <msteps:ColumnMapping id="i298">
+                <ds:ColumnRef columnIdRef="ID" id="i299"/>
+                <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID" id="i300"/>
+            </msteps:ColumnMapping>
+            <msteps:ColumnMapping id="i301">
+                <ds:ColumnRef columnIdRef="TIME" id="i302"/>
+                <ct:SymbRef symbIdRef="T" id="i303"/>
+            </msteps:ColumnMapping>
+            <msteps:MultipleDVMapping id="i304">
+                <ds:ColumnRef columnIdRef="DV" id="i305"/>
+                <msteps:Piecewise>
+                    <math:Piece id="i306">
+                        <ct:SymbRef blkIdRef="om1" symbIdRef="TAM_OBS" id="i307"/>
+                        <math:Condition id="i308">
+                            <math:LogicBinop op="eq" id="i309">
+<ds:ColumnRef columnIdRef="DVID" id="i310"/>
+<ct:Int id="i311">2</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                    <math:Piece id="i312">
+                        <ct:SymbRef blkIdRef="om2" symbIdRef="ENDX_OBS" id="i313"/>
+                        <math:Condition id="i314">
+                            <math:LogicBinop op="eq" id="i315">
+<ds:ColumnRef columnIdRef="DVID" id="i316"/>
+<ct:Int id="i317">3</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                </msteps:Piecewise>
+            </msteps:MultipleDVMapping>
+            <msteps:ColumnMapping id="i318">
+                <ds:ColumnRef columnIdRef="AMT" id="i319"/>
+                <ds:Piecewise>
+                    <math:Piece id="i320">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="GUT" id="i321"/>
+                        <math:Condition id="i322">
+                            <math:LogicBinop op="gt" id="i323">
+<ds:ColumnRef columnIdRef="AMT" id="i324"/>
+<ct:Int id="i325">0</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                </ds:Piecewise>
+            </msteps:ColumnMapping>
+            <msteps:ColumnMapping id="i326">
+                <ds:ColumnRef columnIdRef="CYP3A4" id="i327"/>
+                <ct:SymbRef blkIdRef="cm" symbIdRef="CYP3A4" id="i328"/>
+            </msteps:ColumnMapping>
+            <msteps:ColumnMapping id="i329">
+                <ds:ColumnRef columnIdRef="CYP2D6" id="i330"/>
+                <ct:SymbRef blkIdRef="cm" symbIdRef="CYP2D6" id="i331"/>
+            </msteps:ColumnMapping>
+            <ds:DataSet id="i332">
+                <ds:Definition id="i333">
+                    <ds:Column columnId="ID" columnType="id" valueType="int" columnNum="1" id="i334"/>
+                    <ds:Column columnId="TIME" columnType="idv" valueType="real" columnNum="2" id="i335"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3" id="i336"/>
+                    <ds:Column columnId="IPR" columnType="undefined" valueType="real" columnNum="4" id="i337"/>
+                    <ds:Column columnId="AMT" columnType="dose" valueType="real" columnNum="5" id="i338"/>
+                    <ds:Column columnId="DVID" columnType="dvid" valueType="int" columnNum="6" id="i339"/>
+                    <ds:Column columnId="MDV" columnType="mdv" valueType="int" columnNum="7" id="i340"/>
+                    <ds:Column columnId="EVID" columnType="undefined" valueType="real" columnNum="8" id="i341"/>
+                    <ds:Column columnId="II" columnType="ii" valueType="real" columnNum="9" id="i342"/>
+                    <ds:Column columnId="TAD" columnType="undefined" valueType="real" columnNum="10" id="i343"/>
+                    <ds:Column columnId="L2" columnType="undefined" valueType="real" columnNum="11" id="i344"/>
+                    <ds:Column columnId="CYP3A4" columnType="covariate" valueType="real" columnNum="12" id="i345"/>
+                    <ds:Column columnId="CYP2D6" columnType="covariate" valueType="real" columnNum="13" id="i346"/>
+                    <ds:Column columnId="SS" columnType="ss" valueType="real" columnNum="14" id="i347"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="id" id="i348">
+                    <ds:path>Simulated_tamoxifen.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </msteps:ExternalDataSet>
+        <msteps:EstimationStep oid="estimStep_1" id="i349">
+            <msteps:ExternalDataSetReference id="i350">
+                <ct:OidRef oidRef="nm_ds" id="i351"/>
+            </msteps:ExternalDataSetReference>
+            <msteps:ParametersToEstimate id="i352">
+                <msteps:ParameterEstimation id="i353">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_CL20" id="i354"/>
+                    <msteps:InitialEstimate fixed="false" id="i355">
+                        <math:Equation id="i356">
+                            <ct:Int id="i357">10</ct:Int>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i358">
+                        <math:Equation id="i359">
+                            <ct:Int id="i360">0</ct:Int>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i361">
+                        <math:Equation id="i362">
+                            <ct:Int id="i363">10000</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i364">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_V2" id="i365"/>
+                    <msteps:InitialEstimate fixed="false" id="i366">
+                        <math:Equation id="i367">
+                            <ct:Int id="i368">800</ct:Int>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i369">
+                        <math:Equation id="i370">
+                            <ct:Int id="i371">5</ct:Int>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i372">
+                        <math:Equation id="i373">
+                            <ct:Int id="i374">20000</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i375">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_K12" id="i376"/>
+                    <msteps:InitialEstimate fixed="false" id="i377">
+                        <math:Equation id="i378">
+                            <ct:Int id="i379">2</ct:Int>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i380">
+                        <math:Equation id="i381">
+                            <ct:Real id="i382">0.01</ct:Real>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i383">
+                        <math:Equation id="i384">
+                            <ct:Int id="i385">10</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i386">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_CL23" id="i387"/>
+                    <msteps:InitialEstimate fixed="false" id="i388">
+                        <math:Equation id="i389">
+                            <ct:Real id="i390">0.3</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i391">
+                        <math:Equation id="i392">
+                            <ct:Int id="i393">0</ct:Int>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i394">
+                        <math:Equation id="i395">
+                            <ct:Int id="i396">10000</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i397">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_Q1" id="i398"/>
+                    <msteps:InitialEstimate fixed="false" id="i399">
+                        <math:Equation id="i400">
+                            <ct:Int id="i401">10</ct:Int>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i402">
+                        <math:Equation id="i403">
+                            <ct:Int id="i404">0</ct:Int>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i405">
+                        <math:Equation id="i406">
+                            <ct:Int id="i407">10000</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i408">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="POP_ALAG1" id="i409"/>
+                    <msteps:InitialEstimate fixed="false" id="i410">
+                        <math:Equation id="i411">
+                            <ct:Real id="i412">0.5</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i413">
+                        <math:Equation id="i414">
+                            <ct:Int id="i415">0</ct:Int>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i416">
+                        <math:Equation id="i417">
+                            <ct:Int id="i418">10</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i419">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="BETA_CL23_PHENO2D6" id="i420"/>
+                    <msteps:InitialEstimate fixed="false" id="i421">
+                        <math:Equation id="i422">
+                            <ct:Real id="i423">0.2</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i424">
+                        <math:Equation id="i425">
+                            <ct:Real id="i426">0.01</ct:Real>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i427">
+                        <math:Equation id="i428">
+                            <ct:Int id="i429">10</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i430">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="BETA_CL23_PHENO3A4" id="i431"/>
+                    <msteps:InitialEstimate fixed="false" id="i432">
+                        <math:Equation id="i433">
+                            <ct:Real id="i434">0.2</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound id="i435">
+                        <math:Equation id="i436">
+                            <ct:Real id="i437">0.01</ct:Real>
+                        </math:Equation>
+                    </msteps:LowerBound>
+                    <msteps:UpperBound id="i438">
+                        <math:Equation id="i439">
+                            <ct:Int id="i440">10</ct:Int>
+                        </math:Equation>
+                    </msteps:UpperBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i441">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="RUV_TAM" id="i442"/>
+                    <msteps:InitialEstimate fixed="false" id="i443">
+                        <math:Equation id="i444">
+                            <ct:Real id="i445">0.1</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i446">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="RUV_ENDX" id="i447"/>
+                    <msteps:InitialEstimate fixed="false" id="i448">
+                        <math:Equation id="i449">
+                            <ct:Real id="i450">0.1</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i451">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="PPV_CL20" id="i452"/>
+                    <msteps:InitialEstimate fixed="false" id="i453">
+                        <math:Equation id="i454">
+                            <ct:Real id="i455">0.1</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i456">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="PPV_V2" id="i457"/>
+                    <msteps:InitialEstimate fixed="false" id="i458">
+                        <math:Equation id="i459">
+                            <ct:Real id="i460">0.1</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation id="i461">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="PPV_CL23" id="i462"/>
+                    <msteps:InitialEstimate fixed="false" id="i463">
+                        <math:Equation id="i464">
+                            <ct:Real id="i465">0.1</ct:Real>
+                        </math:Equation>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+            </msteps:ParametersToEstimate>
+            <msteps:Operation order="1" opType="estPop" id="i466">
+                <msteps:Algorithm definition="FOCEI" id="i467"/>
+            </msteps:Operation>
+        </msteps:EstimationStep>
+        <msteps:StepDependencies id="i468">
+            <msteps:Step id="i469">
+                <ct:OidRef oidRef="estimStep_1" id="i470"/>
+            </msteps:Step>
+        </msteps:StepDependencies>
+    </msteps:ModellingSteps>
+</mml:PharmML>

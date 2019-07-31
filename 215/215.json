@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_Pimasertib_AeDropout.mod",
+        "Output_simulated_Pimasertib_AeDropout.lst",
+        "DDMODEL00000215.rdf",
+        "Simulated_Pimasertib_AeDropout.csv",
+        "Command.txt",
+        "Output_real_Pimasertib_AeDropout.lst",
+        "Model_Accommodations.txt"
+    ],
+    "version": 6
+}

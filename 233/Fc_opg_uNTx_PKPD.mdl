@@ -1,0 +1,178 @@
+# Zierhut et al. (2008)
+# - Population PK-PD model for Fc-osteoprotegerin in healthy postmenopausal women
+# - J Pharmacokinet Pharmacodyn 35(4): 379-99
+# Encoded in MDL by Mike K Smith
+# Date: 09 February 2017 
+  
+Fc_opg_uNTx_dat = dataObj {
+	DECLARED_VARIABLES{SC::dosingTarget CENT::dosingTarget PK::observation PD::observation}
+
+	DATA_INPUT_VARIABLES {
+		ID : { use is id }
+		TIME : { use is idv }
+		CMT : { use is cmt }
+		# Probably better if we used CMT equivalent to define administration compartment
+		AMT : { use is amt, define={1 in CMT as SC, 2 in CMT as CENT} }
+		DVID : { use is dvid}
+		DV : { use is dv, define={1 in DVID as PK, 2 in DVID as PD}}
+	} # end DATA_INPUT_VARIABLES
+	
+	SOURCE {
+	    srcfile : {file = "Simulated_opg.txt", 
+            inputFormat is nonmemFormat } 
+	} # end SOURCE
+	
+	DATA_DERIVED_VARIABLES{
+		IV : {use is covariate, column = CMT}
+	}
+} # end data object
+
+Fc_opg_uNTx_par = parObj {
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		TVCL :  { value = 168 }     # Clearance ; ml/h
+		TVVC :  { value = 2800 }    # Central Volume ; ml 
+		TVVP1 : { value = 443 }     # Volume of 1st peripheral cmpt ; ml
+		TVVP2 : { value = 269 }     # Volume of 2nd peripheral cmpt ; ml
+		TVQ1 :  { value = 15.5 }    # Distribution of Clearance ; ml/h
+		TVQ2 :  { value = 3.02 }    # Distribution of Clearance ; ml/h
+		TVKA :  { value = 0.0131 }  # Absorption Rate Constant ; 1/h
+		TVVMAX : { value = 13300 }  # Maximum velocity ; ng/h 
+		TVKM : { value = 6.74 }     # Michaelis constant ; ng/ml
+		TVFSC : { value = 0.0719 }  # Biovailability of SC dose ; no units 
+		TVKSYN : { value = 0.864 }  # Biomarker synthesis rate ; no units
+		TVKDEG : { value = 0.0204 } # Biomarker elimination rate constant ; 1/h
+		TVIC50 : { value = 5.38 }   # Half-maximal inhibitory conc ; ng/ml
+		} # end STRUCTURAL
+	VARIABILITY {
+		PPV_CL  : { value = 0.0391 }  # IIV Clearance
+		PPV_VC  : { value = 0.0102 }  # IIV VC  
+		PPV_VP1 : { value = 0.0144 }  # IIV VP1 
+		PPV_VP2 : { value = 0.0333 }  # IIV VP2
+		PPV_Q1  : { value = 0.0379 }  # IIV Q1
+		PPV_KA  : { value = 0.0457 }  # IIV KA
+		PPV_FSC : { value = 0.263 }   # IIV FSC
+		
+		PPV_KSYN_KDEG_IC50 : {matrixValue = triangle([0.281, 
+											   0.0867, 0.0325, 
+											   0.000, 0.000, 1.18], 3, true)}
+		ADDIV : { value = 0.0193}
+		ADDSC : { value = 0.7330}
+		PDPROP : { value = 0.0407}
+		PDADD : { value = 20.7}
+		} # end VARIABILITY
+} # end of parameter object 
+
+Fc_opg_uNTx_mdl = mdlObj {
+	IDV{ T }
+
+	COVARIATES{ IV }
+
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	} 
+
+ 	STRUCTURAL_PARAMETERS {
+		TVCL 
+		TVVC  
+		TVVP1
+		TVVP2
+		TVQ1 
+		TVQ2 
+		TVKA 
+		TVVMAX  
+		TVKM 
+		TVFSC 
+		TVKSYN
+		TVKDEG
+		TVIC50
+		} # end STRUCTURAL
+	VARIABILITY_PARAMETERS {
+		PPV_CL 
+		PPV_VC   
+		PPV_VP1 
+		PPV_VP2
+		PPV_Q1 
+		PPV_KA 
+		PPV_FSC
+		PPV_KSYN_KDEG_IC50 :: matrix
+		
+		ADDIV
+		ADDSC
+		PDPROP
+		PDADD
+		} # end VARIABILITY
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ECL ~ Normal(mean=0, var = PPV_CL)
+		EVC ~ Normal(mean = 0, var = PPV_VC)
+		EVP1 ~ Normal(mean = 0, var = PPV_VP1)
+		EVP2 ~ Normal(mean = 0, var = PPV_VP2)
+		EQ1 ~ Normal(mean = 0, var = PPV_Q1)
+		EKA ~ Normal(mean = 0, sd = PPV_KA)
+		EFSC ~ Normal(mean = 0, sd = PPV_FSC)
+
+		ETA_KSYN_KDEG_IC50 ~ MultivariateNormal1(mean = [0,0,0], covarianceMatrix = PPV_KSYN_KDEG_IC50)		
+		} # end RANDOM_VARIABLE_DEFINITION 
+
+	
+	INDIVIDUAL_VARIABLES { 
+		CL : {type is linear, trans is ln, pop = TVCL, ranEff = ECL}
+		VC : {type is linear, trans is ln, pop = TVVC, ranEff = EVC }
+		VP1 : {type is linear, trans is ln, pop = TVVP1, ranEff = EVP1}
+		VP2 : {type is linear, trans is ln, pop = TVVP2, ranEff = EVP2 }
+		Q1 : {type is linear, trans is ln, pop = TVQ1, ranEff = EQ1}
+		Q2 = TVQ2
+		KA : {type is linear, trans is ln, pop = TVKA, ranEff = EKA}
+		VMAX = TVVMAX
+		KM = TVKM
+		FSC : {type is linear, trans is ln, pop = TVFSC, ranEff = EFSC}
+		KSYN : {type is linear, trans is ln, pop = TVKSYN, ranEff = ETA_KSYN_KDEG_IC50[1]}
+		KDEG : {type is linear, trans is ln, pop = TVKDEG, ranEff = ETA_KSYN_KDEG_IC50[2]}
+		IC50 : {type is linear, trans is ln, pop = TVIC50, ranEff = ETA_KSYN_KDEG_IC50[3]}
+	} # end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		NTX_0 = KSYN / KDEG
+		F_SC = FSC / (1.0 + FSC)
+
+		DEQ{
+			SC : { deriv = -KA * SC, init = 0, x0 = 0 }
+			CENT : { deriv = KA*SC - (CL+Q1+Q2+CLNL)*CENT/VC + Q1*P1/VP1 + Q2*P2/VP2, init = 0, x0 = 0}
+			P1 : { deriv = CENT*Q1/VC - P1*Q1/VP1, init = 0, x0 = 0 }
+			P2 : { deriv = CENT*Q2/VC - P2*Q2/VP2, init = 0, x0 = 0 }
+			CLNL : { deriv = VMAX/(CP+KM), init = 0, x0 = 0 }
+			NTX : { deriv = KSYN*(1.0 - CP/(IC50+CP)) - KDEG*NTX, init = NTX_0, x0 = 0} 
+		}
+	    CP = CENT / (VC / 1000000.0) 
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_PK ~ Normal(mean = 0, var = 1) 
+		EPS_PD ~ Normal(mean = 0, var = 1)
+	}
+
+	OBSERVATION {
+	    PK : {type is additiveError, trans is ln, 
+	    	  additive = piecewise{{ ADDIV when IV==2; otherwise ADDSC }}, 
+	    	  eps = EPS_PK, prediction = CP }
+	    PD : {type is combinedError1, additive = PDADD, proportional = PDPROP, eps = EPS_PD, prediction = NTX} 
+	} # end OBSERVATION
+} # end of model object
+
+Fc_opg_uNTx_task = taskObj {
+	ESTIMATE{ 
+		set algo is saem
+	}
+} # end of task object
+
+
+Fc_opg_uNTx_mog = mogObj {
+	OBJECTS{
+		Fc_opg_uNTx_dat : { type is dataObj }
+		Fc_opg_uNTx_mdl : { type is mdlObj }
+		Fc_opg_uNTx_par : { type is parObj }
+		Fc_opg_uNTx_task : { type is taskObj }
+	}
+}

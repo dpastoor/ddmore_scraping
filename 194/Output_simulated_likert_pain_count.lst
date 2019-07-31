@@ -1,0 +1,468 @@
+Thu Dec  3 14:39:18 CET 2015
+$PROBLEM    Poisson Estimation 1
+$INPUT      STUD ID MDV DV TIME DAYS TFLA SEX AGE DURP DURD FLAG PCM
+            DRUG DOSE FOLL STRT STR PDV DIF TRA MEAN VAR RATI
+$DATA      simulated_likert_pain_count.csv IGNORE=@
+$PRED  
+
+;-----------------------------------------------
+ ;Covariates
+ IF(NEWIND.NE.2) NFLG=0
+ NFLG=NFLG+1
+
+   ;IF(NEWIND.NE.2) PSDV=0
+   ;PDV=PSDV
+   ;PSDV =  DV
+;-----------------------------------------------
+ ;Placebo parameters
+ TVBAS= THETA(1)/10
+ PHI  = LOG(TVBAS/(1-TVBAS))+ETA(1)
+ BAS  = 10*EXP(PHI)/(1+EXP(PHI))
+
+ PEF  = EXP(LOG(THETA(2)/(1- THETA(2)))+ETA(2))/(1+EXP(LOG(THETA(2)/(1- THETA(2)))+ETA(2)))
+
+ PHA  = THETA(3)*EXP(ETA(3))
+
+ PLC = (1- PEF*(1-EXP(-(LOG(2)/PHA*DAYS))))
+
+ COV = 0
+ IF(PCM.EQ.1) COV = THETA(12)
+;-----------------------------------------------
+ ;Model for lambda
+ TVLAM = BAS*PLC/10
+ PHL = LOG(TVLAM/(1-TVLAM)) +COV
+ LAM  = 10*EXP(PHL)/(1+EXP(PHL))
+
+;-----------------------------------------------
+ ;Markov elements
+ TE = THETA(11)*EXP(ETA(9))
+ TEF = TE*DAYS
+
+ PIN00=EXP(LOG(THETA(4)/(1-THETA(4)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(4)/(1-THETA(4)))+ETA(4)+TEF))
+ PIN09=EXP(LOG(THETA(5)/(1-THETA(5)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(5)/(1-THETA(5)))+ETA(4)+TEF))
+ IF(PDV.EQ.0) PIN0 = PIN00
+ IF(PDV.EQ.1) PIN0 = (8*PIN00+1*PIN09)/9
+ IF(PDV.EQ.2) PIN0 = (7*PIN00+2*PIN09)/9
+ IF(PDV.EQ.3) PIN0 = (6*PIN00+3*PIN09)/9
+ IF(PDV.EQ.4) PIN0 = (5*PIN00+4*PIN09)/9
+ IF(PDV.EQ.5) PIN0 = (4*PIN00+5*PIN09)/9
+ IF(PDV.EQ.6) PIN0 = (3*PIN00+6*PIN09)/9
+ IF(PDV.EQ.7) PIN0 = (2*PIN00+7*PIN09)/9
+ IF(PDV.EQ.8) PIN0 = (1*PIN00+8*PIN09)/9
+ IF(PDV.EQ.9) PIN0 =  PIN09
+ IF(PDV.EQ.10)PIN0 = EXP(LOG(THETA(6)/(1-THETA(6)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(6)/(1-THETA(6)))+ETA(4)+TEF))
+ IF(NEWIND.NE.2) PIN0=0
+;-----------------------------------------------
+ PIN1= .5*EXP(LOG(THETA(7)/(1-THETA(7)))+ETA(5))/(1+EXP(LOG(THETA(7)/(1-THETA(7)))+ETA(5)))
+ PIN1=PIN1*(1-PIN0)
+ IF(NEWIND.NE.2) PIN1=0
+                           PIN1D=PIN1*2
+ IF(PDV.EQ.0.OR.PDV.EQ.10) PIN1D=PIN1
+;-----------------------------------------------
+ PIN2= .5*EXP(LOG(THETA(8)/(1-THETA(8)))+ETA(6))/(1+EXP(LOG(THETA(8)/(1-THETA(8)))+ETA(6)))
+ PIN2=PIN2*(1-PIN0-PIN1D)
+ IF(NEWIND.NE.2) PIN2=0
+                          PIN2D=PIN2*2
+ IF(PDV.LE.1.OR.PDV.GE.9) PIN2D=PIN2
+;-----------------------------------------------
+ PIN3= .5*EXP(LOG(THETA(9)/(1-THETA(9)))+ETA(7))/(1+EXP(LOG(THETA(9)/(1-THETA(9)))+ETA(7)))
+ PIN3=PIN3*(1-PIN0-PIN1D-PIN2D)
+ IF(NEWIND.NE.2) PIN3=0
+                          PIN3D=PIN3*2
+ IF(PDV.LE.2.OR.PDV.GE.8) PIN3D=PIN3
+
+;-----------------------------------------------
+ ;Total probabilities
+ PTOT=PIN0+PIN1D+PIN2D+PIN3D
+
+;-----------------------------------------------
+ PH =  LOG(THETA(10)/(1- THETA(10)))+ETA(8)
+ TH =  EXP(PH)/(1+EXP(PH))
+ DIS = -TH*LAM /(10-LAM)
+
+;-----------------------------------------------
+ ;Truncated Poisson distribution
+ SUM0=1/(LAM*(1-DIS))         *EXP(-(LAM*(1-DIS)))
+ SUM1=                         EXP(-(LAM*(1-DIS)+DIS))
+ SUM2=  (LAM*(1-DIS)+2*DIS)   *EXP(-(LAM*(1-DIS)+ 2*DIS))/2
+ SUM3=  (LAM*(1-DIS)+3*DIS)**2*EXP(-(LAM*(1-DIS)+ 3*DIS))/6
+ SUM4=  (LAM*(1-DIS)+4*DIS)**3*EXP(-(LAM*(1-DIS)+ 4*DIS))/24
+ SUM5=  (LAM*(1-DIS)+5*DIS)**4*EXP(-(LAM*(1-DIS)+ 5*DIS))/120
+ SUM6=  (LAM*(1-DIS)+6*DIS)**5*EXP(-(LAM*(1-DIS)+ 6*DIS))/720
+ SUM7=  (LAM*(1-DIS)+7*DIS)**6*EXP(-(LAM*(1-DIS)+ 7*DIS))/5040
+ SUM8=  (LAM*(1-DIS)+8*DIS)**7*EXP(-(LAM*(1-DIS)+ 8*DIS))/40320
+ SUM9=  (LAM*(1-DIS)+9*DIS)**8*EXP(-(LAM*(1-DIS)+ 9*DIS))/362880
+ SUM10= (LAM*(1-DIS)+10*DIS)**9*EXP(-(LAM*(1-DIS)+ 10*DIS))/3628800
+ SUM =  (LAM*(1-DIS))*(SUM0+SUM1+SUM2+SUM3+SUM4+SUM5+SUM6+SUM7+SUM8+SUM9+SUM10)
+
+ ;-----------------------------------------------
+ ;Y
+ IF(DV.LE.1) THEN
+ LFAC=0
+ ELSE
+ LFAC = DV*LOG(DV)-DV +LOG(DV*(1+4*DV*(1+2*DV)))/6 +LOG(3.1415)/2
+ ENDIF
+
+ GP=EXP(LOG(LAM)+(DV-1)*LOG(LAM*(1-DIS)+DIS*DV)+LOG(1-DIS)-(LAM*(1-DIS)+DIS*DV)- LFAC)
+
+ ;DIF = DV-PDV
+ ;IF(NEWIND.NE.2) DIF = 0
+
+                           YY =      (1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.0)              YY = PIN0+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.1.OR.DIF.EQ.-1) YY = PIN1+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.2.OR.DIF.EQ.-2) YY = PIN2+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.3.OR.DIF.EQ.-3) YY = PIN3+(1-PTOT)*(GP/SUM)
+ IF(NEWIND.NE.2)           YY =      (1-PTOT)*(GP/SUM)
+
+  Y= -2*LOG(YY)
+
+   ;TRA = PDV*100+DV
+
+;-----------------------------------------------
+ ;Simulation
+ IF (ICALL.EQ.4) THEN
+    PRN=0
+    N=0
+       CALL RANDOM (2,R)
+       DO WHILE (R.GT.PRN)
+
+ IF(N.LE.1) THEN
+ LFAC=0
+ ELSE
+ LFAC = N*LOG(N)-N +LOG(N*(1+4*N*(1+2*N)))/6 +LOG(3.1415)/2
+ ENDIF
+
+ GP=EXP(LOG(LAM)+(N-1)*LOG(LAM*(1-DIS)+DIS*N)+LOG(1-DIS)-(LAM*(1-DIS)+DIS*N)- LFAC)
+
+ DIF = N-PDV
+ IF(NEWIND.NE.2) DIF = 0
+
+                           YY =      (1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.0)              YY = PIN0+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.1.OR.DIF.EQ.-1) YY = PIN1+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.2.OR.DIF.EQ.-2) YY = PIN2+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.3.OR.DIF.EQ.-3) YY = PIN3+(1-PTOT)*(GP/SUM)
+ IF(NEWIND.NE.2)           YY =      (1-PTOT)*(GP/SUM)
+
+       PRN=YY+PRN
+       IF (R.GT.PRN) N=N+1
+       END DO
+ DV=N
+ PSDV=DV
+
+ ENDIF
+
+ IF (ICALL.EQ.4) THEN
+ TRA=PDV*100+DV
+ ENDIF
+;-----------------------------------------------
+
+    IF (ICALL.EQ.4) THEN
+;mean of observed counts
+ IF(NEWIND.NE.2) MEA=0
+ MEA=MEA+DV
+ IF(NEWIND.NE.2) MEAN=0
+ MEAN=MEA/NFLG
+;variance of observed counts
+ IF(NEWIND.NE.2) MES=0
+   MES=MES+DV**2
+IF(NEWIND.NE.2) MEAS=0
+   MEAS=MES/NFLG
+IF(NEWIND.NE.2) VAR=0
+   VAR=MEAS-MEAN**2
+RATI=VAR/MEAN
+IF(MEAN.EQ.0) RATI=1
+    ENDIF
+
+; IPRED=0
+; IWRES=0
+; IRES=0
+
+$THETA  (0,6.20667,10) ; BASELINE
+$THETA  (0,0.18986,1) ; PLACEBO_EFFECT
+$THETA  (0,27.7045) ; PLACEBO_HALF_TIME
+$THETA  (0,0.554617,1) ; PROBABILITY_OF_INFLATION_0/0
+$THETA  (0,0.119517,1) ; PROBABILITY_OF_INFLATION_0/9
+$THETA  (0,0.443759,1) ; PROBABILITY_OF_INFLATION_0/10
+$THETA  (0,0.359302,1) ; PROBABILITY_OF_INFLATION_1
+$THETA  (0,0.00472972,1) ; PROBABILITY_OF_INFLATION_2
+$THETA  (0,0.000403033,1) ; PROBABILITY_OF_INFLATION_3
+$THETA  (0,0.99286,1) ; DIS
+$THETA  (0,0.00643534) ; TE0
+$THETA  (0,0.36374) ; COV
+$OMEGA  0.568985  ;  BASELINE_
+$OMEGA  3.77567  ; PLACEBO_EFFECT_
+$OMEGA  0.352913  ; PLACEBO_HALF_TIME_
+$OMEGA  BLOCK(3)
+ 2.69723  ; PROBABILITY_OF_INFLATION_0/0_
+ 2.45376 3.56524  ; PROBABILITY_OF_INFLATION_1_
+ -0.755447 0.805685 1.92485  ; PROBABILITY_OF_INFLATION_2_
+$OMEGA  0  FIX  ; PROBABILITY_OF_INFLATION_3_
+$OMEGA  24.3896  ; UNDERDISPERSION
+$OMEGA  1.33918  ; TRANSITION_ELEMENT
+$ESTIMATION METHOD=1 LAPLACE -2LL MAXEVAL=0 PRINT=1 MSFO=msf001
+;$COVARIANCE PRINT=E UNCONDITIONAL
+
+;$SIM (12345) (678910 UNI) ONLYSIM NOPRED
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  3) THERE MAY BE AN ERROR IN THE ABBREVIATED CODE. THE FOLLOWING
+ ONE OR MORE RANDOM VARIABLES ARE DEFINED WITH "IF" STATEMENTS THAT DO NOT
+ PROVIDE DEFINITIONS FOR BOTH THE "THEN" AND "ELSE" CASES. IF ALL
+ CONDITIONS FAIL, THE VALUES OF THESE VARIABLES WILL BE ZERO.
+  
+   PIN0
+
+             
+ (WARNING  27) THE ABBREVIATED CODE CONTAINS A SIMULATION BLOCK BUT THERE IS
+ NO $SIMULATION RECORD.
+
+License Registered to: Uppsala University
+Expiration Date:    14 MAR 2016
+Current Date:        3 DEC 2015
+Days until program expires : 106
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ Poisson Estimation 1                                                    
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:    22492
+ NO. OF DATA ITEMS IN DATA SET:  24
+ ID DATA ITEM IS DATA ITEM NO.:   2
+ DEP VARIABLE IS DATA ITEM NO.:   4
+ MDV DATA ITEM IS DATA ITEM NO.:  3
+0LABELS FOR DATA ITEMS:
+ STUD ID MDV DV TIME DAYS TFLA SEX AGE DURP DURD FLAG PCM DRUG DOSE FOLL STRT STR PDV DIF TRA MEAN VAR RATI
+0FORMAT FOR DATA:
+ (E2.0,E6.0,2E2.0,E5.0,E6.0,6E2.0,E5.0,11E2.0)                                   
+ 
+ TOT. NO. OF OBS RECS:    22492
+ TOT. NO. OF INDIVIDUALS:    231
+0LENGTH OF THETA:  12
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS BLOCK FORM:
+  1
+  0  2
+  0  0  3
+  0  0  0  4
+  0  0  0  4  4
+  0  0  0  4  4  4
+  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  7
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.6207E+01     0.1000E+02
+  0.0000E+00     0.1899E+00     0.1000E+01
+  0.0000E+00     0.2770E+02     0.1000E+07
+  0.0000E+00     0.5546E+00     0.1000E+01
+  0.0000E+00     0.1195E+00     0.1000E+01
+  0.0000E+00     0.4438E+00     0.1000E+01
+  0.0000E+00     0.3593E+00     0.1000E+01
+  0.0000E+00     0.4730E-02     0.1000E+01
+  0.0000E+00     0.4030E-03     0.1000E+01
+  0.0000E+00     0.9929E+00     0.1000E+01
+  0.0000E+00     0.6435E-02     0.1000E+07
+  0.0000E+00     0.3637E+00     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.5690E+00
+        2                                                                                   NO 
+                  0.3776E+01
+        3                                                                                   NO 
+                  0.3529E+00
+        4                                                                                   NO 
+                  0.2697E+01
+                  0.2454E+01   0.3565E+01
+                 -0.7554E+00   0.8057E+00   0.1925E+01
+        5                                                                                  YES 
+                  0.0000E+00
+        6                                                                                   NO 
+                  0.2439E+02
+        7                                                                                   NO 
+                  0.1339E+01
+1
+
+
+ #TBLN:      1
+ #METH: Laplacian Conditional Estimation (Evaluation)
+
+ ESTIMATION STEP OMITTED:                 YES 
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     NO  
+ LAPLACIAN OBJ. FUNC.:                    YES 
+ NUMERICAL 2ND DERIVATIVES:               NO  
+ PRED F SET TO -2 LOG LIKELIHOOD:         YES 
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    100         
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   100         
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=NPRED
+ RES=NRES
+ WRES=NWRES
+ IWRS=NIWRES
+ IPRD=NIPRED
+ IRS=NIRES
+
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************     3878.404       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+
+ 
+         6.21E+00  1.90E-01  2.77E+01  5.55E-01  1.20E-01  4.44E-01  3.59E-01  4.73E-03  4.03E-04  9.93E-01  6.44E-03  3.64E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9   
+ 
+ ETA1
++        5.69E-01
+ 
+ ETA2
++        0.00E+00  3.78E+00
+ 
+ ETA3
++        0.00E+00  0.00E+00  3.53E-01
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  2.70E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  2.45E+00  3.57E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00 -7.55E-01  8.06E-01  1.92E+00
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.44E+01
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.34E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9   
+ 
+ ETA1
++        7.54E-01
+ 
+ ETA2
++        0.00E+00  1.94E+00
+ 
+ ETA3
++        0.00E+00  0.00E+00  5.94E-01
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  1.64E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  7.91E-01  1.89E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00 -3.32E-01  3.08E-01  1.39E+00
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.94E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.16E+00
+ 
+ #CPUT: Total CPU Time in Seconds,        7.772
+Stop Time:
+Thu Dec  3 14:39:44 CET 2015

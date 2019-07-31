@@ -1,0 +1,75 @@
+; this script is generated automatically
+
+DESCRIPTION: 
+Executable_glucoseKinetics.mlxtran
+
+DATA: 
+    path = "%MLXPROJECT%/",
+    file  ="Simulated_glucoseKinetics.csv",
+    headers = {TIME,Y,MDV,DOSE,RATE,ID,X,X,DPT,X,X,X,X},
+    columnDelimiter = ","
+
+INDIVIDUAL: 
+    Emax = {distribution=logNormal, iiv=yes},
+    F = {distribution=logNormal, iiv=no},
+    KmG = {distribution=logNormal, iiv=yes},
+    KmI = {distribution=logNormal, iiv=yes},
+    V = {distribution=logNormal, iiv=yes},
+    Vmax0 = {distribution=logNormal, iiv=no},
+    flambda2 = {distribution=logitNormal, iiv=yes},
+    flambda3 = {distribution=logitNormal, iiv=yes},
+    fw2 = {distribution=logitNormal, iiv=yes},
+    gamma = {distribution=logNormal, iiv=yes},
+    t12G = {distribution=logNormal, iiv=no},
+    t12I = {distribution=logNormal, iiv=yes},
+    w1 = {distribution=logitNormal, iiv=yes}
+
+CORRELATION: 
+    correlationIIV = {gamma,KmI}
+
+STRUCTURAL_MODEL: 
+    file = "mlxt:Executable_glucoseKinetics",
+    path = "%MLXPROJECT%",
+    output = {G}
+
+
+OBSERVATIONS: 
+    Y = {type=continuous, prediction=G, error=constant}
+
+TASKS: 
+    ; settings
+    globalSettings={
+        withVariance=yes,
+        settingsAlgorithms="%MLXPROJECT%/Executable_glucoseKinetics_algorithms.xmlx",
+        resultFolder="%MLXPROJECT%/Executable_glucoseKinetics"},
+    ; workflow
+    estimatePopulationParameters(
+        initialValues={
+            pop_Emax = 4812,
+            pop_F = 2688 [method=FIXED],
+            pop_KmG = 3.88,
+            pop_KmI = 784,
+            pop_V = 12648,
+            pop_Vmax0 = 338,
+            pop_flambda2 = 0.154,
+            pop_flambda3 = 0.0582,
+            pop_fw2 = 0.901,
+            pop_gamma = 1.62,
+            pop_t12G = 0.7 [method=FIXED],
+            pop_t12I = 15.9,
+            pop_w1 = 0.609,
+            a_Y = 0.014,
+            omega2_Emax = 0.112,
+            omega2_KmG = 0.219,
+            omega2_KmI = 0.263,
+            omega2_V = 0.0557,
+            omega2_flambda2 = 0,
+            omega2_flambda3 = 0.179,
+            omega2_fw2 = 0,
+            omega2_gamma = 0.111,
+            omega2_t12I = 0.151,
+            omega2_w1 = 0.773
+            } ),
+    estimateIndividualParameters( method={conditionalMode} ),
+    displayGraphics(),
+

@@ -1,0 +1,26 @@
+###### Scenario = 1
+###### MDL version = <MDL version, constrained to be 7.0 at the moment >
+###### IO product = <interoperability product number, constrained to be 4.1 at the moment >
+###### Input data = Simulated_tamoxifen.csv
+###### Executable model = Executable_tamoxifen.mdl
+###### Output = Output_tamoxifen_SO.xml
+
+#Initialisation
+rm(list=ls(all=F)) #clean your workspace first
+
+#Set working directory
+myfolder <- "tamoxifen" # name of your project folder
+setwd(file.path(Sys.getenv("MDLIDE_WORKSPACE_HOME"),myfolder))
+
+#Set name of .mdl file and dataset for future tasks
+mymodel <- "Executable_tamoxifen"
+datafile <- "Simulated_tamoxifen.csv"
+mdlfile <- paste0(mymodel,".mdl")
+
+#ESTIMATE model parameters using NONMEM
+nm <- estimate(mdlfile, target="NONMEM", subfolder="NONMEM")
+
+# Print the estimated parameters
+parameters_nm <- getPopulationParameters(nm, what="estimates")$MLE
+print(nm)
+

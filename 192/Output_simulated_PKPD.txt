@@ -1,0 +1,29 @@
+******************************************************************
+*      Executable_PKPD.mlxtran
+*      May 31, 2016 at 09:50:54
+*      Monolix version: 4.3.0
+******************************************************************
+
+Estimation of the population parameters
+
+             parameter 
+ka         :    1.97   
+V          :    95.1   
+Cl         :    9.91   
+kout       :   0.269   
+C50        :   0.307   
+
+omega_ka   :       0   
+omega_V    :   0.744   
+omega_Cl   :   0.819   
+omega_kout :   0.706   
+omega_C50  :   0.822   
+
+b_1        :   0.199   
+a_2        :   0.196   
+
+
+Population parameters estimation...
+
+Elapsed time is 120 seconds. 
+CPU time is 594 seconds. 

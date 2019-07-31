@@ -1,0 +1,21 @@
+###### Model ########
+
+- Original model was used as described in publication (Li et al);
+- Covariate effect of creatinine clearance (CLCR) on CL was fixed to original value from publication (0.62), since no information on the distribution of CLCR was given in the pulication
+
+
+###### Simulated Dataset ########
+
+- Software used for simulation: simulx
+- Number of simulated patients: 79 (=original patient number)
+- Dosing regime: 6 dosing groups (as mentioned in original publication)
+	Group 1: 14 patients: 500 mg --> 1000 mg/h, 
+	Group 2: 13 patients: 1000 mg --> 2000 mg/h, 
+	Group 3: 13 patients: 2000 mg --> 3000 mg/h, 
+	Group 4: 13 patients: 500 mg --> 166.7 mg/h,
+	Group 5: 13 patients: 1000 mg --> 333.3 mg/h
+	Group 6: 13 patients: 2000 mg --> 666.7 mg/h
+- Creatinine clearance in patients: all median CLCR of 83 mL/min, since no information was given on the distribution of CLCR in original population
+- Age in patients: assuming a log normal distribution of age, using information from original publication (median=35.0 yrs, sd= 18.2 yrs) 
+- Body weight in patients: assuming a log normal distribution of body weight, using information from original publication (median=70.0 kg, sd=16.1 kg)
+

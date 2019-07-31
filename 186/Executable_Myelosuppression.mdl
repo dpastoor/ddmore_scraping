@@ -1,0 +1,147 @@
+
+### Data object
+Friberg_JCO2002_Myelosuppression_dat = dataObj{
+ 
+   DECLARED_VARIABLES{Ac Y}
+
+   DATA_INPUT_VARIABLES{
+      ID: {use is id}
+      TIME: {use is idv } # units="h"
+      RATE: {use is rate} #units="umol/h", 3h infusion
+      AMT: {use is amt, variable=Ac} # units="umol" 
+      DV: {use is dv, variable=Y} # units="leukocytes*10^9/L"
+      CMT: {use is cmt} 
+      MDV: {use is mdv} 
+      V2I: {use is covariate} # individual estimate for the peripheral volume of distribution (L)
+      V1I: {use is covariate} # individual estimate for the central volume of distribution (L)
+      CLI: {use is covariate} #  individual estimate for the clearance (L/h)
+   }# end DATA_INPUT_VARIABLES
+
+
+   SOURCE{
+      scrfile : {file= "Simulated_WBC_pacl_ddmore.csv",
+      inputFormat is nonmemFormat}
+   }
+} # end data object
+
+
+### Parameter object
+Friberg_JCO2002_Myelosuppression_par = parObj{
+
+   STRUCTURAL{
+      POP_CIRC0: {value=7.21, lo=2, hi=13} # units = "leukocytes*10^9/L"
+      POP_MTT: {value=124, lo=0} # units="h"
+      POP_GAMMA: {value=0.239, lo=0}
+      POP_SLOPU: {value=28.9, lo=0} # units="L/umol"
+      PROP_ERROR: {value=0.286, lo=0}
+   }# end STRUCTURAL
+
+   VARIABILITY{
+      OMEGA_CIRC0: {value=0.107 ,type is var}
+      OMEGA_MTT: {value=0.0296, type is var}
+      OMEGA_SLOPU: {value=0.176, type is var}
+      
+      SIGMA_ERROR: {value=1, type is var, fix=true}
+   }# end VARIABILITY
+
+} # end of parameter object
+
+### Model object
+Friberg_JCO2002_Myelosuppression_mdl = mdlObj{
+
+   IDV{T}
+   
+   COVARIATES{
+    CLI
+    V1I
+    V2I
+   }
+
+   STRUCTURAL_PARAMETERS{
+      POP_CIRC0      # baseline circulating leukocyte cells
+      POP_MTT        # mean transit time
+      POP_GAMMA          # shape parameter of feedback
+      POP_SLOPU      # linear parameter representing the unbound drug effect
+      PROP_ERROR      # Typical_residual_error
+   }# end STRUCTURAL_PARAMETERS
+
+   VARIABILITY_PARAMETERS{
+      OMEGA_CIRC0
+      OMEGA_MTT
+      OMEGA_SLOPU
+      SIGMA_ERROR
+   }# end VARIABILITY_PARAMETERS
+
+  VARIABILITY_LEVELS{
+    ID:{level=2, type is parameter}
+    DV:{level=1, type is observation}
+    }
+
+   RANDOM_VARIABLE_DEFINITION(level=ID){
+      eta_CIRC0 ~ Normal(mean=0, var=OMEGA_CIRC0)
+      eta_MTT ~ Normal(mean=0, var=OMEGA_MTT)
+      eta_SLOPU ~ Normal(mean=0, var=OMEGA_SLOPU)
+   }# end RANDOM_VARIABLE_DEFINITION
+
+   INDIVIDUAL_VARIABLES{
+   ln(CIRC0) = linear(trans is ln, pop = POP_CIRC0, ranEff=[eta_CIRC0]) 
+   ln(MTT) = linear(trans is ln, pop = POP_MTT, ranEff=[eta_MTT])
+   ln(SLOPU) = linear(trans is ln, pop = POP_SLOPU, ranEff=[eta_SLOPU])
+   GAMMA = POP_GAMMA  
+
+
+
+
+   }# end INDIVIDUAL_VARIABLES
+
+
+   MODEL_PREDICTION{
+    DEQ{
+        # Drug PK
+        Q = 204
+        NN = 3        # number of transit compartments, fixed
+        KTR = (NN+1)/MTT
+        Ac : {deriv= (-Q/V1I*Ac - CLI/V1I*Ac + Q/V2I*Ap)}
+        Ap : {deriv= (Q/V1I*Ac - Q/V2I*Ap)}
+        
+        # Mielosuppression model
+        CONC = Ac/V1I
+        EDRUG= 1 - SLOPU*CONC
+        FEED= (CIRC0/CIRC)^GAMMA
+        
+        CIRC : {deriv = (KTR*TRANSIT3 - KTR*CIRC), init=CIRC0}
+        PROL : {deriv=  (KTR*PROL*EDRUG*FEED - KTR*PROL), init=CIRC0}
+        TRANSIT1 : {deriv= (KTR*PROL - KTR*TRANSIT1), init=CIRC0}
+        TRANSIT2 : {deriv= (KTR*TRANSIT1 - KTR*TRANSIT2), init=CIRC0}
+        TRANSIT3 : {deriv= (KTR*TRANSIT2 - KTR*TRANSIT3), init=CIRC0}
+    }
+   }# end MODEL_PREDICTION
+
+  RANDOM_VARIABLE_DEFINITION(level=DV){
+    eps_ERROR ~ Normal(mean=0, var=SIGMA_ERROR)
+  }
+ 
+   OBSERVATION{
+     Y = proportionalError(proportional=PROP_ERROR,prediction=CIRC, eps=eps_ERROR)    
+   }# end OBSERVATION
+   
+} # end of model object
+
+
+
+Friberg_JCO2002_Myelosuppression_task = taskObj{
+### Task Properties object
+     ESTIMATE {
+          set algo is focei
+      }# end ESTIMATE
+}# end of task object
+
+
+Friberg_JCO2002_Myelosuppression = mogObj{
+ OBJECTS{
+	Friberg_JCO2002_Myelosuppression_dat : { type is dataObj }
+	Friberg_JCO2002_Myelosuppression_mdl : { type is mdlObj }
+	Friberg_JCO2002_Myelosuppression_par : { type is parObj }
+	Friberg_JCO2002_Myelosuppression_task : { type is taskObj }
+	}
+}

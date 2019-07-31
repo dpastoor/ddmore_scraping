@@ -1,0 +1,195 @@
+# IL_21 : Interleukin 21 model for melanoma and renal cell carcinoma
+# Dosing regimen: optional; 1)ip 2)iv and 3)sc (CMT=1,2,3)
+# Structural model : 7 compartments model 
+# Covariate model : no covariate model
+# Variability model: 
+#   - Proportional residual error model
+
+  
+IL_21_PK_ODE_dat = dataObj {
+	DECLARED_VARIABLES{A1 A2 A3 Y}
+
+	DATA_INPUT_VARIABLES {
+		ID : { use is id }
+		TIME : { use is idv }
+		AMT : { use is amt, define={1 in CMT as A1, 2 in CMT as A2, 3 in CMT as A3} } #(DOSE in file)
+		CMT: { use is cmt }
+		DV : { use is dv, variable = Y }
+		MDV : { use is mdv }
+	} # end DATA_INPUT_VARIABLES
+	
+	SOURCE {
+	    srcfile : {file = "IL_21_PK.csv", 
+            inputFormat is nonmemFormat }
+	} # end SOURCE
+} # end data object
+
+IL_21_PK_ODE_par = parObj {
+	DECLARED_VARIABLES{ETA_cl ETA_v2 ETA_q12 ETA_q23}
+
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		POP_cl : { value = 0.0229 }
+		POP_v1 : { value = 0.001 } 
+		POP_v2 : { value = 0.00551 }
+		POP_k10 : { value = 0.4 }
+		POP_k30 : { value = 0.0 }
+		POP_q12 : { value = 0.693 }
+		POP_q23 : { value = 0.727 } 
+		POP_v3 : { value = 0.001 }
+		POP_v4 : { value = 0.0009 }
+		POP_q24 : { value = 0.48 }
+		POP_v5 : { value = 24.4 }
+		POP_q25 : { value = 6.38 }
+		POP_sa1 : { value = 0.0 }
+		POP_sa2 : { value = 0.0 }
+		POP_sa0 : { value = 0.0 }
+		b : { value = 0.00975 }	
+		} # end STRUCTURAL
+	VARIABILITY {
+		omega_cl : { value = 0.407, type is sd }
+		omega_v1 : { value = 0.0, type is sd }
+		omega_v2 : { value = 0.74, type is sd }
+		omega_k10 : { value = 0.0, type is sd }
+		omega_k30 : { value = 0.0, type is sd }
+		omega_q12 : { value = 0.235, type is sd }
+		omega_q23 : { value = 0.304, type is sd }
+		omega_v3 : { value = 0.0, type is sd }
+		omega_v4 : { value = 0.0, type is sd }
+		omega_q24 : { value = 0.0, type is sd }
+		omega_v5 : { value = 0.0, type is sd }
+		omega_q25 : { value = 0.0, type is sd }
+		omega_sa1 : { value = 0.0, type is sd }
+		omega_sa2 : { value = 0.0, type is sd }
+		omega_sa0 : { value = 0.0, type is sd }
+		OMEGA : { parameter=[ETA_cl, ETA_v2,ETA_q12,ETA_q23], value = [-0.27,0.1,-0.29,0.12,-0.28,0.1], type is corr }
+	} # end VARIABILITY
+} # end of parameter object 
+
+IL_21_PK_ODE_mdl = mdlObj {
+	IDV{ T }
+
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	} 
+
+	STRUCTURAL_PARAMETERS { 
+		POP_cl
+		POP_v1
+		POP_v2
+		POP_k10
+		POP_k30
+		POP_q12
+		POP_q23 
+		POP_v3
+		POP_v4
+		POP_q24
+		POP_v5
+		POP_q25
+		POP_sa1
+		POP_sa2
+		POP_sa0
+		b
+	} # end STRUCTURAL_PARAMETERS
+	
+	VARIABILITY_PARAMETERS {
+		omega_cl
+		omega_v1
+		omega_v2
+		omega_k10
+		omega_k30
+		omega_q12
+		omega_q23
+		omega_v3
+		omega_v4
+		omega_q24
+		omega_v5
+		omega_q25
+		omega_sa1
+		omega_sa2
+		omega_sa0
+	} # end VARIABILITY_PARAMETERS 
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_cl ~ Normal(mean = 0, sd = omega_cl)
+		ETA_v1 ~ Normal(mean = 0, sd = omega_v1)
+		ETA_v2 ~ Normal(mean = 0, sd = omega_v2)
+		ETA_k10 ~ Normal(mean = 0, sd = omega_k10)
+		ETA_k30 ~ Normal(mean = 0, sd = omega_k10)
+		ETA_q12 ~ Normal(mean = 0, sd = omega_q12)
+		ETA_q23 ~ Normal(mean = 0, sd = omega_q23)
+		ETA_v3 ~ Normal(mean = 0, sd = omega_v3)
+		ETA_v4 ~ Normal(mean = 0, sd = omega_v4)
+		ETA_q24 ~ Normal(mean = 0, sd = omega_q24)
+		ETA_v5 ~ Normal(mean = 0, sd = omega_v5)
+		ETA_q25 ~ Normal(mean = 0, sd = omega_q25)
+		ETA_sa1 ~ Normal(mean = 0, sd = omega_sa1)
+		ETA_sa2 ~ Normal(mean = 0, sd = omega_sa2)
+		ETA_sa0 ~ Normal(mean = 0, sd = omega_sa0)
+	} # end RANDOM_VARIABLE_DEFINITION 
+
+	
+	INDIVIDUAL_VARIABLES { # This maps to the "Type 3" individual parameter definition in PharmML
+		ln(cl) = linear( trans is ln, pop = POP_cl, ranEff = [ETA_cl] )
+		ln(v1) = linear( trans is ln, pop = POP_v1, ranEff = [ETA_v1] )
+		ln(v2) = linear( trans is ln, pop = POP_v2, ranEff = [ETA_v2] )
+		ln(k10) = linear( trans is ln, pop = POP_k10, ranEff = [ETA_k10] )
+		ln(k30) = linear( trans is ln, pop = POP_k30, ranEff = [ETA_k10] )
+		ln(q12) = linear( trans is ln, pop = POP_q12, ranEff = [ETA_q12] )
+		ln(q23) = linear( trans is ln, pop = POP_q23, ranEff = [ETA_q23] )
+		ln(v3) = linear( trans is ln, pop = POP_v3, ranEff = [ETA_v3] )
+		ln(v4) = linear( trans is ln, pop = POP_v4, ranEff = [ETA_v4] )
+		ln(q24) = linear( trans is ln, pop = POP_q24, ranEff = [ETA_cl] )
+		ln(v5) = linear( trans is ln, pop = POP_v5, ranEff = [ETA_v5] )
+		ln(q25) = linear( trans is ln, pop = POP_q25, ranEff = [ETA_q25] )
+		ln(sa1) = linear( trans is ln, pop = POP_sa1, ranEff = [ETA_sa1] )
+		ln(sa2) = linear( trans is ln, pop = POP_sa2, ranEff = [ETA_sa2] )
+		ln(sa0) = linear( trans is ln, pop = POP_sa0, ranEff = [ETA_sa0] )
+	} # end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		kk = cl/v2
+		k12 = q12
+		k32 = q23
+		k24 = q24
+		k42 = q24*v2/v4
+		k25 = q25
+		k52 = q25*v2/v5
+		
+		DEQ{
+			A1 : { deriv =(-k12*A1/(1+A1*sa1) - k10*A1), init = 0, x0 = 0 }
+			A2 : { deriv =(k12*A6/(1+A6*sa1) - kk*A2/(1+A2*sa0) + k32*A7/(1+A7*sa2) - k24*A2 + k42*A4 - k25*A2 + k52*A5), init = 0, x0 = 0 }
+			A3 : { deriv =(-k32*A3/(1+A3*sa2) - k30*A3), init = 0, x0 = 0 }
+			A4 : { deriv =(k24*A2 - k42*A4), init = 0, x0 = 0 }
+			A5 : { deriv =(k25*A2 - k52*A5), init = 0, x0 = 0 }
+			A6 : { deriv =(k12*A1/(1+A1*sa1) - k12*A6/(1+A6*sa1) -k10*A6), init = 0, x0 = 0 }
+			A7 : { deriv =(k32*A3/(1+A3*sa2) - k32*A7/(1+A7*sa2) -k30*A7), init = 0, x0 = 0 }
+		}
+	    output1 = A2/v2 
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_Y ~ Normal(mean = 0, var = 1) # This maps the standard error model in PharmML. The error model is predefined.
+	}
+
+	OBSERVATION {
+	    Y = proportionalError(proportional = b, eps = EPS_Y, prediction = output1)
+	} # end OBSERVATION
+} # end of model object
+
+IL_21_PK_ODE_task = taskObj {
+	ESTIMATE{ 
+		set algo is saem
+	}
+} # end of task object
+
+
+IL_21_PK_ODE_mog = mogObj {
+	OBJECTS{
+		IL_21_PK_ODE_dat : { type is dataObj }
+		IL_21_PK_ODE_mdl : { type is mdlObj }
+		IL_21_PK_ODE_par : { type is parObj }
+		IL_21_PK_ODE_task : { type is taskObj }
+	}
+}

@@ -1,0 +1,14 @@
+# Example on a text file with executable original code, here example is NONMEM
+ommented lines
+# this file is mandatory for submission scenario 1 and 2 and 4.
+###################### if the executable model is written in original language #####
+###################### please specify the block below 
+###### Scenario = 4
+###### PsNversion (if any) = 4.7.0
+###### Original tool version=  NM 7.4
+###### Input data= Simulated_data_CPathAD.csv
+###### Executable model= Executable_simulated_CPathAD.mod
+###### Output= Output_simulated_CPathAD.lst
+###################### end block
+###### Script used as execution command for NONMEM via PsN: #############
+C:\Perl64\bin/execute -parafile=pirana_auto_mpi.pnm -nodes=3 Executable_simulated_CPathAD.mod

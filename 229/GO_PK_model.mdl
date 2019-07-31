@@ -1,0 +1,166 @@
+# GO : Gemcitabine ozogamicin for acute myeloid lymphoma 
+# Dosing regimen: sequential infusions administration
+# Structural model : 5 compartments model 
+# Covariate model : no covariate model
+# Variability model: 
+#   - Additive residual error model
+
+  
+GO_PK_ODE_dat = dataObj {
+	DECLARED_VARIABLES{A1 Y}
+
+	DATA_INPUT_VARIABLES {
+		ID : { use is id }
+		TIME : { use is idv}
+		AMT : { use is amt, variable = A1 }
+		RATE : { use is rate }
+		DV : { use is dv, variable = Y }
+		SS: {use is ss }
+        II: {use is ii}
+        MDV : { use is mdv }
+	} # end DATA_INPUT_VARIABLES
+	
+	SOURCE {
+	    srcfile : {file = "GO.csv", 
+            inputFormat is nonmemFormat }
+	} # end SOURCE
+} # end data object
+
+GO_PK_ODE_par = parObj {
+	DECLARED_VARIABLES{ETA_k ETA_alph ETA_n0 ETA_v1 ETA_kn ETA_km}
+
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		POP_kb : { value = 9.24e5 }
+		POP_ku : { value = 310 } 
+		POP_ki : { value = 0.624 }
+		POP_ke : { value = 0.199 }
+		POP_rp : { value = 823 }
+		POP_k : { value = 0.0135 }
+		POP_alph : { value = 0.0755 } 
+		POP_n0 : { value = 1.32e-5 }
+		POP_v1 : { value = 5.42 }
+		POP_km : { value = 0.00757 }
+		POP_kn : { value = 0.0185 }
+		a : { value = 0.000583 }	
+		} # end STRUCTURAL
+	VARIABILITY {
+		omega_kb : { value = 0.0, type is sd }
+		omega_ku : { value = 0.0, type is sd }
+		omega_ki : { value = 0.258, type is sd }
+		omega_ke : { value = 0.281, type is sd }
+		omega_rp : { value = 0.611, type is sd }
+		omega_k : { value = 0.0, type is sd }
+		omega_alph : { value = 0.0, type is sd }
+		omega_n0 : { value = 0.0, type is sd }
+		omega_v1 : { value = 0.0, type is sd }
+		omega_km : { value = 0.0, type is sd }
+		omega_kn : { value = 0.0, type is sd }
+		OMEGA : { parameter=[ETA_k,ETA_alph,ETA_n0,ETA_v1,ETA_kn,ETA_km], 
+					value = [0.32,0.17,0.28,-0.71,-0.39,-0.23,0.4,0.25,0.08,-0.64,0.72,0.2,0.12,-0.71,0.76], type is corr }
+	} # end VARIABILITY
+} # end of parameter object 
+
+GO_PK_ODE_mdl = mdlObj {
+	IDV{ T }
+
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	} 
+
+	STRUCTURAL_PARAMETERS { 
+		POP_kb
+		POP_ku
+		POP_ki
+		POP_ke
+		POP_rp
+		POP_k
+		POP_alph
+		POP_n0
+		POP_v1
+		POP_km
+		POP_kn
+		a
+	} # end STRUCTURAL_PARAMETERS
+	
+	VARIABILITY_PARAMETERS {
+		omega_kb
+		omega_ku
+		omega_ki
+		omega_ke
+		omega_rp
+		omega_k
+		omega_alph
+		omega_n0
+		omega_v1
+		omega_km
+		omega_kn
+	} # end VARIABILITY_PARAMETERS 
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_kb ~ Normal(mean = 0, sd = omega_kb)
+		ETA_ku ~ Normal(mean = 0, sd = omega_ku)
+		ETA_ki ~ Normal(mean = 0, sd = omega_ki)
+		ETA_ke ~ Normal(mean = 0, sd = omega_ke)
+		ETA_rp ~ Normal(mean = 0, sd = omega_rp)
+		ETA_k ~ Normal(mean = 0, sd = omega_k)
+		ETA_alph ~ Normal(mean = 0, sd = omega_alph)
+		ETA_n0 ~ Normal(mean = 0, sd = omega_n0)
+		ETA_v1 ~ Normal(mean = 0, sd = omega_v1)
+		ETA_km ~ Normal(mean = 0, sd = omega_km)
+		ETA_kn ~ Normal(mean = 0, sd = omega_kn)
+	} # end RANDOM_VARIABLE_DEFINITION 
+
+	
+	INDIVIDUAL_VARIABLES { # This maps to the "Type 3" individual parameter definition in PharmML
+		ln(kb) = linear( trans is ln, pop = POP_kb, ranEff = [ETA_kb] )
+		ln(ku) = linear( trans is ln, pop = POP_ku, ranEff = [ETA_ku] )
+		ln(ki) = linear( trans is ln, pop = POP_ki, ranEff = [ETA_ki] )
+		ln(ke) = linear( trans is ln, pop = POP_ke, ranEff = [ETA_ke] )
+		ln(rp) = linear( trans is ln, pop = POP_rp, ranEff = [ETA_rp] )
+		ln(k) = linear( trans is ln, pop = POP_k, ranEff = [ETA_k] )
+		ln(alph) = linear( trans is ln, pop = POP_alph, ranEff = [ETA_alph] )
+		ln(n0) = linear( trans is ln, pop = POP_n0, ranEff = [ETA_n0] )
+		ln(v1) = linear( trans is ln, pop = POP_v1, ranEff = [ETA_v1] )
+		ln(km) = linear( trans is ln, pop = POP_km, ranEff = [ETA_km] )
+		ln(kn) = linear( trans is ln, pop = POP_kn, ranEff = [ETA_kn] )
+	} # end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		nav=6.02214
+		vblood=4.8		
+		DEQ{
+			A1 : { deriv =((-kb*A1*A2 + v1*ku*A3)*A4/(vblood*nav) - k*A1 -km*A1 + kn*A5), init = 0, x0 = 0 }
+			A2 : { deriv =(-(kb/v1)*A1*A2 + ku*A3 + rp - ke*A2), init = rp/ke, x0 = 0 }
+			A3 : { deriv =((kb/v1)*A1*A2 - ku*A3 - ki*A3), init = 0, x0 = 0 }
+			A4 : { deriv =(-alph*A4), init = n0, x0 = 0 }
+			A5 : { deriv =(km*A1 - kn*A5), init = 0, x0 = 0 }
+		}
+	    output1 = A1/v1 
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_Y ~ Normal(mean = 0, var = 1) # This maps the standard error model in PharmML. The error model is predefined.
+	}
+
+	OBSERVATION {
+	    Y = additiveError(additive = a, eps = EPS_Y, prediction = output1)
+	} # end OBSERVATION
+} # end of model object
+
+GO_PK_ODE_task = taskObj {
+	ESTIMATE{ 
+		set algo is saem
+	}
+} # end of task object
+
+
+GO_PK_ODE_mog = mogObj {
+	OBJECTS{
+		GO_PK_ODE_dat : { type is dataObj }
+		GO_PK_ODE_mdl : { type is mdlObj }
+		GO_PK_ODE_par : { type is parObj }
+		GO_PK_ODE_task : { type is taskObj }
+	}
+}

@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_ParacetamolInNewborns.mod",
+        "Simulated_ParacetamolPKnewborns.csv",
+        "Output_simulated_ParacetamolInNewborns.lst",
+        "DDMODEL00000271.rdf",
+        "Model_Accommodations.txt",
+        "Command.txt",
+        "Output_real_ParacetamolInNewborns.lst"
+    ],
+    "version": 9
+}

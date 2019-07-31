@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000194">
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006037"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001023"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The model was based on 231 subjects randomized to the placebo arm of three Phase III trials (daily measurements of 11-point Likert pain scale over 18 weeks, a total of 22 492 measurements). The structural and statistical components were first developed assuming a constant baseline and independence of observations. Following this, the time course of the scores was investigated and fixed for the exploration of elements accounting for the nonindependence between scores. Lastly, the underdispersion of the scores and inclusion of covariates were tested. The integer model was developed based on the Poisson distribution, with right-truncation implemented to keep scores in the finite range [0, 10] while ensuring that the sum of all possibile probabilities remained 1. For the time-course, the mean count (lambda) can drift over time, and in the model an exponential decay over time was implemented to describe this. As count models assume that observations are statistically mutually independent (i.e. that they are not conditioned on each other), discrete Markov properties were included using First-order Markov components (only conditioned on the preceeding observation). Finally, underdispersion (where nonequality is observed between mean and variance) were implemented and found to better account for observed within-individual variability.</j.2:model-has-description-long>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The publication describes development of two models: A Markov Integer Model (fast but complex) and an Autoregressive Continuous Model (slow but simpler). This upload contains the Markov Integer Model</j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006010"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Development of platform models dealing with inferences about stochastic relationships between random variables, exemplified for description of pain scores.</j.2:model-has-description>
+  </rdf:Description>
+</rdf:RDF>

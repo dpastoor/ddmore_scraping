@@ -1,0 +1,538 @@
+;; 1. Based on: 282
+;; 2. Description: Col & Mero Wild + Resistant
+;; x1. Author: Anders Kristoffersson
+$PROBLEM    Col & Mero Wild + Resistant
+;;    Combined model
+
+;;
+
+;; 3. Label:
+
+;;
+
+;; 4. Structural model:
+
+;;    Binding Model, new data
+
+;; 5. Covariate model:
+
+;;    No covariates
+
+;; 6. Inter-individual variability:
+
+;; 7. Inter-occasion variability:
+
+;; 8. Residual variability:
+
+;;    Proportional
+
+;; 9. Estimation:
+
+;;    LAPLACIAN
+$INPUT      ID ID2 Ccol Cmer TYPE EVID CMT TIME NOP=DROP
+            NOB=DROP G10=DROP NDV=DROP DV AMT L2 REPL BACT BLOQ DILcol
+            DILmer STR
+$DATA      Colistin_Meropenem_simulated.csv IGNORE=@
+ ;
+$SUBROUTINE ADVAN13 TOL9
+$MODEL      COMP=(S) ;1. Compartment S,suspectible
+            COMP=(R) ;2. Compartment R,resting
+            COMP=(CA2) ;3. Cmer Meropenem
+            COMP=(CE2) ;4. CE2 Meropenem   (not used)
+            COMP=(BINDOFF) ;5. Bind Off Mero   (not used)
+            COMP=(CA1) ;6. C Colistin conc
+            COMP=(CE1) ;7. CE1 Colistin
+            COMP=(BINDOFF1) ;8.Bind Off Col
+            COMP=(SM) ;9. Compartment S,suspectible,mutant
+            COMP=(RM) ;10. Compartment R,resting,mutant
+$PK    
+
+
+
+MERO=0
+IF(TYPE.EQ.1.OR.TYPE.EQ.3) MERO=1   ; TYPE=1 Meropenem, TYPE=2 Colistin, TYPE=3 Combination, TYPE=4 Control, TYPE=5 Control
+
+COL=0
+IF(TYPE.EQ.2.OR.TYPE.EQ.3) COL=1
+
+CONTR=0
+IF(TYPE.EQ.4.OR.TYPE.EQ.5) CONTR=1
+
+TVKGA=0
+IF(BACT.EQ.2)TVKGA   = THETA(1)  ;ATCC Rate of growth
+
+TVKGP=0
+IF(BACT.EQ.1)TVKGP   = THETA(2)  ;PLO6 Rate of growth
+
+TVKK    = THETA(3)  ; Natural death rate
+
+TVEMAX1 =0
+IF(COL.EQ.1.AND.BACT.EQ.2) TVEMAX1  = THETA(4)  ;ATCC + COL
+
+TVSLOP1 =0
+IF(COL.EQ.1.AND.BACT.EQ.1) TVSLOP1  = THETA(5)  ;ARU + COL
+
+TVEMAX2=0
+IF(MERO.EQ.1.AND.BACT.EQ.2) TVEMAX2  = THETA(6)  ;ATCC + MERO
+
+TVEMAX3=0
+IF(MERO.EQ.1.AND.BACT.EQ.1) TVEMAX3  = THETA(7) ;ARU + MERO
+
+TVEC51=0
+IF(COL.EQ.1.AND.BACT.EQ.2) TVEC51  = THETA(8)  ;ATCC + COL
+
+TVSLOPAM=0
+IF(MERO.EQ.1.AND.BACT.EQ.2) TVSLOPAM  = THETA(9)  ;ATCC + MERO
+
+TVEC53=0
+IF(MERO.EQ.1.AND.BACT.EQ.1) TVEC53  = THETA(10)  ;ARU + MERO
+
+IF(COL.EQ.1) TVGAMC   = THETA(11) ;COL
+
+IF(MERO.EQ.1.AND.BACT.EQ.2) TVGAMA   = THETA(12)  ;ATCC + MERO
+
+IF(MERO.EQ.1.AND.BACT.EQ.1) TVGAMP   = THETA(26)  ;ARU + MERO
+
+TVBMAX  = 10**THETA(13)        ;Bmax log10
+
+TVKON51=0
+IF(COL.EQ.1.AND.BACT.EQ.2) TVKON51   = THETA(14) ;COL + ATCC
+
+TVKON52=0
+IF(COL.EQ.1.AND.BACT.EQ.1) TVKON52   = THETA(15) ;COL + PLO6
+
+TVKOFFC=0
+IF(COL.EQ.1) TVKOFFC   = THETA(16) ;COL
+
+IF(MERO.EQ.1) TVKOFFM   = THETA(17) ;MERO
+
+TVKONCA=0
+IF(COL.EQ.1.AND.BACT.EQ.2) TVKONCA  = THETA(18)  ;COL + ATCC
+
+TVKONCP=0
+IF(COL.EQ.1.AND.BACT.EQ.1) TVKONCP  = THETA(19)  ;COL + PLO6
+
+TVKONMA=0
+IF(MERO.EQ.1.AND.BACT.EQ.2) TVKONMA  = THETA(20)   ;ATCC + MERO
+
+TVKONMP=0
+IF(MERO.EQ.1.AND.BACT.EQ.1) TVKONMP  = THETA(21)  ;ARU + MERO
+
+IF(COL.EQ.1) TVGAM3C   = THETA(22)  ; COL
+
+IF(COL.EQ.1) TVGAM1  = THETA(23) ;COL
+
+;Dynamic growth rate frac increase
+KGDxS = 1
+IF (ID2>18) KGDxS = (1+THETA(35));  %ID>18 --> dynamic system
+
+
+;--Mutant parameters
+
+;Mutant suceptibillity shift, handle as common concetration shift for ATCC and ARU
+MSLOPAM    = TVSLOPAM/((1+THETA(31))**TVGAMA) ;
+EC53M    = TVEC53*(1+THETA(31))
+
+
+;Decrease mutant KG
+KGAFM = THETA(33)
+KGPFM = THETA(34)
+
+KGAM    = KGDxS*TVKGA*(1-KGAFM)     ;frac decrease
+KGPM    = KGDxS*TVKGP*(1-KGPFM)
+
+
+
+;Mutant fraction
+MUTA = 10**(-THETA(29)) ;ATCC
+MUTP = MUTA; ARU, same as ATCC
+
+MUT=0
+IF(MERO.EQ.1.AND.BACT.EQ.2) MUT  = MUTA  ;ATCC + MERO
+IF(MERO.EQ.1.AND.BACT.EQ.1) MUT  = MUTP  ;ARU + MERO
+
+NMUT = 0
+IF (AMT*MUT>=0) NMUT = AMT*MUT    ;Number mutant
+
+
+;Initialize
+A_0(2)=0        ; R
+A_0(3)=Cmer       ; Meropenem
+A_0(4)=0        ; Meropenem adaptive res on (not used)
+A_0(5)=1        ; Meropenem adaptive res off (not used)
+A_0(6)=Ccol        ; Colistin
+A_0(7)=0        ; Colistin adaptive res on (not used)
+A_0(8)=1        ; Colistin adaptive res off (not used)
+A_0(9)=NMUT     ; Smut
+A_0(10)=0       ; Rmut
+
+KGA    = KGDxS*TVKGA*EXP(ETA(1))
+KGP    = KGDxS*TVKGP*EXP(ETA(1))
+KK     = TVKK
+EMAX1   = TVEMAX1
+SLOP1   = TVSLOP1
+EMAX2   = TVEMAX2
+EMAX3   = TVEMAX3
+EC51   = TVEC51
+SLOPAM   = TVSLOPAM
+EC53   = TVEC53
+GAMA    = TVGAMA
+GAMP   = TVGAMP
+GAMC    = TVGAMC
+BMAX   = TVBMAX
+KON51  = TVKON51
+KON52  = TVKON52
+KOFFC   = TVKOFFC
+KOFFM   = TVKOFFM
+KONCA   = TVKONCA
+KONCP   = TVKONCP
+KONMA   = TVKONMA
+KONMP   = TVKONMP
+GAM3C   = TVGAM3C
+GAM1   = TVGAM1
+
+
+;---- Observed C -----
+
+KE1     = (0.02)       ;  Meropenem degeneration value obtained from exp
+
+KE2 = 0                                              ; Colistin degeneration value
+IF(A_0(6).EQ.0.04162.AND.TIME.LT.8) KE2 = 0.059   ;ATCC + COL
+IF(A_0(6).EQ.0.04162.AND.TIME.GE.8) KE2 = 0.003
+IF(A_0(6).EQ.0.1877.AND.TIME.LT.8)  KE2 = 0.079
+IF(A_0(6).EQ.0.1877.AND.TIME.GE.8)  KE2 = 0.021
+IF(A_0(6).EQ.0.2960.AND.TIME.LT.8)  KE2 = 0.042
+IF(A_0(6).EQ.0.2960.AND.TIME.GE.8)  KE2 = 0.042
+IF(A_0(6).EQ.0.7753.AND.TIME.LT.8)  KE2 = 0.003
+IF(A_0(6).EQ.0.7753.AND.TIME.GE.8)  KE2 = 0.017
+IF(A_0(6).EQ.2.182.AND.TIME.LT.8)   KE2 = 0.038
+IF(A_0(6).EQ.2.182.AND.TIME.GE.8)   KE2 = 0.015
+IF(A_0(6).EQ.4.305.AND.TIME.LT.8)   KE2 = 0.0076
+IF(A_0(6).EQ.4.305.AND.TIME.GE.8)   KE2 = 0.00061
+IF(A_0(6).EQ.12.024.AND.TIME.LT.8)  KE2 = 0.012
+IF(A_0(6).EQ.12.024.AND.TIME.GE.8)  KE2 = 0.0033
+IF(A_0(6).EQ.0.08091.AND.TIME.LT.8) KE2 = 0.16  ;ARU + COL
+IF(A_0(6).EQ.0.08091.AND.TIME.GE.8) KE2 = 0.039
+IF(A_0(6).EQ.0.2483.AND.TIME.LT.8)  KE2 = 0.031
+IF(A_0(6).EQ.0.2483.AND.TIME.GE.8)  KE2 = 0.070
+IF(A_0(6).EQ.0.9582.AND.TIME.LT.8)  KE2 = 0.049
+IF(A_0(6).EQ.0.9582.AND.TIME.GE.8)  KE2 = 0.093
+IF(A_0(6).EQ.2.672.AND.TIME.LT.8)   KE2 = 0.037
+IF(A_0(6).EQ.2.672.AND.TIME.GE.8)   KE2 = 0.056
+IF(A_0(6).EQ.5.113.AND.TIME.LT.8)   KE2 = 0.027
+IF(A_0(6).EQ.5.113.AND.TIME.GE.8)   KE2 = 0.022
+IF(A_0(6).EQ.11.471.AND.TIME.LT.8)  KE2 = 0.011
+IF(A_0(6).EQ.11.471.AND.TIME.GE.8)  KE2 = 0.0058
+IF(A_0(6).EQ.24.099.AND.TIME.LT.8)  KE2 = 0.0078
+IF(A_0(6).EQ.24.099.AND.TIME.GE.8)  KE2 = 0.0021
+
+CA025=0
+IF(A_0(6).EQ.0.205.OR.A_0(6).EQ.0.199.OR.A_0(6).EQ.0.195) CA025=1
+
+CA026=0
+IF(A_0(6).EQ.0.211.OR.A_0(6).EQ.0.223.OR.A_0(6).EQ.0.187) CA026=1
+
+IF(CA025.EQ.1.AND.TIME.LT.8)   KE2 = 0.196       ; Intended conc 0.25 combined exp
+IF(CA025.EQ.1.AND.TIME.GE.8)   KE2 = 0.0534
+IF(CA026.EQ.1.AND.TIME.LT.8)   KE2 = 0.196
+IF(CA026.EQ.1.AND.TIME.GE.8)   KE2 = 0.0534
+IF(A_0(6).EQ.0.431.AND.TIME.LT.8)   KE2 = 0.111        ; Intended conc 0.5 combined exp
+IF(A_0(6).EQ.0.431.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.411.AND.TIME.LT.8)   KE2 = 0.111
+IF(A_0(6).EQ.0.411.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.408.AND.TIME.LT.8)   KE2 = 0.111
+IF(A_0(6).EQ.0.408.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.482.AND.TIME.LT.8)   KE2 = 0.111
+IF(A_0(6).EQ.0.482.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.479.AND.TIME.LT.8)   KE2 = 0.111
+IF(A_0(6).EQ.0.479.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.465.AND.TIME.LT.8)   KE2 = 0.111
+IF(A_0(6).EQ.0.465.AND.TIME.GE.8)   KE2 = 0.126
+IF(A_0(6).EQ.0.673.AND.TIME.LT.8)   KE2 = 0.0503      ; Intended conc 1  combined exp
+IF(A_0(6).EQ.0.673.AND.TIME.GE.8)   KE2 = 0.0143
+IF(A_0(6).EQ.0.71.AND.TIME.LT.8)    KE2 = 0.0503
+IF(A_0(6).EQ.0.71.AND.TIME.GE.8)    KE2 = 0.0143
+IF(A_0(6).EQ.1.467.AND.TIME.LT.8)   KE2 = 0.0330     ; Intended conc 2  combined exp
+IF(A_0(6).EQ.1.467.AND.TIME.GE.8)   KE2 = 0.0367
+IF(A_0(6).EQ.1.234.AND.TIME.LT.8)   KE2 = 0.0330
+IF(A_0(6).EQ.1.234.AND.TIME.GE.8)   KE2 = 0.0367
+IF(A_0(6).EQ.1.433.AND.TIME.LT.8)   KE2 = 0.0330
+IF(A_0(6).EQ.1.433.AND.TIME.GE.8)   KE2 = 0.0367
+IF(A_0(6).EQ.1.657.AND.TIME.LT.8)   KE2 = 0.0330
+IF(A_0(6).EQ.1.657.AND.TIME.GE.8)   KE2 = 0.0367
+IF(A_0(6).EQ.1.418.AND.TIME.LT.8)   KE2 = 0.0330
+IF(A_0(6).EQ.1.418.AND.TIME.GE.8)   KE2 = 0.0367
+IF(A_0(6).EQ.3.523.AND.TIME.LT.8)   KE2 = 0.0351     ; Intended conc 4  combined exp
+IF(A_0(6).EQ.3.523.AND.TIME.GE.8)   KE2 = 0.0245
+IF(A_0(6).EQ.3.447.AND.TIME.LT.8)   KE2 = 0.0351
+IF(A_0(6).EQ.3.447.AND.TIME.GE.8)   KE2 = 0.0245
+IF(A_0(6).EQ.3.288.AND.TIME.LT.8)   KE2 = 0.0351
+IF(A_0(6).EQ.3.288.AND.TIME.GE.8)   KE2 = 0.0245
+IF(A_0(6).EQ.3.031.AND.TIME.LT.8)   KE2 = 0.0351
+IF(A_0(6).EQ.3.031.AND.TIME.GE.8)   KE2 = 0.0245
+IF(A_0(6).EQ.7.669.AND.TIME.LT.8)   KE2 = 0.00226     ; Intended conc 8  combined exp
+IF(A_0(6).EQ.7.669.AND.TIME.GE.8)   KE2 = 0.0001
+IF(A_0(6).EQ.6.622.AND.TIME.LT.8)   KE2 = 0.00226
+IF(A_0(6).EQ.6.622.AND.TIME.GE.8)   KE2 = 0.0001
+
+
+
+$DES 
+CA2=A(3)   ; MERO
+CE2=0;A(4)
+CA1=A(6)    ; COL
+CE1=A(7)
+
+AT = A(1)+A(2)+A(9)+A(10)
+
+;DRUG EFFECT
+COLA = 0
+IF(COL.EQ.1.AND.BACT.EQ.2)  COLA = EMAX1*(CA1)**GAMC/(EC51**GAMC+(CA1)**GAMC)   ;ATCC + COL
+
+COLP = 0
+IF(COL.EQ.1.AND.BACT.EQ.1)  COLP = SLOP1*CA1**GAMC                              ;ARU + COL
+
+MEROA = 0
+IF(MERO.EQ.1.AND.BACT.EQ.2) MEROA = SLOPAM*CA2**GAMA ;ATCC + MERO
+
+MEROP = 0
+IF(MERO.EQ.1.AND.BACT.EQ.1) MEROP = EMAX3*(CA2)**GAMP/(EC53**GAMP+(CA2)**GAMP)  ;ARU + MER
+
+;Mutant
+
+MEROAM = 0
+IF(MERO.EQ.1.AND.BACT.EQ.2) MEROAM = MSLOPAM*CA2**GAMA;  ;ATCC + MERO
+
+MEROPM = 0
+IF(MERO.EQ.1.AND.BACT.EQ.1) MEROPM = EMAX3*(CA2)**GAMP/(EC53M**GAMP+(CA2)**GAMP)  ;ARU + MER
+
+;INHIBITION OF DRUG EFFECT
+COLA1 = 0
+IF(COL.EQ.1.AND.BACT.EQ.2)  COLA1 = COLA*(1-CE1**GAM1) ;ATCC + COL
+
+COLP1 = 0
+IF(COL.EQ.1.AND.BACT.EQ.1)  COLP1 = COLP*(1-CE1**GAM1) ;ARU + COL
+
+MEROA1 = 0
+IF(MERO.EQ.1.AND.BACT.EQ.2) MEROA1 = MEROA*(1-CE2) ;ATCC + MERO
+
+MEROP1 = 0
+IF(MERO.EQ.1.AND.BACT.EQ.1) MEROP1 = MEROP*(1-CE2) ; ARU + MERO
+
+
+;Mutant
+MEROA1M = 0
+IF(MERO.EQ.1.AND.BACT.EQ.2) MEROA1M = MEROAM*(1-CE2) ;ATCC + MERO
+
+MEROP1M = 0
+IF(MERO.EQ.1.AND.BACT.EQ.1) MEROP1M = MEROPM*(1-CE2) ; ARU + MERO
+
+;COMBINATION
+DRUGA = 0
+IF(TYPE.EQ.3.AND.BACT.EQ.2)THEN
+DRUGA = (COLA1*(1+MEROA1/(COLA1+MEROA1))**(THETA(27)) + MEROA1*(1+COLA1/(COLA1+MEROA1))**(THETA(27)))  ; ATCC + COMB
+DRUG = DRUGA
+ADD = MEROA1 +  COLA1
+
+ENDIF
+
+DRUGB = 0
+IF(TYPE.EQ.3.AND.BACT.EQ.1) THEN
+DRUGB = (COLP1*(1+MEROP1/(COLP1+MEROP1))**(THETA(28)) + MEROP1*(1+COLP1/(COLP1+MEROP1))**(THETA(28))) ; PLO6 + COMB
+DRUG = DRUGB
+ADD =   COLP1 +  MEROP1
+ENDIF
+
+;Mutant
+DRUGAM = 0
+IF(TYPE.EQ.3.AND.BACT.EQ.2) THEN 
+DRUGAM = (COLA1*(1+MEROA1M/(COLA1+MEROA1M))**(THETA(27)) + MEROA1M*(1+COLA1/(COLA1+MEROA1M))**(THETA(27))) ; ATCC + COMB
+DRUGM = DRUGAM
+ADDM =  COLA1 +   MEROA1M
+ENDIF
+
+DRUGBM = 0
+IF(TYPE.EQ.3.AND.BACT.EQ.1) THEN
+DRUGBM = (COLP1*(1+MEROP1M/(COLP1+MEROP1M))**(THETA(28)) + MEROP1M*(1+COLP1/(COLP1+MEROP1M))**(THETA(28)))  ; PLO6 + COMB
+DRUGM =  DRUGBM
+ADDM =  COLP1 + MEROP1M
+ENDIF
+
+
+;CONVERSION FROM ACTIVE TO RESTING COMP
+FEEDA=0
+IF(BACT.EQ.2) FEEDA=(KGA-KK)/BMAX          ;ATCC            ;Maximum conversion rate btw active/resting cell
+
+FEEDP=0
+IF(BACT.EQ.1) FEEDP=(KGP-KK)/BMAX          ; PLO6
+
+SRA=0
+IF(BACT.EQ.2) SRA=FEEDA*AT                 ;ATCC           Conversion rate btw active/resting cell dependent on cell number
+
+SRP=0
+IF(BACT.EQ.1) SRP=FEEDP*AT                 ;PLO6
+
+
+; RATE FOR DEV OF KON
+KON1CA=0
+IF(COL.EQ.1.AND.BACT.EQ.2) KON1CA = (KONCA*CA1**GAM3C)/(CA1**GAM3C + KON51**GAM3C)  ; ATCC + COL
+
+KON1CP=0
+IF(COL.EQ.1.AND.BACT.EQ.1) KON1CP = (KONCP*CA1**GAM3C)/(CA1**GAM3C + KON52**GAM3C)  ; PLO6 + COL
+
+DADT(1)=0 ;S
+IF(COL.EQ.1.AND.BACT.EQ.2)   DADT(1)=KGA*A(1)-(KK+COLA1)*A(1)  - SRA*A(1)  ;ATCC + COL
+IF(COL.EQ.1.AND.BACT.EQ.1)   DADT(1)=KGP*A(1)-(KK+COLP1)*A(1)  - SRP*A(1)  ;ARU + COL
+IF(MERO.EQ.1.AND.BACT.EQ.2)  DADT(1)=KGA*A(1)-(KK+MEROA1)*A(1) - SRA*A(1)  ;ATCC + MERO
+IF(MERO.EQ.1.AND.BACT.EQ.1)  DADT(1)=KGP*A(1)-(KK+MEROP1)*A(1) - SRP*A(1)  ;ARU + MERO
+IF(TYPE.EQ.3.AND.BACT.EQ.2)  DADT(1)=KGA*A(1)-(KK+DRUGA)*A(1)  - SRA*A(1)  ;ATCC + COMB
+IF(TYPE.EQ.3.AND.BACT.EQ.1)  DADT(1)=KGP*A(1)-(KK+DRUGB)*A(1)  - SRP*A(1)  ;PLO6 + COMB
+IF(CONTR.EQ.1.AND.BACT.EQ.2) DADT(1)=KGA*A(1)-(KK)*A(1)  - SRA*A(1) ; ATCC +CONTROL
+IF(CONTR.EQ.1.AND.BACT.EQ.1) DADT(1)=KGP*A(1)-(KK)*A(1)  - SRP*A(1)  ;PLO6 + CONTROL
+
+DADT(2)=0  ; R
+IF(BACT.EQ.2) DADT(2)=-KK*A(2) + SRA*A(1)   ;ATCC
+IF(BACT.EQ.1) DADT(2)=-KK*A(2) + SRP*A(1)   ;PLO6
+
+DADT(3)=0
+IF(MERO.EQ.1) DADT(3)=-(KE1+DILmer)*A(3)        ; Mero
+
+;Mer adaptive res on (not used)
+DADT(4)=0
+;IF(MERO.EQ.1.AND.BACT.EQ.2)DADT(4)=KONMA*A(5)-KOFFM*A(4)      ;ATCC + MERO
+;IF(MERO.EQ.1.AND.BACT.EQ.1)DADT(4)=KONMP*A(5)-KOFFM*A(4)      ;ARU + MERO
+
+;Mer adaptive res on (not used)
+DADT(5)=0
+;IF(MERO.EQ.1.AND.BACT.EQ.2) DADT(5)=KOFFM*A(4)-KONMA*A(5)   ;ATCC + MERO
+;IF(MERO.EQ.1.AND.BACT.EQ.1) DADT(5)=KOFFM*A(4)-KONMP*A(5)     ;ARU + MERO
+
+DADT(6)=0
+IF(COL.EQ.1) DADT(6)=-(KE2+DILcol)*A(6)         ; Colistin
+
+;Colistin adaptive res on
+DADT(7)=0
+IF(COL.EQ.1.AND.BACT.EQ.2) DADT(7)=KON1CA*A(8)-KOFFC*A(7)         ; ATCC + Colistin
+IF(COL.EQ.1.AND.BACT.EQ.1) DADT(7)=KON1CP*A(8)-KOFFC*A(7)         ;ARU +  Colistin
+
+;Colistin adaptive res off
+DADT(8)=0
+IF(COL.EQ.1.AND.BACT.EQ.2) DADT(8)=KOFFC*A(7)-KON1CA*A(8)         ; ATCC + Colistin
+IF(COL.EQ.1.AND.BACT.EQ.1) DADT(8)=KOFFC*A(7)-KON1CP*A(8)         ;ARU +  Colistin
+
+;S mut
+DADT(9)=0
+IF(COL.EQ.1.AND.BACT.EQ.2)   DADT(9)=KGAM*A(9)-(KK+COLA1)*A(9)  - SRA*A(9)  ;ATCC + COL
+IF(COL.EQ.1.AND.BACT.EQ.1)   DADT(9)=KGPM*A(9)-(KK+COLP1)*A(9)  - SRP*A(9)  ;ARU + COL
+IF(MERO.EQ.1.AND.BACT.EQ.2)  DADT(9)=KGAM*A(9)-(KK+MEROA1M)*A(9) - SRA*A(9)  ;ATCC + MERO
+IF(MERO.EQ.1.AND.BACT.EQ.1)  DADT(9)=KGPM*A(9)-(KK+MEROP1M)*A(9) - SRP*A(9)  ;ARU + MERO
+IF(TYPE.EQ.3.AND.BACT.EQ.2)  DADT(9)=KGAM*A(9)-(KK+DRUGAM)*A(9)  - SRA*A(9)  ;ATCC + COMB
+IF(TYPE.EQ.3.AND.BACT.EQ.1)  DADT(9)=KGPM*A(9)-(KK+DRUGBM)*A(9)  - SRP*A(9)  ;PLO6 + COMB
+IF(CONTR.EQ.1.AND.BACT.EQ.2) DADT(9)=KGAM*A(9)-(KK)*A(9)  - SRA*A(9) ; ATCC +CONTROL
+IF(CONTR.EQ.1.AND.BACT.EQ.1) DADT(9)=KGPM*A(9)-(KK)*A(9)  - SRP*A(9)  ;PLO6 + CONTROL
+
+;R mut
+DADT(10)=0
+IF(BACT.EQ.2) DADT(10)=-KK*A(10) + SRA*A(9)   ;ATCC
+IF(BACT.EQ.1) DADT(10)=-KK*A(10) + SRP*A(9)   ;PLO6
+
+$ERROR    
+LLOQ=LOG(10)  ;LOQ=10
+A1=A(1)
+A2=A(2)
+A3=A(3)
+A4=A(4)
+A5=A(5)
+A6=A(6)
+A7=A(7)
+A8=A(8)
+A9=A(9)
+A10=A(10)
+
+ATOT=A1+A2 +A9 + A10 ; S+ R + Smut + Rmut
+IF(ATOT<1e-5) ATOT = 1e-5
+IPRED=LOG(ATOT) ;LOG=LN in NONMEM
+
+
+IRES  = DV-IPRED
+W=SQRT(SIGMA(1)+SIGMA(2))*LOG(10) ;Set on log10
+IWRES = IRES/W
+
+
+;Replicate number for L2 method
+AAA=0
+AAB=0
+AAC=0
+AAD=0
+IF(REPL.EQ.1) AAA=1
+IF(REPL.EQ.2) AAB=1
+IF(REPL.EQ.3) AAC=1
+IF(REPL.EQ.4) AAD=1
+
+IF(BLOQ.EQ.0) THEN  ;DV>LOQ
+F_FLAG=0
+Y=IPRED+LOG(10)*(EPS(1)+AAA*EPS(2)+AAB*EPS(3)+AAC*EPS(4)+AAD*EPS(5))     ;Set on log10
+ENDIF
+
+IF(BLOQ.EQ.1) THEN  ;DV<LOQ  use M3 method
+DUM = (LLOQ-IPRED)/W
+DUM2= PHI(DUM)
+F_FLAG=1
+Y=DUM2
+ENDIF
+
+
+$THETA  (0,1.08,10) ; 1.KG1 ATCC
+ (0,0.814,10) ; 2.KG1 ARU
+ 0.179 FIX ; 3.KK
+ 282 FIX ; 4.EMAX ATCC COL
+ (0,17.2,50) ; 5.SLOP1 ARU
+ 0 FIX ; 6. EMAX ATCC MERO
+ (0,1.74,100) ; 7. EMAX ARU MERO
+ (0,1.84,20) ; 8.EC51 ATCC COL
+ (0,2.16,100) ; 9.SLOPAM ATCC MERO
+ (0,17.7,50) ; 10.EC53 ARU MERO
+ 1 FIX ; 11.GAMC COL
+ (0,0.376,100) ; 12. GAMA ATCC MERO
+ (8,9.11,10) ; 13. BMAX (on log10)
+ (0,2.42,10) ; 14.KON51 ATCC COL
+ (0,18.6,10000) ; 15.KON52 PLO6 COL
+ (0,0.103,5) ; 16.KOFFC COL
+ 0 FIX ; 17.KOFFM MERO
+ (0,0.779,100) ; 18.KONCA COL
+ (0,2.68,100) ; 19.KONCP COL
+ (0,0.113,200) FIX ; 20.KONMA ATCC MERO
+ (0,0.0821,200) FIX ; 21.KONMP ARU MERO
+ (0,1.08,10) ; 22. GAM3C COL
+ (0,0.0245,10) ; 23.GAM1 COL
+ 1 FIX ; 24.Residual error
+ 1 FIX ; 25.Replicate residual error
+ (0,2.79,10) ; 26. GAMP ARU MERO
+ (-10,-2.58,10) ; 27. Interaction ATCC(=0 No interaction,not 0 Interaction > 0 synergistic <0 antagonist)
+ (-10,1.3,10) ; 28. Interaction ARU(=0 No interaction,not 0 Interaction > 0 synergistic <0 antagonist)
+ (0,2.83) ; 29. -LOG10 MUTF ATCC
+ 0 FIX ; 30. -LOG10 MUTF ARU
+ (0,22.5) ; 31.   Concentration shift  EC50 / Slope(MEROMfrac increase)
+ 0 FIX ; 32.  -
+ 0 FIX ; 33.  decrease KG MEROM ATCC
+ (0,0.536,1) ; 34.  decrease KG MEROM ARU(set as frac decrease)
+ (0,0.332,10) ; 35. KG stat x dyn(set as frac increase)
+$OMEGA  0  FIX  ;    ETA KG1
+$SIGMA  0.422  ; S1 set on log10
+$SIGMA  BLOCK(1)
+        0.0364  ; S2 seton log10
+$SIGMA  BLOCK(1) SAME
+$SIGMA  BLOCK(1) SAME
+$SIGMA  BLOCK(1) SAME
+$ESTIMATION METHOD=1 LAPLACIAN NUMERICAL SIGDIG=3 SIGL=9 SIGLO=9
+            MAXEVAL=0 POSTHOC PRINT=1 NOABORT
+            MSFO=msfb282-final_tidyup
+$COVARIANCE UNCONDITIONAL
+$TABLE      ID TYPE BACT TIME EVID Ccol Cmer IPRED IWRES CWRES NOPRINT
+            ONEHEADER FILE=sdtab282-finall_tidyup
+$TABLE      ID TYPE BACT TIME EVID Ccol Cmer KE2 AT A1 A2 A3 A4 A5 A6
+            A7 A8 A9 A10 KGA KGAM KGP KGPM MEROA MEROA1 MEROP MEROP1
+            MEROAM MEROA1M MEROPM MEROP1M COLA COLA1 COLP COLP1 DRUGA
+            DRUGB DRUGAM DRUGBM DRUG ADD DRUGM ADDM IPRED NOPRINT
+            ONEHEADER FILE=patab282-finall_tidyup
+

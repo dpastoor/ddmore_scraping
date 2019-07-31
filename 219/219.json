@@ -1,0 +1,10 @@
+{
+    "files": [
+        "Executable_BDQ_M2_PK_plus_WT_ALB_in_MDR-TB_patients.mod",
+        "Output_real_BDQ_M2_PK_plus_WT_ALB_in_MDR-TB_patients.lst",
+        "Simulated_data_BDQ_M2_PK_plus_WT_ALB_in_MDR-TB_patients.csv",
+        "Output_simulated_executable_BDQ_M2_PK_plus_WT_ALB_in_MDR-TB_patients.lst",
+        "Command.txt"
+    ],
+    "version": 5
+}

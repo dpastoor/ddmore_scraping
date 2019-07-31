@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000198">
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tumor growth inhibition model; PD model predicting tumour size during sunitinib treatment of imatinib-resistant GIST</j.2:model-has-description>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006029"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Final PD model (predicting tumour size) of drug and biomarkers during sunitinib treatment of imatinib-resistant GIST. 2 biomarkers from BM included: sVEGFR-3 and sKIT. 4 compartments initiated to BM posthoc baselines at t=0. 1st/2nd compartment: sKIT timecourse with and without drug effect (placebo).  3rd compartment: sVEGFR-3 timecourse. 4th compartment: tumour size timecourse. Normal scale tumour measurements (DV). Tumour timecourse is a growth inhibition model. Linear inhibition effect by AUC (+) and sKIT/sVEGFR-3 (-). Sunitinib AUC=DOSE/CL. Baseline tumour size covariate; residual variability as measure error. Tumour regrowth/resistance with exponential time-dependent function. Covariate: Baseline tumour size observation. IIV on rate constants: growth rate, drug effect and sKIT effect. Residual error (shared variance estimate): Proportional on DV and Proportional on baseline tumour size observation. Estimation method: FOCE with INTERACTION (NO COVARIANCE STEP).</j.2:model-has-description-long>
+  </rdf:Description>
+</rdf:RDF>

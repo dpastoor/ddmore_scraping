@@ -1,0 +1,888 @@
+
+#-----------------------------------------------------------------------
+#                         Initial Comments
+#-----------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------
+# 			            Initial Parameters 
+#               (plus params for added compartments)
+#-----------------------------------------------------------------------
+#region
+
+# Chemical Parameters
+#--------------------
+MW_APAP = 151.17;   # Molecualar Weight of APAP
+MW_AG = 327.28;     # Molecular Weight of APAP-glucoronide
+MW_AS = 231.22;     # Molecular Weight of APAP-suphate
+#fa = 0.87; lnfa = log(0.87);          # Bioavailability of APAP
+
+
+# Anatomical Parameters
+#---------------------- 
+BW    = 70.; lnBW = log(70.);       # Body weight (kg).
+QCC   = 16.2;         # Cardiac output (L/hr/kg^0.75).
+
+# Fractional volumes (fraction of body weight).
+VFC  = 0.214;            # Fat.
+VKC  = 0.0044;          # Kidney.
+VGC  = 0.0144;          # Gut.
+VLC  = 0.0257;          # Liver.
+VMC  = 0.4;             # Muscle
+VBLAC= 0.0243;        # Arterial Blood.
+VBLVC= 0.0557;         # Venous Blood.
+VSC = 0.185;            # Slowly Perfused
+VRC = 0.0765;           # Rapidly Perfused (1- everything else)
+
+
+# Fractional blood flows (fraction of cardiac output).
+QFC  = 0.052;           # Fat. **
+QKC  = 0.175;          # Kidney.
+QGC  = 0.181;          # Gut. **
+QLBC = 0.046;          # Hepatic artery. **
+QMC  = 0.191;          # Muscle
+QSC = 0.14;           # Slowly Perfused
+QRC = 0.215;           # Rapidly Perfused (1 -  everything else)
+
+
+# Chemical Specific Transport Params
+#-----------------------------------
+kSG_Vm = 2332.5; lnkSG_Vm = log(2332.5);     # Kmax for abs to portal
+kSG_Km = 1765.49; lnkSG_Km = log(1765.49);     # Km for abs to portal
+Tg = 0.233;     lnTg = log(0.233);
+Tp = 0.033; lnTp = log(0.033);
+
+
+CLC_APAP = 0.059; lnCLC_APAP = log(0.059); # Total APAP blood clearance (L/hr/kg)
+CLC_AS = 0.29; lnCLC_AS = log(0.29);       # Total AS blood clearance (L/hr/kg)
+CLC_AG = 0.22; lnCLC_AG = log(0.22);      # Total AG blood clearance (L/hr/kg)
+alpha_APAP = 1.;
+alpha_AS = 1.;
+alpha_AG = 1.;
+
+BP_APAP = 0.9; lnBP_APAP = log(0.9);    # Blood:Plasma Ratio
+
+# Partition Coefficients
+    # Rodgers et al. APAP: pKa1 = 9.46, pKa2 = -4.4, zwitterion, logP = 0.91, fu = 0.819, BP = 0.98
+    PF_APAP = 0.447; lnPF_APAP = log(0.447);    # Fat:blood
+    PG_APAP = 0.907; lnPG_APAP = log(0.907);    # Gut:blood
+    PK_APAP = 0.711; lnPK_APAP = log(0.711);    # Kidney:blood
+    PL_APAP = 0.687; lnPL_APAP = log(0.687);    # Liver:blood
+    PM_APAP = 0.687; lnPM_APAP = log(0.687);    # Muscle:blood
+    
+    PR_APAP = 0.676; lnPR_APAP = log(0.676);    # rapidly perfused:blood [brain, lung, spleen]
+    PS_APAP = 0.606; lnPS_APAP = log(0.606);    # slowly perfused:blood [bone, heart, skin]
+
+    # Rodgers et al. AS: pKa1 = -2.2, pKa2 = -4.4, zwitterion, logP = -1, fu = 0.46, BP = 0.98
+    PF_AS = 0.088; lnPF_AS = log(0.088);
+    PG_AS = 0.297; lnPG_AS = log(0.297);
+    PK_AS = 0.261; lnPK_AS = log(0.261);
+    PL_AS = 0.203; lnPL_AS = log(0.203);
+    PM_AS = 0.199; lnPM_AS = log(0.199);
+    
+    PR_AS = 0.207; lnPR_AS = log(0.207);
+    PS_AS = 0.254; lnPS_AS = log(0.254);
+
+    # Rodgers et al. AG: pKa1 = 3.17, pKa2 = -3.7, zwitterion, logP = -0.68, fu = 0.923, BP = 0.98
+    PF_AG = 0.128; lnPF_AG = log(0.128);
+    PG_AG = 0.436; lnPG_AG = log(0.436);
+    PK_AG = 0.392; lnPK_AG = log(0.392);
+    PL_AG = 0.321; lnPL_AG = log(0.321);
+    PM_AG = 0.336; lnPM_AG = log(0.366);
+
+    PR_AG = 0.364; lnPR_AG = log(0.364);
+    PS_AG = 0.351; lnPS_AG = log(0.351);
+
+# Biochemical Parameters
+#-----------------------
+
+# PAPS second order rate constant
+#--------------------------------
+kPAPS = 0.018; lnkPAPS = log(0.018);
+kPAPS_syn = 1E-20; lnkPAPS_syn = log(1E-20); # Zeroth order PAPS synthesis
+
+# GA second order rate constant
+#-------------------------------
+kGA = 0.008; lnkGA = log(0.008);
+kGA_syn = 1E-20; lnkGA_syn = log(1E-20); # Zeroth order GA synthesis
+
+#CYP Oxidase Params (Liver)
+#--------------------------
+CYP_Km = 2082.; lnCYP_Km = log(2082.);
+CYP_VmaxC = 4623.; lnCYP_VmaxC = log(4623.);
+
+# Glucoronidation (Liver)
+#------------------------
+UGT_Km = 6000.; lnUGT_Km = log(6000.);    # Km for entire UGT 2
+UGT_Ki = 1E10; lnUGT_Ki = log(1E10);       # Partial substrate inhibition for UGT
+UGT_VmaxC = 1551.; lnUGT_VmaxC = log(1551.); # Vmax in Liver
+UGT_Km_GA = 10.; lnUGT_Km_GA = log(10.); # Km for UGT cofactor
+Vmax_AG = 1E20; lnVmax_AG = log(1E20); # Vmax for transport out of hepatocyte
+Km_AG = 20000.; lnKm_AG = log(20000.); # Km for transport out of hepatocyte
+
+# Sulfation by PAPS (Liver)
+#-------------------------------
+SULT_Km_apap = 300.; lnSULT_Km_apap = log(300.);
+SULT_Km_paps = 19.65; lnSULT_Km_paps = log(19.65);
+SULT_Ki = 1E10; lnSULT_Ki = log(1E10);      # Partial substrate inhibition for SULT
+SULT_VmaxC = 43100.; lnSULT_VmaxC = log(43100.); # Vmax in Liver
+Vmax_AS = 1.0E20; lnVmax_AS = log(1.0E20); # Vmax for AS transport out of hepatocyte
+Km_AS = 22900.; lnKm_AS = log(22900.); # Km for AS transport out of hepatocyte
+
+
+#endregion
+
+#-----------------------------------------------------------------------
+#                   Parameters for Exposure/Dose
+#-----------------------------------------------------------------------
+#region
+mgkg_flag=1.; # If the flag is 1, we have a mg/kg dose
+
+# Oral Regimen
+OralDose_APAP_mgkg = 0.; lnOralDose_APAP_mgkg = log(2E-9);     # Oral Dose given (mg/kg)
+OralDose_APAP_mg = 0.;  lnOralDose_APAP_mg = log(2E-9);         # Oral Dose given (mg)
+
+OralDur_APAP = 0.001;   # Oral Duration of chemical (hr)
+ODose_APAP_mg;  # Calculated Dose of APAP (mg)
+fa;             # Calculated, dose dependent fa
+ODose_APAP;     # Dose of chemical (muM/hr)
+true_dose;      # Calculated dose (muM)
+
+# IV Regimen
+IVDose_APAP_mgkg = 0.; lnIVDose_APAP_mgkg = log(2E-9);      # IV Dose given (mg/kg)
+IVDose_APAP_mg = 0.; lnIVDose_APAP_mg = log(2E-9);      # IV Dose given (mg)
+
+IVDur_APAP = 0.001;     # IV Duration (hr): Default is 5 min duration
+IVD_APAP_mg; # Calculated Dose of APAP (mg) 
+IVDR_APAP; # Actual Dose of APAP (muM)
+#endregion
+
+#-----------------------------------------------------------------------
+#                   Defined Scaled Parameters
+#-----------------------------------------------------------------------
+#region
+# Metabolism Vmax
+CYP_Vmax; UGT_Vmax; SULT_Vmax;
+
+# Compartment Volumes
+VTC; VF; VK; VG; VM; VL; VBLA; VBLV; VR; VS;
+
+# Compartment Flow Rates
+QTC; QC; QF; QK; QG; QM; QLB; QR; QS; QL;
+
+# Clearance Rates
+CLR_APAP; CLR_AS; CLR_AG;
+#endregion
+
+#-----------------------------------------------------------------------
+#                   Reverse Dosimetry Parameters
+#-----------------------------------------------------------------------
+#region
+M_OralDose_APAP; Var_OralDose_APAP;
+M_IVDose_APAP; Var_IVDose_APAP;
+M_lnOralDose_APAP; Var_lnOralDose_APAP;
+M_lnIVDose_APAP; M_lnVar_IVDose_APAP;
+#endregion
+
+
+#-----------------------------------------------------------------------
+#                   Calibration Parameters
+#-----------------------------------------------------------------------
+#region
+
+#-----------------------------------------------------------------------
+#                   Population Mean Parameters (M_...)
+#-----------------------------------------------------------------------
+#region
+# Phyisiological Params
+#----------------------
+M_BW; M_lnBW;
+M_fa; M_lnfa;
+
+# Chemical Specific Transport Params
+#-----------------------------------
+M_kSG_Vm; M_lnkSG_Vm;
+M_kSG_Km; M_lnkSG_Km;
+M_Tg;     M_lnTg;
+M_Tp;     M_lnTp;
+
+M_CLC_APAP; M_lnCLC_APAP; # Total APAP blood clearance (L/hr/kg)
+M_CLC_AS; M_lnCLC_AS;       # Total AS blood clearance (L/hr/kg)
+M_CLC_AG; M_lnCLC_AG;      # Total AG blood clearance (L/hr/kg)
+
+M_BP_APAP; M_lnBP_APAP;    # Blood:Plasma Ratio
+# Rodgers et al.
+# APAP
+M_PF_APAP; M_lnPF_APAP;    # Fat:blood
+M_PG_APAP; M_lnPG_APAP;    # Gut:blood
+M_PK_APAP; M_lnPK_APAP;    # Kidney:blood
+M_PL_APAP; M_lnPL_APAP;    # Liver:blood
+M_PM_APAP; M_lnPM_APAP;    # Muscle:blood
+M_PR_APAP; M_lnPR_APAP;    # rapidly perfused:blood
+M_PS_APAP; M_lnPS_APAP;    # slowly perfused:blood
+
+# AS
+M_PK_AS; M_lnPK_AS;
+M_PF_AS; M_lnPF_AS;
+M_PL_AS; M_lnPL_AS;
+M_PG_AS; M_lnPG_AS;
+M_PM_AS; M_lnPM_AS;
+M_PR_AS; M_lnPR_AS;
+M_PS_AS; M_lnPS_AS;
+
+# AG
+M_PK_AG; M_lnPK_AG;
+M_PF_AG; M_lnPF_AG;
+M_PL_AG; M_lnPL_AG;
+M_PG_AG; M_lnPG_AG;
+M_PM_AG; M_lnPM_AG;
+M_PR_AG; M_lnPR_AG;
+M_PS_AG; M_lnPS_AG;
+
+# Biochemical Parameters
+#-----------------------
+
+# PAPS second order rate constant
+#--------------------------------
+M_kPAPS; M_lnkPAPS;
+M_kPAPS_syn; M_lnkPAPS_syn;
+
+# GA second order rate constant
+#-------------------------------
+M_kGA; M_lnkGA;
+M_kGA_syn; M_lnkGA_syn;
+
+#CYP Oxidase Params (Liver)
+#--------------------------
+M_CYP_Km; M_lnCYP_Km;
+M_CYP_VmaxC; M_lnCYP_VmaxC;
+
+# Glucoronidation (Liver)
+#------------------------
+M_UGT_Km; M_lnUGT_Km;    # Km for entire UGT 2
+M_UGT_VmaxC; M_lnUGT_VmaxC; # Vmax in Liver
+M_UGT_Km_GA; M_lnUGT_Km_GA;
+M_UGT_Ki;   M_lnUGT_Ki;
+M_Vmax_AG; M_lnVmax_AG;
+M_Km_AG; M_lnKm_AG;
+
+# Sulfation by PAPS (Liver)
+#-------------------------------
+M_SULT_Km_apap; M_lnSULT_Km_apap;
+M_SULT_Km_paps; M_lnSULT_Km_paps;
+M_SULT_Ki;   M_lnSULT_Ki;
+M_SULT_VmaxC; M_lnSULT_VmaxC; # Vmax in Liver
+M_Vmax_AS; M_lnVmax_AS;
+M_Km_AS; M_lnKm_AS;
+#endregion
+
+#-----------------------------------------------------------------------
+#                   Population Variance Parameters (Var_...)
+#-----------------------------------------------------------------------
+#region
+# Phyisiological Params
+#----------------------
+Var_BW; Var_lnBW;
+Var_fa; Var_lnfa;
+
+# Chemical Specific Transport Params
+#-----------------------------------
+Var_kSG_Vm; Var_lnkSG_Vm;
+Var_kSG_Km; Var_lnkSG_Km;
+Var_Tg;     Var_lnTg;
+Var_Tp;     Var_lnTp;
+
+Var_CLC_APAP; Var_lnCLC_APAP; # Total APAP blood clearance (L/hr/kg)
+Var_CLC_AS; Var_lnCLC_AS;       # Total AS blood clearance (L/hr/kg)
+Var_CLC_AG; Var_lnCLC_AG;      # Total AG blood clearance (L/hr/kg)
+
+Var_BP_APAP; Var_lnBP_APAP;    # Blood:Plasma Ratio
+# Rodgers et al.
+# APAP
+Var_PF_APAP; Var_lnPF_APAP;    # Fat:blood
+Var_PG_APAP; Var_lnPG_APAP;    # Gut:blood
+Var_PK_APAP; Var_lnPK_APAP;    # Kidney:blood
+Var_PL_APAP; Var_lnPL_APAP;    # Liver:blood
+Var_PM_APAP; Var_lnPM_APAP;    # Muscle:blood
+Var_PR_APAP; Var_lnPR_APAP;    # rapidly perfused:blood
+Var_PS_APAP; Var_lnPS_APAP;    # slowly perfused:blood
+
+# AS
+Var_PK_AS; Var_lnPK_AS;
+Var_PF_AS; Var_lnPF_AS;
+Var_PL_AS; Var_lnPL_AS;
+Var_PG_AS; Var_lnPG_AS;
+Var_PM_AS; Var_lnPM_AS;
+Var_PR_AS; Var_lnPR_AS;
+Var_PS_AS; Var_lnPS_AS;
+
+# AG
+Var_PK_AG; Var_lnPK_AG;
+Var_PF_AG; Var_lnPF_AG;
+Var_PL_AG; Var_lnPL_AG;
+Var_PG_AG; Var_lnPG_AG;
+Var_PM_AG; Var_lnPM_AG;
+Var_PR_AG; Var_lnPR_AG;
+Var_PS_AG; Var_lnPS_AG;
+
+# Biochemical Parameters
+#-----------------------
+
+# PAPS second order rate constant
+#--------------------------------
+Var_kPAPS; Var_lnkPAPS;
+Var_kPAPS_syn; Var_lnkPAPS_syn;
+
+# GA second order rate constant
+#-------------------------------
+Var_kGA; Var_lnkGA;
+Var_kGA_syn; Var_lnkGA_syn;
+
+#CYP Oxidase Params (Liver)
+#--------------------------
+Var_CYP_Km; Var_lnCYP_Km;
+Var_CYP_VmaxC; Var_lnCYP_VmaxC;
+
+# Glucoronidation (Liver)
+#------------------------
+Var_UGT_Km; Var_lnUGT_Km;    # Km for entire UGT 2
+Var_UGT_VmaxC; Var_lnUGT_VmaxC; # Vmax in Liver
+Var_UGT_Km_GA; Var_lnUGT_Km_GA;
+Var_UGT_Ki;   Var_lnUGT_Ki;
+Var_Vmax_AG; Var_lnVmax_AG;
+Var_Km_AG; Var_lnKm_AG;
+
+# Sulfation by PAPS (Liver)
+#-------------------------------
+Var_SULT_KVar_apap; Var_lnSULT_Km_apap;
+Var_SULT_KVar_paps; Var_lnSULT_Km_paps;
+Var_SULT_Ki;   Var_lnSULT_Ki;
+Var_SULT_VmaxC; Var_lnSULT_VmaxC; # Vmax in Liver
+Var_Vmax_AS; Var_lnVmax_AS;
+Var_Km_AS; Var_lnKm_AS;
+#endregion
+
+
+#endregion
+
+#-----------------------------------------------------------------------
+#                          Data Error (Verr_...)
+#-----------------------------------------------------------------------
+#region
+# Needed if you are using an error distribution, rather than error at specific time points.
+
+Verr_CPL_APAP_mcmolL; Verr_CPL_APAP_mcgL;
+Verr_CPL_AG_mcmolL; Verr_CPL_AG_mcgL;
+Verr_CPL_AS_mcmolL; Verr_CPL_AS_mcgL;
+
+Verr_lnCPL_APAP_mcmolL_samp; Verr_lnCPL_APAP_mcgL_samp;
+Verr_lnCPL_AG_mcmolL_samp; Verr_lnCPL_AG_mcgL_samp;
+Verr_lnCPL_AS_mcmolL_samp; Verr_lnCPL_AS_mcgL_samp;
+
+Verr_CU_APAP_mcg;
+Verr_CU_AG_mcg;
+Verr_CU_AS_mcg;
+
+Verr_lnCU_APAP_mcg_samp;
+Verr_lnCU_AG_mcg_samp;
+Verr_lnCU_AS_mcg_samp;
+
+
+#endregion
+
+#-----------------------------------------------------------------------
+#                 State Variables (Dependent Variables in ODE)
+#-----------------------------------------------------------------------
+#region
+
+States = {
+#================
+# Meabolism Rates
+#================
+# Liver
+#------
+# CYP                  # Sulfation          # Glucoronidation
+CL_APAP_to_NAPQI_CYP, CL_APAP_to_AS_SULT, CL_APAP_to_AG_UGT,
+
+
+#=========================
+# Chemical Amounts (mcmol)
+#=========================
+# Stomach
+AST_Oral_APAP, AST_APAP, AST_to_Gut_APAP,
+
+		# Adipose   # Rapid # Slow
+		AF_APAP, AR_APAP, AS_APAP,
+            AF_AS,   AR_AS,  AS_AS,
+            AF_AG,   AR_AG,  AS_AG,
+
+# Kidney
+AKE_APAP, AKE_AS, AKE_AG,
+AK_APAP, AK_AS, AK_AG,
+# Liver
+AL_APAP, AL_AS, AL_AG, AL_PAPS, AL_GA, CH_AG, CH_AG_to_CL_AG, CH_AS, CH_AS_to_CL_AS,
+
+# Muscle
+AM_APAP, AM_AS, AM_AG,
+
+# Blood         Arterial
+                ABLA_APAP, ABLA_AS, ABLA_AG,
+#               Venous
+ABL_IV_APAP, ABLV_APAP, ABLV_AS, ABLV_AG,
+
+# Urine
+AU_APAP, AU_AS, AU_AG, pct_abs
+
+# Inactive Cofactor
+#AL_PAPS_inact, AL_GA_inact 
+
+};
+#endregion
+
+#-----------------------------------------------------------------------
+#                    Inputs (Switches for Exposures)
+#-----------------------------------------------------------------------
+#region
+
+Inputs = {
+# ORAL EXPOSURE
+#--------------
+OralExp_APAP, IVExp_APAP,
+
+};
+
+#endregion
+
+#-----------------------------------------------------------------------
+#                       Outputs from the Model
+#-----------------------------------------------------------------------
+#region
+Outputs = {
+# Anything in CalcOutputs must go here
+
+CF_APAP, CK_APAP, CL_APAP, CR_APAP, CS_APAP,
+
+CF_AS, CK_AS, CL_AS, CR_AS, CS_AS,
+
+CF_AG, CK_AG, CL_AG, CR_AG, CS_AG,
+
+CA_APAP, CV_APAP, CPL_APAP,
+
+CA_AS, CV_AS, CPL_AS,
+
+CA_AG, CV_AG, CPL_AG, 
+
+CPL_APAP_mcmolL, CPL_APAP_mcgL, CPL_AG_mcmolL,
+CPL_AG_mcgL, CPL_AS_mcmolL, CPL_AS_mcgL,
+CL_APAP_mcmolL, CL_APAP_mcgL,
+CU_APAP_mcg, CU_AG_mcg, CU_AS_mcg,
+f_abs,
+
+lnCPL_APAP_mcgL, lnCPL_AG_mcgL, lnCPL_AS_mcgL,
+lnCU_APAP_mcg, lnCU_AG_mcg, lnCU_AS_mcg,
+lnf_abs,
+
+Verr_lnCPL_APAP_mcmolL, Verr_lnCPL_APAP_mcgL,
+Verr_lnCPL_AG_mcmolL, Verr_lnCPL_AG_mcgL,
+Verr_lnCPL_AS_mcmolL, Verr_lnCPL_AS_mcgL,
+
+Verr_lnCU_APAP_mcg,
+Verr_lnCU_AG_mcg,
+Verr_lnCU_AS_mcg,
+
+};
+
+#endregion
+
+#-----------------------------------------------------------------------
+#                       Initialize the Model
+#-----------------------------------------------------------------------
+#region
+
+Initialize {
+
+# Rescale log-transformed params
+#-------------------------------
+#region
+# Rescale the log transformed params here, comment out if no log re-scale needed
+
+#fa = exp(lnfa);
+BW = exp(lnBW);
+
+# Inital Dosing
+#--------------
+OralDose_APAP_mgkg = exp(lnOralDose_APAP_mgkg);
+OralDose_APAP_mg = exp(lnOralDose_APAP_mg);
+IVDose_APAP_mgkg = exp(lnIVDose_APAP_mgkg);
+IVDose_APAP_mg = exp(lnIVDose_APAP_mg);
+
+# Chemical Specific Transport Params
+#-----------------------------------
+kSG_Vm = exp(lnkSG_Vm);     # Kmax for abs to portal
+kSG_Km = exp(lnkSG_Km);     # Km for abs to portal
+Tg = exp(lnTg);
+Tp = exp(lnTp);
+
+CLC_APAP = exp(lnCLC_APAP);     # Total APAP blood clearance (L/hr/kg)
+CLC_AS = exp(lnCLC_AS);       # Total AS blood clearance (L/hr/kg)
+CLC_AG = exp(lnCLC_AG);      # Total AG blood clearance (L/hr/kg)
+
+BP_APAP = exp(lnBP_APAP);    # Blood:Plasma Ratio
+# Rodgers et al.
+# APAP
+PF_APAP = exp(lnPF_APAP);    # Fat:blood
+PG_APAP = exp(lnPG_APAP);    # Gut:blood
+PK_APAP = exp(lnPK_APAP);    # Kidney:blood
+PL_APAP = exp(lnPL_APAP);    # Liver:blood
+PM_APAP = exp(lnPM_APAP);    # Muscle:blood
+PR_APAP = exp(lnPR_APAP);   # rapidly perfused:blood
+PS_APAP = exp(lnPS_APAP);   # slowly perfused:blood
+
+# AS
+PK_AS = exp(lnPK_AS);
+PF_AS = exp(lnPF_AS);
+PL_AS = exp(lnPL_AS);
+PG_AS = exp(lnPG_AS);
+PM_AS = exp(lnPM_AS);
+PR_AS = exp(lnPR_AS);
+PS_AS = exp(lnPS_AS);
+
+# AG
+PK_AG = exp(lnPK_AG);
+PF_AG = exp(lnPF_AG);
+PL_AG = exp(lnPL_AG);
+PG_AG = exp(lnPG_AG);
+PM_AG = exp(lnPM_AG);
+PR_AG = exp(lnPR_AG);
+PS_AG = exp(lnPS_AG);
+
+# Biochemical Parameters
+#-----------------------
+
+# PAPS second order rate constant
+#--------------------------------
+kPAPS = exp(lnkPAPS);
+kPAPS_syn = exp(lnkPAPS_syn);
+
+# GA second order rate constant
+#-------------------------------
+kGA = exp(lnkGA);
+kGA_syn = exp(lnkGA_syn);
+
+#CYP Oxidase Params (Liver)
+#--------------------------
+CYP_Km = exp(lnCYP_Km);
+CYP_VmaxC = exp(lnCYP_VmaxC);
+
+# Glucoronidation (Liver) -> GA Cofactor
+#---------------------------------------
+UGT_Km = exp(lnUGT_Km);    # Km for entire UGT 2
+UGT_VmaxC = exp(lnUGT_VmaxC); # Vmax in Liver
+UGT_Km_GA = exp(lnUGT_Km_GA);
+UGT_Ki = exp(lnUGT_Ki);
+Vmax_AG = exp(lnVmax_AG);
+Km_AG = exp(lnKm_AG);
+
+# Sulfation (Liver) -> PAPS Cofactor
+#-----------------------------------
+SULT_Km_apap = exp(lnSULT_Km_apap);
+SULT_Km_paps = exp(lnSULT_Km_paps);
+SULT_Ki = exp(lnSULT_Ki);
+SULT_VmaxC = exp(lnSULT_VmaxC); # Vmax in Liver
+Vmax_AS = exp(lnVmax_AS);
+Km_AS = exp(lnKm_AS);
+
+#endregion
+
+# APAP oral dose rate (rate of input to stomach (mcmol/hr)).
+ODose_APAP_mg = (mgkg_flag>0.5 ? OralDose_APAP_mgkg*BW: OralDose_APAP_mg);
+fa = (ODose_APAP_mg<1000 ? 0.0005*ODose_APAP_mg + 0.37: 0.88);
+ODose_APAP  = (fa*ODose_APAP_mg/OralDur_APAP)*(1000./MW_APAP);
+true_dose = (fa*ODose_APAP_mg)*(1000./MW_APAP);
+
+# APAP IV dose rate (rate of input to venous blood (mcmol/hr)).
+IVD_APAP_mg = (mgkg_flag>0.5 ? IVDose_APAP_mgkg*BW: IVDose_APAP_mg);
+IVDR_APAP = (IVD_APAP_mg/IVDur_APAP)*(1000./MW_APAP);
+
+#---------------------------------------------------------------------------
+# Specify the compartment volumes (L)
+#---------------------------------------------------------------------------
+VTC  = VFC+VKC+VGC+VLC+VMC+VBLAC+VBLVC+VRC+VSC;
+VF = VFC*BW/VTC;         # Fat.
+VK = VKC*BW/VTC;         # Kidney.
+VG = VGC*BW/VTC;         # Gut.
+VL = VLC*BW/VTC;         # Liver.
+VM = VMC*BW/VTC;         # Muscle.
+VBLA = VBLAC*BW/VTC;     # Arterial
+VBLV = VBLVC*BW/VTC;     # Venous
+VR = VRC*BW/VTC;         # Rapidly Perfused
+VS = VSC*BW/VTC;         # Slowly Perfused
+
+#---------------------------------------------------------------------------
+# Specify the flow rates (L/hr)
+#---------------------------------------------------------------------------
+QTC  = QFC+QKC+QGC+QLBC+QMC+QRC+QSC;
+QC  = QCC*pow(BW,0.75);      # Cardiac output (L/hr).
+
+QF = QFC*QC/QTC;         # Fat.
+QK = QKC*QC/QTC;         # Kidney.
+QG = QGC*QC/QTC;         # Gut.
+QM = QMC*QC/QTC;         # Gut.
+QLB = QLBC*QC/QTC;       # Hepatic artery.
+QR = QRC*QC/QTC;         # Rapidly Perfused
+QS = QSC*QC/QTC;         # Slowly Perfused
+QL  = QG+QLB;            # Total liver flow.
+
+#---------------------------------------------------------------------------
+# Compute the clearance rates (L/hr)
+#---------------------------------------------------------------------------
+CLR_APAP  = (alpha_APAP)*CLC_APAP*BW;        # Renal clearance (L/hr).
+CLR_AS = (alpha_AS)*(CLC_AS)*BW;
+CLR_AG = (alpha_AG)*CLC_AG*BW;
+
+#------------------------------------
+# Compute Allometric Scaling for Vmax
+#------------------------------------
+
+CYP_Vmax = CYP_VmaxC*pow(BW, 0.75);
+UGT_Vmax = UGT_VmaxC*pow(BW, 0.75);
+SULT_Vmax = SULT_VmaxC*pow(BW, 0.75);
+
+#---------------------------------------
+# Initialize PAPSn and GA at 100% at t=0
+#---------------------------------------
+AL_PAPS = 1.;
+AL_GA = 1.;
+
+
+};
+#endregion
+
+#-----------------------------------------------------------------------
+#                       The Model (Actual ODEs)
+#-----------------------------------------------------------------------
+#region
+Dynamics {
+
+#---------------------------------------------------------------------------
+# Compute the drug tissue/organ concentrations (mcmol/L)
+#---------------------------------------------------------------------------
+CF_APAP = AF_APAP/VF;      # APAP Fat
+CVF_APAP = CF_APAP/PF_APAP;
+CK_APAP = AK_APAP/VK;      # APAP Kidney
+CVK_APAP = CK_APAP/PK_APAP;
+CM_APAP = AM_APAP/VM;      # APAP Muscle
+CVM_APAP = CM_APAP/PM_APAP;
+CL_APAP = AL_APAP/VL;      # APAP Liver
+CVL_APAP = CL_APAP/PL_APAP;
+CR_APAP = AR_APAP/VR;      # APAP Rapidly Perfused
+CVR_APAP = CR_APAP/PR_APAP;
+CS_APAP = AS_APAP/VS;      # APAP Slowly Perfused
+CVS_APAP = CS_APAP/PS_APAP;
+
+CF_AS = AF_AS/VF;          # AS Fat
+CVF_AS = CF_AS/PF_AS;
+CK_AS = AK_AS/VK;          # AS Kidney
+CVK_AS = CK_AS/PK_AS;
+CL_AS = AL_AS/VL;          # AS Liver
+CVL_AS = CL_AS/PL_AS;
+CM_AS = AM_AS/VM;          # AS Muscle
+CVM_AS = CM_AS/PM_AS;
+CR_AS = AR_AS/VR;          # AS Rapidly Perfused
+CVR_AS = CR_AS/PR_AS;
+CS_AS = AS_AS/VS;          # AS Slowly Perfused
+CVS_AS = CS_AS/PS_AS;
+
+CF_AG = AF_AG/VF;          # AG Fat
+CVF_AG = CF_AG/PF_AG;
+CK_AG = AK_AG/VK;          # AG Kidney
+CVK_AG = CK_AG/PK_AG;
+CL_AG = AL_AG/VL;          # AG Liver
+CVL_AG = CL_AG/PL_AG;
+CM_AG = AM_AG/VM;          # AG Muscle
+CVM_AG = CM_AG/PM_AG;
+CR_AG = AR_AG/VR;          # AG Rapidly Perfused
+CVR_AG = CR_AG/PR_AG;
+CS_AG = AS_AG/VS;          # AG Slowly Perfused
+CVS_AG = CS_AG/PS_AG;
+
+#---------------------------------------------------------------------------
+# Compute the blood/plasma concentrations (mcmol/L)
+#---------------------------------------------------------------------------
+CA_APAP = ABLA_APAP/VBLV;   # APAP Blood
+CV_APAP = ABLV_APAP/VBLA;
+CPL_APAP = CV_APAP/BP_APAP;
+
+CA_AS = ABLA_AS/VBLA;       # AS Blood
+CV_AS = ABLV_AS/VBLV;
+CPL_AS = CV_AS/BP_APAP;
+
+CA_AG = ABLA_AG/VBLA;       # AG Blood
+CV_AG = ABLV_AG/VBLV;
+CPL_AG = CV_AG/BP_APAP;
+
+#================
+# Meabolism Rates
+#================
+
+#---------------------------------------------
+# Liver Metabolism (Michaelis-Menten Kinetics)
+#---------------------------------------------
+
+dt(CL_APAP_to_NAPQI_CYP) = CYP_Vmax*CL_APAP/(CYP_Km + CL_APAP);
+dt(CL_APAP_to_AS_SULT) = SULT_Vmax*(CL_APAP)*(AL_PAPS)/((SULT_Km_apap + CL_APAP + pow(CL_APAP, 2)/SULT_Ki)*(SULT_Km_paps + AL_PAPS));
+dt(CL_APAP_to_AG_UGT) = UGT_Vmax*(CL_APAP)*(AL_GA)/((UGT_Km + CL_APAP + pow(CL_APAP, 2)/UGT_Ki)*(UGT_Km_GA + AL_GA));
+
+# Cofactor amounts
+dt(AL_PAPS) = -dt(CL_APAP_to_AS_SULT) + kPAPS_syn*(1 - AL_PAPS);
+dt(AL_GA) = -dt(CL_APAP_to_AG_UGT) + kGA_syn*(1 - AL_GA);
+
+#==============================
+# Individual Substrate Dynamics
+#==============================
+
+# APAP
+#=====
+dt(AST_Oral_APAP) = OralExp_APAP*ODose_APAP;
+
+# Stomach (Dissolution Absorption)
+dt(AST_to_Gut_APAP) = true_dose*(exp(-t/Tg)-exp(-t/Tp))/(Tg-Tp);
+dt(AST_APAP) = dt(AST_Oral_APAP) - dt(AST_to_Gut_APAP);
+
+# Liver
+dt(AL_APAP) =  QL*CA_APAP + dt(AST_to_Gut_APAP) - QL*CVL_APAP - dt(CL_APAP_to_NAPQI_CYP) - dt(CL_APAP_to_AS_SULT) - dt(CL_APAP_to_AG_UGT);
+dt(pct_abs) =  dt(AST_to_Gut_APAP)/true_dose;
+
+# Venous Blood
+dt(ABL_IV_APAP) = IVExp_APAP*IVDR_APAP;
+dt(ABLV_APAP)  =  QF*CVF_APAP + QM*CVM_APAP + QK*CVK_APAP + QL*CVL_APAP + QR*CVR_APAP + QS*CVS_APAP - QC*CV_APAP + dt(ABL_IV_APAP);
+
+# Arterial Blood
+dt(ABLA_APAP) = QC*(CV_APAP - CA_APAP);
+
+# Fat
+dt(AF_APAP) = QF*(CA_APAP - CVF_APAP);
+
+# Muscle
+dt(AM_APAP) = QM*(CA_APAP - CVM_APAP);
+
+# Kidney
+dt(AKE_APAP) = CLR_APAP*CA_APAP; # APAP Kidney Elimination
+dt(AK_APAP)  = QK*(CA_APAP - CVK_APAP) - dt(AKE_APAP);
+
+# Rapidly Perfused
+dt(AR_APAP) = QR*(CA_APAP - CVR_APAP);
+
+# Slowly Perfused
+dt(AS_APAP) = QS*(CA_APAP - CVS_APAP);
+
+# Urine
+dt(AU_APAP) = dt(AKE_APAP);
+
+#AS
+#==
+
+# liver
+dt(CH_AS_to_CL_AS) = Vmax_AS*CH_AS/(Km_AS + CH_AS);
+dt(CH_AS) = dt(CL_APAP_to_AS_SULT) - dt(CH_AS_to_CL_AS);
+dt(AL_AS) = QL*(CA_AS - CVL_AS) + dt(CH_AS_to_CL_AS);
+
+# fat
+dt(AF_AS) = QF*(CA_AS - CVF_AS);
+
+# muscle
+dt(AM_AS) = QM*(CA_AS - CVM_AS);
+
+# rapidly perfused
+dt(AR_AS) = QR*(CA_AS - CVR_AS);
+
+# slowly perfused
+dt(AS_AS) = QS*(CA_AS - CVS_AS);
+
+# venous blood
+dt(ABLV_AS) = QK*CVK_AS + QL*CVL_AS + QF*CVF_AS + QM*CVM_AS + QR*CVR_AS + QS*CVS_AS - QC*CV_AS;
+
+# arterial blood
+dt(ABLA_AS) = QC*(CV_AS - CA_AS);
+
+# kidney
+dt(AKE_AS) = CLR_AS*CA_AS; # AS kidney elimination
+dt(AK_AS) = QK*(CA_AS - CVK_AS) - dt(AKE_AS);
+
+# Urine
+dt(AU_AS) = dt(AKE_AS);
+
+#AG
+#==
+
+# liver
+dt(CH_AG_to_CL_AG) = Vmax_AG*CH_AG/(Km_AG + CH_AG);
+dt(CH_AG) = dt(CL_APAP_to_AG_UGT) - dt(CH_AG_to_CL_AG);
+dt(AL_AG) = QL*(CA_AG - CVL_AG) + dt(CH_AG_to_CL_AG);
+
+# fat
+dt(AF_AG) = QF*(CA_AG - CVF_AG);
+
+# fat
+dt(AM_AG) = QM*(CA_AG - CVM_AG);
+
+# rapidly perfused
+dt(AR_AG) = QR*(CA_AG - CVR_AG);
+
+# slowly perfused
+dt(AS_AG) = QS*(CA_AG - CVS_AG);
+
+# venous blood
+dt(ABLV_AG) = QK*CVK_AG + QL*CVL_AG + QF*CVF_AG + QM*CVM_AG + QR*CVR_AG + QS*CVS_AG  - QC*CV_AG;
+
+# arterial blood
+dt(ABLA_AG) = QC*(CV_AG - CA_AG);
+
+# kidney
+dt(AKE_AG) = CLR_AG*CA_AG; # AS kidney elimination
+dt(AK_AG) = QK*(CA_AG - CVK_AG) - dt(AKE_AG);
+
+# Urine
+dt(AU_AG) = dt(AKE_AG);
+
+
+
+};
+#endregion
+
+#-----------------------------------------------------------------------
+#                       Calculate the Model Outputs
+#-----------------------------------------------------------------------
+#region
+CalcOutputs {
+CPL_APAP_mcmolL = CPL_APAP; CPL_APAP_mcgL = CPL_APAP*MW_APAP;
+CPL_AG_mcmolL = CPL_AG; CPL_AG_mcgL = CPL_AG*MW_AG;
+CPL_AS_mcmolL = CPL_AS; CPL_AS_mcgL = CPL_AS*MW_AS;
+CL_APAP_mcmolL = CL_APAP; CL_APAP_mcgL = CL_APAP*MW_APAP;
+
+CU_APAP_mcg = AU_APAP*MW_APAP;
+CU_AG_mcg = AU_AG*MW_AG;
+CU_AS_mcg = AU_AS*MW_AS;
+f_abs = AST_to_Gut_APAP/true_dose;
+
+lnCPL_APAP_mcgL = (CPL_APAP_mcgL > 0 ? log(CPL_APAP_mcgL):-20.); # APAP in Plasma
+lnCPL_AG_mcgL = (CPL_AG_mcgL > 0 ? log(CPL_AG_mcgL):-20.); # AG in Plasma
+lnCPL_AS_mcgL = (CPL_AS_mcgL > 0 ? log(CPL_AS_mcgL):-20.); # AS in Plasma
+lnCU_APAP_mcg = (CU_APAP_mcg > 0 ? log(CU_APAP_mcg):-20.); # APAP in Urine
+lnCU_AG_mcg = (CU_AG_mcg > 0 ? log(CU_AG_mcg):-20.); # AG in Urine
+lnCU_AS_mcg = (CU_AS_mcg > 0 ? log(CU_AS_mcg):-20.); # AS in Urine
+lnf_abs = (f_abs > 0 ? log(f_abs): -20);  
+
+# Sampled error from measured data points
+Verr_lnCPL_APAP_mcmolL=Verr_lnCPL_APAP_mcmolL; 
+Verr_lnCPL_APAP_mcgL=Verr_lnCPL_APAP_mcgL;
+Verr_lnCPL_AG_mcmolL=Verr_lnCPL_AG_mcmolL; 
+Verr_lnCPL_AG_mcgL=Verr_lnCPL_AG_mcgL;
+Verr_lnCPL_AS_mcmolL=Verr_lnCPL_AS_mcmolL; 
+Verr_lnCPL_AS_mcgL=Verr_lnCPL_AS_mcgL;
+   
+Verr_lnCU_APAP_mcg=Verr_lnCU_APAP_mcg;
+Verr_lnCU_AG_mcg=Verr_lnCU_AG_mcg;
+Verr_lnCU_AS_mcg=Verr_lnCU_AS_mcg;
+}
+End.

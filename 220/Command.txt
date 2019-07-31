@@ -1,0 +1,13 @@
+######    Scenario = scenario 4
+######    PsN version= 3.2.10
+######    Original tool version = NONMEM version 6.2
+######    Input data = Simulated_data.csv
+######    Executable model = Executable_run32150.mod
+######    Output = Output_simulated_original_run32150.lst
+######    Output = Output_real_original_32150.lst
+######    Output = Finmod_7_3.lst; the model re-run with real data in NONMEM version 7.3
+
+
+######    Script used as execution command:
+
+execute Executable_run32150.mod

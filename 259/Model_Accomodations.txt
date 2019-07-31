@@ -1,0 +1,7 @@
+## Full reference to publication
+## Clewe O, Wicha SG, de Vogel CP, de Steenwinkel JEM, Simonsson US.
+## A model-informed pre-clinical approach for prediction of clinical pharmacodynamic 
+## interactions of anti-tuberculosis drug combinations
+## J Antimicrob Chemother. 2017 Accepted
+###### Scenario = 4
+###### Original publication PubMed ID: 

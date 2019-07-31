@@ -1,0 +1,177 @@
+# Basic MCL template
+#
+# Customise as required
+#
+
+# Define the dataset to be used by the model
+mero_PK_ODE_data = dataObj {
+	DECLARED_VARIABLES{CENTRAL Y}
+
+	DATA_INPUT_VARIABLES {       # Data column definitions and mapping go here
+		ID : { use is id }
+		TIME : { use is idv}
+		GROUP : {use is ignore}
+		DV : { use is dv, variable = Y }
+		MDV : {use is mdv }
+		EVID : {use is ignore}
+		AMT : { use is amt, variable = CENTRAL }
+		RATE : { use is rate}
+		AGE : { use is covariate }
+		WT : { use is covariate }
+		CLCR : { use is covariate }
+		
+	}
+	
+	SOURCE {       #  Define data file here
+		srcfile : {file = "Simulated_DatasetMeropenem.csv", 
+            inputFormat is nonmemFormat } 
+	}
+}
+
+# Provide a set of initial parameters values for a model 
+mero_PK_ODE_par = parObj {
+	
+STRUCTURAL {
+		POP_CL : { value = 14.6,  lo = 0 }
+	    POP_V1 : { value = 10.8, lo = 0 }
+		POP_Q :  { value = 18.6, lo = 0 }
+	 	POP_V2 : { value = 12.6,  lo = 0 }
+	 	COV_CL_AGE : { value = -0.34 }
+	 	COV_CL_CLCR : { value = 0.62, fix=true}
+	 	COV_V1_WT : { value = 0.99 }
+		RUV_PROP : { value = 0.19 }
+		RUV_ADD : { value = 0.47 } 
+		}
+		
+	VARIABILITY {
+		# variability parameters
+		PPV_CL : { value = 0.118, type is var }
+		PPV_V1 : { value = 0.143, type is var }
+		PPV_Q :  { value = 0.290, type is var }
+		PPV_V2 : { value = 0.102, type is var }
+		
+	} # end VARIABILITY
+} # end of parameter object  
+
+# Define the model in a model object
+mero_PK_ODE_mdl = mdlObj {
+	# Independent variable of model
+	IDV{ T }
+
+	# Covariates are defined here
+	COVARIATES{
+		# maps to data
+		WT
+		AGE 
+		CLCR
+		
+		# transformed
+		logtWT =   ln(WT/70)
+		logtAGE =  ln(AGE/35)
+		logtCLCR = ln(CLCR/83)
+	}
+
+	# Levels of random variability define here
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	}
+
+	# Stuctural parameters
+	STRUCTURAL_PARAMETERS { 
+		POP_CL 
+	    POP_V1 
+		POP_Q 
+	 	POP_V2 
+	 	COV_CL_AGE 
+	 	COV_CL_CLCR 
+	 	COV_V1_WT 
+		RUV_PROP 
+		RUV_ADD 
+	}
+	
+	# Variability Parameters
+	VARIABILITY_PARAMETERS {
+		PPV_CL 
+		PPV_V1 
+		PPV_Q 
+		PPV_V2 
+	} 
+	
+	# Define etas here
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_CL ~ Normal(mean = 0, var = PPV_CL)
+		ETA_V1 ~ Normal(mean = 0, var = PPV_V1)
+		ETA_Q ~ Normal(mean = 0, var = PPV_Q)
+		ETA_V2 ~ Normal(mean = 0, var = PPV_V2)
+	} # end RANDOM_VARIABLE_DEFINITION 
+
+	# Define group variables here
+	GROUP_VARIABLES{
+		# GRP_CL = POP_CL * WT ^ BETA_CL_WT
+	}
+	
+	# Define individual parameters
+	INDIVIDUAL_VARIABLES {
+		ln(CL) = linear( trans is ln,
+		                 pop= POP_CL, 
+		                 fixEff=[{coeff=COV_CL_AGE,  cov=logtAGE},
+		                         {coeff=COV_CL_CLCR, cov=logtCLCR}], 
+		                 ranEff= [ETA_CL] )
+		                 
+	     ln(V1) = linear( trans is ln,
+		                  pop= POP_V1, 
+		                  fixEff=[{coeff=COV_V1_WT, cov=logtWT}], 
+		                  ranEff= [ETA_V1] )    
+		                   
+         ln(Q) = linear( trans is ln,
+		                 pop= POP_Q,  
+		                 ranEff= [ETA_Q] )
+		                 
+		 ln(V2) = linear( trans is ln,
+		                  pop= POP_V2,  
+		                  ranEff= [ETA_V2] )
+		# (For maximum interoperability with a linear covariate model use this form)	    
+	}
+
+	# Define the model
+	MODEL_PREDICTION {
+		# ODEs can go in the DEQ block
+	DEQ{
+	CENTRAL : { deriv= - Q*CENTRAL/V1 + Q*PERIPHERAL/V2 - CL*CENTRAL/V1, init = 0, x0 = 0 } 
+    PERIPHERAL : { deriv =  Q*CENTRAL/V1 - Q*PERIPHERAL/V2, init = 0, x0 = 0 } 
+    }
+ 	    CC = CENTRAL / V1 
+	}
+	
+	# Define epsilons like this
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	EPS_Y  ~ Normal(mean=0, var=1)
+	}
+
+	# Define observations here
+	OBSERVATION {
+		  Y = combinedError2(additive = RUV_ADD, proportional = RUV_PROP, eps = EPS_Y, prediction = CC )
+	}
+}
+
+
+# Define the task
+mero_PK_ODE_task = taskObj {
+	# This is an estimate task. 
+	ESTIMATE{ 
+		# Specify the algorithm
+		set algo is focei 
+	}
+}
+
+# Define the modelling object group
+mero_PK_ODE_mog = mogObj {
+	OBJECTS{
+		# A MOG is composed of a data, model, parameter and task object
+		mero_PK_ODE_data : { type is dataObj }
+		mero_PK_ODE_mdl : { type is mdlObj }
+		mero_PK_ODE_par : { type is parObj }
+		mero_PK_ODE_task : { type is taskObj }
+	}
+}

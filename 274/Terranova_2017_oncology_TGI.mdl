@@ -1,0 +1,205 @@
+# DEB-TGI model 
+# This model is used for estimation and simulation.
+#
+# Limitations:
+# - among the drugs considered in the paper, only PACLITAXEL has been used for PK 
+#
+# Dataset:
+# Simulated dataset
+#
+# Evaluation method for this model:
+# run NONMEM simulation; 
+# check the consistency of predictions with the simulated DVs provided by the authors 
+#
+# By Elena Maria Tosca 
+# BMS lab - Unipv, Pavia (Italy)
+# 
+
+DEB_TGI_data = dataObj {
+SOURCE {
+			srcfile : {file = "Simulated_DEB_TGI_data.csv", inputFormat is nonmemFormat} 
+	    	} 
+	DECLARED_VARIABLES{
+	        Y1::observation #Y1= net mice body weight
+	        Y2::observation #Y2= tumor weight
+	        Q1::dosingTarget 
+	        }  
+	                                                                
+	DATA_INPUT_VARIABLES {
+		ID : { use is id }
+		TIME : { use is idv }
+		DV : { use is dv, define={1 in DVID as Y1, 2 in DVID as Y2} }
+		DVID: { use is dvid }
+		AMT: { use is amt, variable=Q1 }
+        EVID: { use is evid }
+        CMT: { use is cmt }		
+	}
+}
+      
+
+
+DEB_TGI_par = parObj {
+	
+ 	STRUCTURAL {
+ 	    #PK parameters
+ 	    K10_POP : {value=20.832, fix=true} # 1/day
+	    K12_POP : {value=0.144, fix=true} # 1/day
+        K21_POP : {value =2.011, fix=true} # 1/day
+        V1_POP : {value=813.1, fix=true} # mL/kg
+ 		    	
+ 		# fixed physiological parameters 
+ 		En_initial_POP : { value = 1.3,  fix=true}
+		xi_POP : {value = 0.184, fix=true}
+ 		ni_POP : { value = 1.2242, fix = true }
+		gr_POP : { value = 12.2, fix = true }
+		V1inf_POP : { value = 22.6, fix = true }
+		rho_b_POP : {value=1, fix=true}
+		     			
+		# estimated parameters
+		mu_POP : { value = 0.0223, lo=0}
+		mu_u_POP : { value = 13.3, lo=0}
+		gu_POP : { value = 11.7, lo=0}
+		delta_Vmax_POP : { value = 0.185, lo=0}
+		W_initial_POP : { value = 21.2, lo=0}
+		Vu1_initial_POP : { value = 0.0023, lo=0}
+		IC50_POP : { value = 0.461, lo=0}  
+        k1_POP : { value = 0.462, lo=0}
+        k2_POP : { value = 0.000653, lo=0}	      
+        }
+	
+	VARIABILITY {
+	    #residual error parameters  
+        b_W:{value=0.101, lo=0}
+	    b_Wu : {value=0.134, lo=0}
+	} # end VARIABILITY
+	
+} # end of parameter object 
+
+DEB_TGI_mdl = mdlObj {
+	# Independent variable of model
+	IDV{ T }
+	
+	# Levels of random variability define here
+	VARIABILITY_LEVELS{
+		DV : { level=1, type is observation }
+	}
+
+	# Stuctural parameters
+	STRUCTURAL_PARAMETERS {
+	    K10_POP
+	    K12_POP 
+        K21_POP 
+        V1_POP
+		En_initial_POP 
+		rho_b_POP
+		xi_POP 
+ 		ni_POP 
+		gr_POP 
+		V1inf_POP 
+		mu_POP 
+		mu_u_POP 
+		gu_POP 
+		delta_Vmax_POP 
+		W_initial_POP 
+		Vu1_initial_POP 
+		IC50_POP  
+        k1_POP 
+        k2_POP 		
+			}
+	
+	VARIABILITY_PARAMETERS { 
+		b_W
+		b_Wu
+	} 
+	
+	INDIVIDUAL_VARIABLES{
+	    K10=K10_POP
+	    K12=K12_POP 
+        K21=K21_POP 
+        V1=V1_POP
+		En_initial=En_initial_POP 
+		rho_b=rho_b_POP
+		xi=xi_POP 
+ 		ni=ni_POP 
+		gr=gr_POP 
+		V1inf=V1inf_POP 
+		mu=mu_POP 
+		mu_u=mu_u_POP 
+		gu=gu_POP 
+		delta_Vmax=delta_Vmax_POP 
+		W_initial=W_initial_POP 
+		Vu1_initial=Vu1_initial_POP 
+		IC50=IC50_POP  
+        k1=k1_POP 
+        k2=k2_POP
+
+        density_V=1
+      	density_Vu=1
+      	omeg= 0.75
+		m=ni/((V1inf^(1/3))*gr)  
+	    Z_initial=W_initial/(1+En_initial*xi)      	
+   	}
+	
+	
+	MODEL_PREDICTION {
+		              
+		DEQ{
+		    C=Q1/V1
+		    Q1:{deriv=K21*Q2-(K10+K12)*Q1, init=0}
+			Q2:{deriv=K12*Q1-K21*Q2, init=0}
+		    rho=rho_b*(1-(C/(IC50+C)))
+			ku=((mu_u*Vu1)/(Z+(mu_u*Vu1)))			
+			switch1= (((1-ku)*ni*En*(Z^(2/3)))-(gr*m*Z))/(gr+((1-((mu_u*Vu1)/(Z+(mu_u*Vu1))))*En))
+            switch2= (((1-ku)*ni*En*(Z^(2/3)))-gr*m*Z)/((1-((mu_u*Vu1)/(Z+(mu_u*Vu1))))*(En+omeg*gr))
+ 
+            Wu=density_Vu*(Vu1+Vu2+Vu3+Vu4)
+            W=density_V*(1+xi*En)*Z
+            W_err=b_W*sqrt(W)
+            Wu_err=b_Wu*sqrt(Wu)
+            
+			Z  : {deriv= if(switch1>=0) then (((1-ku)*ni*En*(Z^(2/3)))-(gr*m*Z))/(gr+((1-ku)*En)) 
+                         elseif (switch1<0 && switch2<=(-delta_Vmax)) then (((1-ku)*ni*En*(Z^(2/3)))-(gr*m*Z))/(((1-ku)*(En+omeg*gr)))
+                         else  -delta_Vmax, 
+                         init=Z_initial}
+            En : {deriv= (ni/((Z)^(1/3)))*(rho*(((V1inf)/(Vu1+Z))^(2/3))-En), init=En_initial}
+            Vu1: {deriv= if(switch1>=0) then (((ni*(Z^(2/3)))+(m*Z))*(gr*ku*En))/((gr*gu)+((1-ku)*gu*En))-(mu*Vu1)-(k2*Vu1*C)
+                     elseif (switch1<0 && switch2<0 && switch2>=(-delta_Vmax)) then (gr*m*mu_u*Vu1/gu)-(mu*Vu1)-(k2*C*Vu1)
+                     else (ku/gu)*((En*ni*(Z^(2/3)))+(delta_Vmax*En)+(delta_Vmax*omeg*gr))-(mu*Vu1)-(k2*C*Vu1), 
+                     init=Vu1_initial}
+            Vu2: {deriv= k2*C*Vu1-k1*Vu2 , init=0}
+            Vu3: {deriv= k1*Vu2-k1*Vu3 , init=0}
+            Vu4: {deriv= k1*Vu3-k1*Vu4 , init=0}          
+		  }
+ 
+	}
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+
+	    eps_RES_W ~ Normal(mean=0, var=1)
+	    eps_RES_Wu ~ Normal(mean=0, var=1)
+	}
+
+	# Define observations here
+	OBSERVATION {
+		Y1 : {type is additiveError, additive=W_err, eps=eps_RES_W, prediction= W}
+		Y2 : {type is additiveError, additive=Wu_err, eps=eps_RES_Wu, prediction= Wu}	 
+	}
+}
+
+# Define the task
+DEB_TGI_task = taskObj {
+	# This is an estimate task. 
+	ESTIMATE{ 
+		set algo is foce 
+	}
+}
+
+# Define the modelling object group
+DEB_TGI_mog = mogObj {
+	OBJECTS{
+		DEB_TGI_data : { type is dataObj }
+		DEB_TGI_mdl : { type is mdlObj }
+		DEB_TGI_par : { type is parObj }
+		DEB_TGI_task : { type is taskObj }
+	}
+}

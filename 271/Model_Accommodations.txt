@@ -1,0 +1,2 @@
+The publication mentiones additive errors for the recovered amounts in urine, while these were in fact proportional. 
+The uploaded code has the correct error model sturcture

@@ -1,0 +1,118 @@
+###### Scenario = 2
+###### MDL version = 1.0
+###### IO product = 5 (aka 2.0.0) 
+###### Monolix version = 4.3.2
+###### Input data = "Simulated_glucoseKinetics.csv" - Simulated data
+###### Executable model = "Executable_glucoseKinetics.txt"
+###### Output = "glucoseKineticsPLOT.pdf" - Output from simulation
+
+####################################
+## Initialisation
+####################################
+
+library(mlxR)# necessary if working outside the MDLIDE
+library(ggplot2)# necessary if working outside the MDLIDE
+library(gridExtra)
+
+rm(list=ls(all=F))
+
+# Set working directory
+myfolder <- "GlucoseKinetics/models" #  name of your project folder
+setwd(file.path(Sys.getenv("MDLIDE_WORKSPACE_HOME"),myfolder))
+
+# Set name of MDL file and dataset
+mdlfile <- "glucoseKinetics.mdl"# not necessary
+
+# Produce PHARMML code
+pharmMLfile <- as.PharmML(mdlfile)# not necessary
+
+####################################
+## Simulation of new data
+####################################
+
+# Execute the model
+#mlx <- estimate(mdlfile, target="MONOLIX", subfolder="Monolix")
+
+#The MONOLIX files which are automatically produced by the DDMoRe converter are not executable
+#The following files
+#Executable_glucoseKinetics.txt,
+#Executable_glucoseKinetics.mlxtran,
+#Executable_glucoseKinetics_graphics.xmlx and
+#Executable_glucoseKinetics_algorithms.xmlx
+#need to be used to simulate, with MONOLIX, a new dataset: "Output_simulated_glucoseKinetics.txt"
+
+####################################
+## Plot of the new simulated data
+####################################
+
+# Read the new data
+d<-read.csv('Executable_glucoseKinetics/Output_simulated_glucoseKinetics.txt',header=T,na=' . ')
+
+# Keep only the dependent variable data
+d<-d[d$MDV==0,]
+
+# Introduce a categorical variable distinguishing the subjects undergoing different tests
+d$gr<-7
+d$gr[d$ID<450]<-6
+d$gr[d$ID<400]<-5
+d$gr[d$ID<300]<-4
+d$gr[d$ID<200]<-3
+d$gr[d$ID<150]<-2
+d$gr[d$ID<100]<-1
+group<-c('HGclamp','\"OGTT\"/clamp','OGTT/\"clamp"','ISOclamp','MTT','\"MTT\"/clamp','MTT/\"clamp\"')
+
+dC<-list()
+plC<-list()
+
+# For each test
+for (j in c(1,4,2,3,5,6,7)) {
+
+	# Compute mean, sd and upper and lower prediction interval (+-1 sd) on the predictions
+	dC[[j]]<-data.frame(t=sort(unique(d$t[d$gr==j])),mean=tapply(d$conc[d$gr==j],d$t[d$gr==j],mean),sd=tapply(d$conc[d$gr==j],d$t[d$gr==j],sd))
+	dC[[j]]$se<-dC[[j]]$sd/sqrt(tapply(d$conc[d$gr==j],d$t[d$gr==j],length))
+	dC[[j]]<-dC[[j]][!is.na(dC[[j]]$sd),]
+	dC[[j]]$upp<-dC[[j]]$mean+1.645*dC[[j]]$se
+	dC[[j]]$low<-dC[[j]]$mean-1.645*dC[[j]]$se 
+	
+	# Prepare plots	
+	if (j==1) {
+		dC[[j]]$t<-dC[[j]]$t-120
+		xlm<-c(-120,200)
+	} else if (j==4) {
+		dC[[j]]$t<-dC[[j]]$t-145
+		xlm<-c(-145,200)
+	} else if (j==2) {
+		dC[[j]]$t<-dC[[j]]$t-150
+		xlm<-c(-150,150)
+	} else if (j==3) {
+		dC[[j]]$t<-dC[[j]]$t-120
+		xlm<-c(-120,120)
+	} else if (j==5) {
+		dC[[j]]$t<-dC[[j]]$t-180
+		xlm<-c(-180,300)
+	} else if (j==6) {
+		dC[[j]]$t<-dC[[j]]$t-120
+		xlm<-c(-120,480)
+	} else if (j==7) {
+		dC[[j]]$t<-dC[[j]]$t-150
+		xlm<-c(-150,300)
+	}	
+	xl<-''
+	yl<-''
+	if (j==length(group)) xl<-'time (min)'
+	if (j==3) yl<-'tracer concentration (mM)'
+	plC[[j]]<-ggplot(dC[[j]],aes(t)) +
+			geom_point(aes(y=mean),colour='blue',size=2) +
+			ggtitle(group[[j]]) +
+			geom_ribbon(aes(ymin=low, ymax=upp), alpha=0.3) +
+			xlab('time (min)') + ylab('tracer conc. (mmol/L)') +
+			xlim(xlm)
+
+}
+
+# Print plots
+pdf(paste0("glucoseKineticsPLOT.pdf"))	
+print(grid.arrange(plC[[1]],plC[[5]],plC[[4]],plC[[6]],plC[[2]],plC[[7]],plC[[3]],ncol=2))
+dev.off()
+
+

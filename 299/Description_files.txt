@@ -1,0 +1,11 @@
+# This file explains what is in the model entry:
+
+- Simulated_concqt.sas7dbat: simulated data generated with Simulated_Dataset generator.sas
+
+- Executable_Misspecification Example using LMEM V3:  linear mixed effect model with mispecification
+
+- Executable_Misspecification Example using Nonlinear MEM V3 : non linear model without mispecification
+
+- ReadMe: describe the analysis
+
+

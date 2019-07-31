@@ -1,0 +1,8 @@
+###### Scenario = 4
+###### PsN version = 4.6.9
+###### Original tool version = NONMEM 7.3
+###### Input data = Simulated_myelosuppression_dailyANC.csv
+###### Executable model = Executable_myelosuppression_dailyANC.mod
+###### Output = Executable_myelosuppression_dailyANC.lst
+
+execute Executable_myelosuppression_dailyANC.mod

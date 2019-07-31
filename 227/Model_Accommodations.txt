@@ -1,0 +1,1 @@
+The model in MDL/PharmML language differs from the one used in the related publication in two aspects: 1) it does not consider that the subject undergoing a paired test is unique; 2) it is used as a simulation model, as performing parameter estimation on the provided dataset ("Simulated_glucoseKinetics.csv") would be meaningless, because of the used model inputs.

@@ -1,0 +1,8 @@
+###### Scenario = 4
+###### PsN version = 4.6.0
+###### Original tool version = 7.3.0
+###### Input data = Simulated_TB_Rifampicin_PK_Wilkins_2008.csv
+###### Executable model = Executable_simulated_TB_Rifampicin_PK_Wilkins_2008.mod
+###### Output = Output_simulated_TB_Rifampicin_PK_Wilkins_2008
+
+execute Executable_simulated_TB_Rifampicin_PK_Wilkins_2008.mod -min_retries=5

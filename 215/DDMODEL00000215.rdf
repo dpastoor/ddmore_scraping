@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000215">
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006036"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The original publication does not describe the dropout model </j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The joint model describes the dynamics of ocular adverse events and dropout. Adverse events are graded from 0, no toxicity to 3. The risk of developing an ocular adverse event was described using a proportional odds model including a sigmoidal maximum effect on the exposure of pimasertib. A Markov model defining transition probabilities was used to take into account of the dependencies between two consecutive time points. For describing the pimasertib exposure the kinetics-pharmacodynamics (K-PD) approach was used. The occurrence of dropout events was described using the proportional hazard model assuming a Weibull baseline hazard function and DOSE as covariate. Maximum plasma concentration at month 1 (CMAXM1), individual clearance (CL_IND), dose (DOSE) were included in the model as continuous covariates. Medical history of hypertension (MHHY), BID dosing (BID), regimen (REGI) were included in the model as categorical covariates.</j.2:model-has-description-long>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006009"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The model describes the ocular adverse events dynamics in in two phase I dose escalation studies involving patients with solid tumors and hematological malignancies receiving pimasertib. This model was developed to support the choice of dosing regimen.</j.2:model-has-description>
+  </rdf:Description>
+</rdf:RDF>

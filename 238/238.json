@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_run35b_ddm2.mod",
+        "Readme_ddmore.txt",
+        "Simulated_simdataDDM.csv",
+        "DDMODEL00000238.rdf",
+        "Output_simulated_run35b_ddm2.lst",
+        "Output_real_run35b.lst",
+        "Command.txt"
+    ],
+    "version": 18
+}

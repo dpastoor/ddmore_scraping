@@ -1,0 +1,8 @@
+## Full reference to publication
+## Clewe O, Aulin L, Hu Y, Coates AR, Simonsson US.
+## A multistate tuberculosis pharmacometric model: a framework for studying anti-
+## tubercular drug effects in vitro.
+## J Antimicrob Chemother. 2016 Apr;71(4):964-74. doi: 10.1093/jac/dkv416. Epub 2015 ## Dec 24.
+###### Scenario = 4
+###### Original publication PubMed ID: 26702921
+###### Model appears in publication with exposure response of rifampicin

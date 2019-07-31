@@ -1,0 +1,146 @@
+DESCRIPTION:
+
+INPUT:
+    parameter={KM,VMAX0,ALP,K1,KM1,TAUI,TAUGn,Vt1,fPEX31,fPEX21,PWG11,fPWG21,Vt2,fPEX32,PWG12,fPEX22,fPWG22,F}
+    regressor={iins,iglu,td,tn,glun,insn,id1}
+    ;iins: interpolated insulin
+    ;iglu: interpolated glucose
+    ;td: same as t
+    ;tn: next value of t
+    ;glun: next value of glu
+    ;insn: next value of ins
+    ;id1: same as ID
+
+PK:
+    compartment(cmt=1, amount=HL1)
+    compartment(cmt=2, amount=HL2)
+    compartment(cmt=3, amount=GDEL0)
+    compartment(cmt=4, amount=IDEL0)
+    compartment(cmt=5, amount=IDEL)
+    compartment(cmt=6, amount=GDEL)
+    iv(adm=1, cmt=1)
+    iv(adm=2, cmt=2)
+    iv(adm=3, cmt=3)
+    iv(adm=4, cmt=4)
+    iv(adm=5, cmt=5)
+    iv(adm=6, cmt=6)
+    iv(adm=7, cmt=1, p=F)
+    iv(adm=8, cmt=2, p=F)
+
+EQUATION:
+
+    odeType = stiff
+
+    TAUG=TAUGn+0.1
+
+    if id1>400
+    Vt3=Vt1
+    else
+    Vt3=Vt1+Vt2
+    end
+
+    if id1>400
+    fPEX23=fPEX21
+    else
+    fPEX23=fPEX21+fPEX22
+    end
+
+    if id1>400
+    fPEX33=fPEX31
+    else
+    fPEX33=fPEX31+fPEX32
+    end
+
+    if id1>400
+    PWG13=PWG11
+    else
+    PWG13=PWG11+PWG12
+    end
+    
+    if id1>400
+    fPWG23=fPWG21
+    else
+    fPWG23=fPWG21+fPWG22
+    end
+
+    Vt=exp(Vt3)
+    fPEX2=exp(fPEX23)/(1+exp(fPEX23))
+    fPEX3=exp(fPEX33)/(1+exp(fPEX33))
+    PWG1=exp(PWG13)/(1+exp(PWG13))
+    fPWG2=exp(fPWG23)/(1+exp(fPWG23))
+
+    FII=0
+
+    COE1=7.8689
+    COE2=-5.1613
+    COUT=2688
+    HLVO=700
+    HLE0=15
+    PEX0=10
+
+    PWG2=(1-PWG1)*fPWG2
+
+    PWG3=1-PWG1-PWG2
+
+    PEX1=(PWG1*fPEX2*fPEX3+PWG2*fPEX3+PWG3)/(fPEX2*fPEX3)*PEX0*COUT/(PEX0*(Vt-HLVO)-COUT)
+
+    PEX2=PEX1*fPEX2
+    PEX3=PEX2*fPEX3
+
+    A11=-PEX1
+    A22=-PEX2
+    A33=-PEX3
+    A41=PEX1
+    A42=PEX2
+    A43=PEX3
+    A44=-PEX0
+
+    IGLU1=(t-td)/(tn-td)*(glun-iglu)+iglu
+    IINS1=((t-td)/(tn-td)*(insn-iins)+iins)
+
+    ddt_GDEL0=(IGLU1-GDEL0)*log(2)/TAUG
+    ddt_GDEL=(GDEL0-GDEL)*log(2)/TAUG
+    ddt_IDEL0=(IINS1-IDEL0)*log(2)/TAUI
+    ddt_IDEL=(IDEL0-IDEL)*log(2)/TAUI
+
+    VMAX=VMAX0+ALP*IDEL^K1/(KM1^K1+IDEL^K1)
+
+    G0=GDEL
+
+    UT=VMAX*GDEL/(KM+GDEL)
+
+    CL=(FII+UT)/GDEL
+
+    TRMV=PEX0*PER4
+
+    ;HL
+    ddt_HL1=flag*(COE2*HL1+TRMV)
+    ddt_HL2=flag*(-HLE0*HL2+TRMV)
+    TRA=COE1*(HL1-HL2)
+
+    ;PER
+    IN=TRA*(1-CL/COUT)
+    ddt_PER1=flag*(A11*PER1+PWG1*IN)
+    ddt_PER2=flag*(A22*PER2+PWG2*IN)
+    ddt_PER3=flag*(A33*PER3+PWG3*IN)
+    ddt_PER4=flag*(A41*PER1+A42*PER2+A43*PER3+A44*PER4)
+
+    TRA1=TRA
+    TRA2=TRA
+    TRA3=TRA
+    TRA4=TRA
+    TRA5=TRA
+    TRA6=TRA
+    TRA7=TRA
+    TRA9=TRA
+    TRA10=TRA
+    TRA11=TRA
+    TRA12=TRA
+    TRA13=TRA
+    TRA14=TRA
+    TRA15=TRA
+    TRA16=TRA
+
+OUTPUT:
+output={TRA1,TRA2,TRA3,TRA4,TRA5,TRA6,TRA7,TRA9,TRA10,TRA11,TRA12,TRA13,TRA14,TRA15,TRA16}
+

@@ -1,0 +1,7 @@
+## Full reference to abstract and poster publication
+## P. Girard, B. Brockhaus, G. Massimini, E. Asiatiani, N. Rejeb, R.A. Rajeswaran, C. Lüpfert, O. Von Richter, A. Munafo
+## Simultaneous Ocular adverse event and treatment discontinuation model of pimasertib
+## PAGE 21 (2012) Abstr 2458 [www.page-meeting.org/?abstract=2458]
+###### Scenario = 4
+###### There are no model differences
+

@@ -1,0 +1,15 @@
+### please fill in commented lines
+# this file is mandatory for submission scenarios 1, 2 and 4.
+###################### if the executable model is written in original language #####
+###################### please specify the block below
+###### Scenario = 4
+###### PsNversion (if any) = 4.5.9
+###### Original tool version= NM7.3
+###### Input data= Simulated_TGI_GIST.csv
+###### Executable model= Executable_TGI_GIST.mod
+###### Output= Output_simulated_TGI_GIST.lst
+###################### end block
+
+###### Script used as execution command for NONMEM via PsN: #############
+
+execute Executable_TGI_GIST_GIST.mod

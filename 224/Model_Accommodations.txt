@@ -1,0 +1,5 @@
+###### Model differences = 1) The OMEGA related to the gamma paramater was set to 0 here (estimated to 0.0216452 in the original publication) 
+                           2) Code for extraction of nadir, time to recovery to baseline and time to different neutropenic grades is included
+                           3) Only docetaxel is used
+
+###### Reasons = Used to simulate for a different purpose

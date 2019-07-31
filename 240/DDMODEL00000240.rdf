@@ -1,0 +1,16 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000240">
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mycobacterium tuberculosis can exist in different states in vitro, which can be denoted as fast multiplying, slow multiplying and non-multiplying. Characterizing the natural growth of M. tuberculosis could provide a framework for accurate characterization of drug effects on the different bacterial states.</j.2:model-has-description>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001024"/>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000051"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+  </rdf:Description>
+</rdf:RDF>

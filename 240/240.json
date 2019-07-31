@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_MTP.mod",
+        "Command.txt",
+        "Output_simulated_MTP.lst",
+        "Output_real_MTP.lst",
+        "DDMODEL00000240.rdf",
+        "Model_Accomodations.txt",
+        "Simulated_Mtb-H37Rv_In-vitro-NATG.csv"
+    ],
+    "version": 12
+}

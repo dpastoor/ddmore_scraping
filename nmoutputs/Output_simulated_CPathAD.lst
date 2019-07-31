@@ -1,0 +1,688 @@
+Sat 05/26/2018 
+11:19 AM
+;; 1. Based on: run47
+;; 2. Description: run14.mod CAMD ADAS-COG TOTAL
+;; x1. Author: Daniela Conrado
+;; Tue Apr  8 11:48:30 EDT 2014
+$PROBLEM    run48.mod CAMD ADAS-COG TOTAL
+$INPUT      ID STUDY TIME WEEK ADAS DROPOUT MMSE AGE SEX DXDATE START
+            END QSDTC APOE4 COMED COMEDEND COMEDSTART COMEDENDIND
+            COMEDSTARTIND PRIMCOMED PRIMCOMEDS ADASBL MDV ADASMOD
+            ADASTRANS=DV COMED2 APOE4C
+;ID: patient identification
+
+;STUDY: study identification
+
+;VISIT: study visit
+
+;WEEK: study week
+
+;TIME: time (days)
+
+;ADAS: ADAS-cog total score (0-70)
+
+;DROPOUT: 0=patient has never dropped out; 1=patient has dropped out at some point
+
+;It does not directly carry time information, meaning that each subject has been assigned to one dropout code
+
+;Do not know when exactly the patient dropped out but can infer based on the last time of the non-missing DV
+
+;COVARIATES AT MMSE BASELINE:
+
+;MMSE: BASELINE mini-mental state evaluation (normally taken at screening)
+
+;AGE: age (years)
+
+;SEX: 1=female, 2=male
+
+;DXDATE: year of diagnosis
+
+;RACE: 1="AMERICAN INDIAN OR ALASKA NATIVE", 2="ASIAN", 3="BLACK OR AFRICAN AMERICAN", 4/5="MULTIPLE"/"MUTIPLE", 
+
+;6="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER", 7="OTHER", 8="UNKNOWN", 9="WHITE"
+
+;FAMILY: family history of AD 1=no, 2=unknown, 3=yes
+
+;START: patient start year
+
+;END: patient end year
+
+;QSDTC: CDISC standard term for Date/Time of Finding
+
+;APOE: 0=non-carrrier, 1=heterozygous, 2=homozygous, 3=unknown
+
+;MDV: missing dependent variable
+
+;ADASMOD: (ADAS * (nid-1) + 0.5)/nid, where nid is the total number of individuals
+
+;Based on: Smithson & Verkuilen. Psychological Methods, 11: 54-71, 2006 [please refer to page 55]
+
+;ADASTRANS: (ADASMOD - 0)/(70 - 0)
+
+;ADASBLT2TRANS: adas baseline including the ones with baseline indicator; for missing bl, adas at time 0 or 1 was used in this order
+
+;Based on: Smithson & Verkuilen. Psychological Methods, 11: 54-71, 2006 [please refer to page 54]
+
+;INITIAL ESTIMATES:unless stated differently, it was based on lme model for ADASTRANS in R
+
+;MOTIVATION FOR USING BETA-REGRESSION: for bounded data, the expectation must be nonlinear due to the ceiling/floor effects,
+
+;and the error distribution must be heteroscedastic since the variance must approach zero as their mean approaches
+
+;either boundary score (Reference: Xu et al. J PK PD, 40: 537-544, 2013)
+$DATA      simulated_dataset.csv IGNORE=@ IGNORE=(MDV.EQ.1,ID.EQ.528)
+ ;
+$OMEGA  BLOCK(2)
+ 0.156  ;   1 BSV_BL
+ 0.0224  ; CORR BSV_BL:BSV_SL
+ 0.0424  ;   2 BSV_SL
+$OMEGA  BLOCK(2)
+ 0.0084  ;   1 ISV_BL
+ 0.0014  ; 2 CORR ISV_BL:ISV_SL
+ 0.0004  ;   3 ISV_SL
+;##########################################################################################################################################
+$PRED 
+
+;;; BLAPOE4C-DEFINITION START
+BLAPOE4C = ( 1 + THETA(9)*(APOE4C - 0.72))
+;;; BLAPOE4C-DEFINITION END
+
+
+;;; SLCOMED2-DEFINITION START
+IF(COMED2.EQ.1) SLCOMED2 = 1  ; Most common
+IF(COMED2.EQ.0) SLCOMED2 = 1+THETA(8)
+;;; SLCOMED2-DEFINITION END
+
+
+;;; SLAPOE4C-DEFINITION START
+SLAPOE4C = ( 1 + THETA(7)*(APOE4C - 0.72))
+;;; SLAPOE4C-DEFINITION END
+
+
+;;; SLAGE-DEFINITION START
+SLAGE = ( 1 + THETA(6)*(AGE - 75.00))
+;;; SLAGE-DEFINITION END
+
+;;; SL-RELATION START
+SLCOV=SLAGE*SLAPOE4C*SLCOMED2
+;;; SL-RELATION END
+
+
+;;; BLSEX-DEFINITION START
+IF(SEX.EQ.1) BLSEX = 1  ; Most common
+IF(SEX.EQ.2) BLSEX = THETA(5)
+;;; BLSEX-DEFINITION END
+
+;;; BL-RELATION START
+BLCOV=BLSEX*BLAPOE4C
+;;; BL-RELATION END
+
+YTIME	 = TIME/365.25									;TIME in years to avoid such small slope
+;############################### DEFINING THETAS ###########################################################################################
+
+TVBL     = THETA(1)				 					    ;POPULATION BASELINE ADAS-Cog
+
+TVBL = BLCOV*TVBL
+TVSL     = THETA(2)                					    ;POPULATION SLOPE: disease progression rate constant
+
+TVSL = SLCOV*TVSL
+
+
+STEWSV = 1
+STEBSV = 1
+IF(STUDY.EQ.1131) THEN
+  STEWSV = EXP(THETA(10))
+  STEBSV = EXP(THETA(11))
+ENDIF
+
+BL       = TVBL*EXP(ETA(1)*STEBSV + ETA(3))        			    ;EXPONENTIAL ERROR: to prevent individual baseline from becoming negative
+SL       = TVSL + ETA(2) + ETA(4)		     			;ADDITIVE ERROR: slope can be positive or negative on individual basis
+
+TVSHAPE  = THETA(3)				 					    ;POPULATION SHAPE factor of the Richards logistic growth model
+TAU      = THETA(4)*STEWSV				 					    ;TAU is the precision parameter of the beta distribution (=ALPHA+BETA)
+														;VARIANCE of the beta distribution is MUR*(1-MUR)/(TAU+1), 
+														;meaning that the variance increases as TAU increase; although, it is not
+														;the sole determinante of dispersion, since dispersion also depends on MUR
+
+;############################### STRUCTURAL MODEL TO DESCRIBE THE RATE OF DISEASE PROGRESSION ##############################################
+														;Using Richards logistic growth model: three-parameter logistic model
+														;Tsoularis & Wallace. Mathematical Biosciences, 179:21-55, 2002 [please refer to page 33]
+
+;GG=1.0E-30
+;IF(BL<GG) THEN
+;   BL=GG
+;   PRINT 1,ID
+;ENDIF
+DEN1     = BL**TVSHAPE
+DEN2     = (70**TVSHAPE) - (BL**TVSHAPE)
+DEN3     = EXP(-TVSHAPE*SL*YTIME)
+DENN=DEN1 + DEN2*DEN3
+;IF(DENN<GG) THEN
+;  DENN=GG
+;  PRINT 2, ID
+;ENDIF
+MUR      = BL/((DENN)**(1/TVSHAPE)) 	     			;INDIVIDUAL ADAS-Cog response as a function of time
+
+
+;############################### DEFINING IPRED/PRED ########################################################################################
+
+F        = MUR					      					;INDIVIDUAL (IPRED)
+IPRED    = F
+
+;############################## RATE OF CHANGE IN ADAS-Cog AS A FUNCTION OF TIME ############################################################
+
+;RATE     = SL*MUR*(1-((MUR/70)**TVSHAPE)) 				;as differential equation: RATE=d(ADAS-Cog)/dt
+;TVRATE   = TVSL*TVMUR*(1-((TVMUR/70)**TVSHAPE))		    ;population value
+
+;############################## BETA REGRESSION #############################################################################################
+														;Reference: Smithson & Verkuilen. Psychological Methods, 11: 54-71, 2006 [page 58]
+														;MUR is the location parameter of the beta distrution
+														;TAU is the precision parameter of the beta distribution
+														;MUR and TAU have no restriction on each other, so that they can be modeled separately
+ALPHA    = MUR*TAU										;BETA DISTRIBUTION shape parameter pulling density toward 0 (alpha>0)
+BETA     = (1-MUR)*TAU								    ;BETA DISTRIBUTION shape parameter pulling density toward 1 (beta >0)
+
+X1       = ALPHA+BETA									;It is really TAU
+X2       = ALPHA
+X3       = BETA
+
+;NEMES APPROXIMATION OF THE LN(GAMMA) DISTRIBUTION
+GG1=1.0E-150
+;IF(X1<GG1) THEN
+;   X1=GG1
+;   PRINT 3, ID
+;ENDIF
+;IF(X2<GG1) THEN
+;  X2=GG1
+;  PRINT 4,ID
+;ENDIF
+;IF(X3<GG1) THEN
+;  X3=GG1
+;  PRINT 5,ID
+;ENDIF
+LGAMMAX1 = X1*(LOG(X1)-1) + 0.5*(LOG(2*3.1415)-LOG(X1)) + (5/4)*X1*LOG(1+(1/(15*X1**2)))
+LGAMMAX2 = X2*(LOG(X2)-1) + 0.5*(LOG(2*3.1415)-LOG(X2)) + (5/4)*X2*LOG(1+(1/(15*X2**2)))
+LGAMMAX3 = X3*(LOG(X3)-1) + 0.5*(LOG(2*3.1415)-LOG(X3)) + (5/4)*X3*LOG(1+(1/(15*X3**2)))
+
+;LOG-LIKELIHOOD OF THE BETA DISTRIBUTION: LN of the probability density function of the beta distribution
+WDV=DV
+IF(WDV<0.001) THEN
+   WDV=0.001
+;   PRINT 6,ID
+ENDIF
+IF(WDV>0.999) THEN
+   WDV=0.999
+;   PRINT 7,ID
+ENDIF
+LLBETA   = LGAMMAX1 - LGAMMAX2 - LGAMMAX3 + (ALPHA-1)*LOG(WDV) + (BETA-1)*LOG(1-WDV)
+
+;############################### DEFINING RESIDUALS AND Y ###################################################################################
+
+;PEARSON RESIDUALS
+;SOR      = (WDV-IPRED)/SQRT(IPRED*(1-IPRED)/(1+TAU))    ;Standardized ordinary residuals
+
+LLB2=-2.0*LLBETA
+;IF(LLB2.GT.300.0) THEN
+;   LLB2=300.0
+;   PRINT 8,ID
+;ENDIF 
+;IF(LLB2.LT.-300.0) THEN
+;   LLB2=-300.0
+;   PRINT 9,ID
+;ENDIF
+Y        = LLB2
+;############################## INITIAL ESTIMATES ###########################################################################################
+
+$THETA  (0,22.3,100) ; 1 TVBL
+ (-100,0.151,50) ; 2 TVSL
+ (0,6.98,100) ; 3 TVSHAPE (initial estimate from bapineuzumab model)
+ (-300,87.8,300) ; 4 TAU (initial estimate from bapineuzumab model)
+ (0,1) ; 5 BLSEX1
+ 0.1 ; 6 SLAGE1
+ 0.2 ; 7 SLAPOE4C1
+ (-0.5,-0.275,0.1) ; 8 SLCOMED21
+ 0.1 ; 9 BLAPOE4C1
+ 0.1 ; 10 STE WSV EFFECT
+ 0.1 ; 11 STE BSV EFFECT
+$LEVEL      STUDY=(3[1],4[2])
+$ESTIMATION MAXEVAL=9999 PRINT=1 METHOD=BAYES -2LL LAPLACIAN NOHABORT
+            FNLETA=0 NSIG=2 SIGL=7 SLOW MCETA=10 NONINFETA=1
+            FILE=psn.ext
+;$ESTIMATION MAXEVAL=9999 PRINT=1 METHOD=COND -2LL LAPLACIAN NOHABORT SIGL=10 FILE=run48.ext
+$COVARIANCE MATRIX=R UNCONDITIONAL SIGL=9 SLOW PRINT=E
+$TABLE      STUDY ID TIME ADAS WDV MUR NOPRINT ONEHEADER
+            FILE=sdtab48.txt
+;$TABLE STUDY ID TIME ADAS RATE TVRATE WDV MUR TVMUR SOR NOPRINT ONEHEADER FILE=sdtab48.txt
+
+;$TABLE STUDY ID BL SL TVSHAPE ALPHA BETA TAU ETA(1) ETA(2) ETA(3) ETA(4) NOPRINT ONEHEADER FIRSTONLY FILE=patab48.txt
+$TABLE      STUDY ID BL SL TVSHAPE ALPHA BETA TAU ETA(1) ETA(2)
+            NOPRINT ONEHEADER FIRSTONLY FILE=patab48.txt
+$TABLE      STUDY ID AGE SEX START APOE4 APOE4C COMED2 MMSE BL ADASBL
+            NOPRINT ONEHEADER FILE=cotab48.txt
+
+  
+NM-TRAN MESSAGES 
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  97) A RANDOM QUANTITY IS RAISED TO A POWER. IF THE RESULT AFFECTS
+ THE VALUE OF THE OBJECTIVE FUNCTION, THE USER SHOULD ENSURE THAT THE
+ RANDOM QUANTITY IS NEVER 0 WHEN THE POWER IS < 1.
+  
+License Registered to: Critical Path Institute
+Expiration Date:    14 SEP 2018
+Current Date:       26 MAY 2018
+Days until program expires : 108
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.4.1
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+
+ PROBLEM NO.:         1
+ run48.mod CAMD ADAS-COG TOTAL
+0DATA CHECKOUT RUN:              NO
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO
+ NO. OF DATA RECS IN DATA SET:    58409
+ NO. OF DATA ITEMS IN DATA SET:  27
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ DEP VARIABLE IS DATA ITEM NO.:  25
+ MDV DATA ITEM IS DATA ITEM NO.: 23
+0LABELS FOR DATA ITEMS:
+ ID STUDY TIME WEEK ADAS DROPOUT MMSE AGE SEX DXDATE START END QSDTC APOE4 COMED COMEDEND COMEDSTART COMEDENDIND
+ COMEDSTARTIND PRIMCOMED PRIMCOMEDS ADASBL MDV ADASMOD ADASTRANS COMED2 APOE4C
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ BL SL TVSHAPE TAU MUR ALPHA BETA WDV
+0FORMAT FOR DATA:
+ (E4.0,E2.0,E3.0,4E1.0,E2.0,16E1.0,E18.0,E1.0,E4.0)
+
+ TOT. NO. OF OBS RECS:    58409
+ TOT. NO. OF INDIVIDUALS:     4493
+0LENGTH OF THETA:  11
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO
+0OMEGA HAS BLOCK FORM:
+  1
+  1  1
+  0  0  2
+  0  0  2  2
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.2230E+02     0.1000E+03
+ -0.1000E+03     0.1510E+00     0.5000E+02
+  0.0000E+00     0.6980E+01     0.1000E+03
+ -0.3000E+03     0.8780E+02     0.3000E+03
+  0.0000E+00     0.1000E+01     0.1000E+07
+ -0.1000E+07     0.1000E+00     0.1000E+07
+ -0.1000E+07     0.2000E+00     0.1000E+07
+ -0.5000E+00    -0.2750E+00     0.1000E+00
+ -0.1000E+07     0.1000E+00     0.1000E+07
+ -0.1000E+07     0.1000E+00     0.1000E+07
+ -0.1000E+07     0.1000E+00     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO
+                  0.1560E+00
+                  0.2240E-01   0.4240E-01
+        2                                                                                   NO
+                  0.8400E-02
+                  0.1400E-02   0.4000E-03
+0COVARIANCE STEP OMITTED:        NO
+ R MATRIX SUBSTITUTED:          YES
+ S MATRIX SUBSTITUTED:           NO
+ EIGENVLS. PRINTED:             YES
+ COMPRESSED FORMAT:              NO
+ GRADIENT METHOD USED:       SLOW
+ SIGDIGITS ETAHAT (SIGLO):                  -1
+ SIGDIGITS GRADIENTS (SIGL):                9
+ EXCLUDE COV FOR FOCE (NOFCOV):              NO
+ TURN OFF Cholesky Transposition of R Matrix (CHOLROFF): NO
+ KNUTHSUMOFF:                                -1
+ RESUME COV ANALYSIS (RESUME):               NO
+ SIR SAMPLE SIZE (SIRSAMPLE):              -1
+ NON-LINEARLY TRANSFORM THETAS DURING COV (THBND): 1
+ PRECONDTIONING CYCLES (PRECOND):        0
+ PRECONDTIONING TYPES (PRECONDS):        TOS
+ FORCED PRECONDTIONING CYCLES (PFCOND):0
+ PRECONDTIONING TYPE (PRETYPE):        0
+ FORCED POS. DEFINITE SETTING: (FPOSDEF):0
+0TABLES STEP OMITTED:    NO
+ NO. OF TABLES:           3
+ SEED NUMBER (SEED):    11456
+ RANMETHOD:             3U
+ MC SAMPLES (ESAMPLE):    300
+ WRES SQUARE ROOT TYPE (WRESCHOL): EIGENVALUE
+0-- TABLE   1 --
+0RECORDS ONLY:    ALL
+04 COLUMNS APPENDED:    YES
+ PRINTED:                NO
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO
+ FORMAT:                S1PE11.4
+ LFORMAT:
+ RFORMAT:
+ FIXED_EFFECT_ETAS:
+0USER-CHOSEN ITEMS:
+ STUDY ID TIME ADAS WDV MUR
+0-- TABLE   2 --
+0RECORDS ONLY:    FIRSTONLY
+04 COLUMNS APPENDED:    YES
+ PRINTED:                NO
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO
+ FORMAT:                S1PE11.4
+ LFORMAT:
+ RFORMAT:
+ FIXED_EFFECT_ETAS:
+0USER-CHOSEN ITEMS:
+ STUDY ID BL SL TVSHAPE ALPHA BETA TAU ETA1 ETA2
+0-- TABLE   3 --
+0RECORDS ONLY:    ALL
+04 COLUMNS APPENDED:    YES
+ PRINTED:                NO
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO
+ FORMAT:                S1PE11.4
+ LFORMAT:
+ RFORMAT:
+ FIXED_EFFECT_ETAS:
+0USER-CHOSEN ITEMS:
+ STUDY ID AGE SEX START APOE4 APOE4C COMED2 MMSE BL ADASBL
+
+ #PARA: PARAFILE=pirana_auto_mpi.pnm, PROTOCOL=MPI, NODES= 3
+
+1
+
+
+ #TBLN:      1
+ #METH: MCMC Bayesian Analysis
+
+ ESTIMATION STEP OMITTED:                 NO
+ ANALYSIS TYPE:                           POPULATION
+ NUMBER OF SADDLE POINT RESET ITERATIONS:      0
+ GRADIENT METHOD USED:               SLOW
+ CONDITIONAL ESTIMATES USED:              YES
+ CENTERED ETA:                            NO
+ EPS-ETA INTERACTION:                     NO
+ LAPLACIAN OBJ. FUNC.:                    NO
+ PRED F SET TO -2 LOG LIKELIHOOD:         YES
+ NO. OF FUNCT. EVALS. ALLOWED:            9999
+ NO. OF SIG. FIGURES REQUIRED:            2
+ INTERMEDIATE PRINTOUT:                   YES
+ ESTIMATE OUTPUT TO MSF:                  NO
+ ABORT WITH PRED EXIT CODE 1:             NO
+ IND. OBJ. FUNC. VALUES SORTED:           NO
+ NUMERICAL DERIVATIVE
+       FILE REQUEST (NUMDER):               NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP):   0
+ ETA HESSIAN EVALUATION METHOD (ETADER):    0
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):    10
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):      7
+ GRADIENT SIGDIGITS OF
+       FIXED EFFECTS PARAMETERS (SIGL):     7
+ NOPRIOR SETTING (NOPRIOR):                 OFF
+ NOCOV SETTING (NOCOV):                     OFF
+ DERCONT SETTING (DERCONT):                 OFF
+ FINAL ETA RE-EVALUATION (FNLETA):          OFF
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS
+       IN SHRINKAGE (ETASTYPE):             NO
+ NON-INFL. ETA CORRECTION (NONINFETA):      ON
+ RAW OUTPUT FILE (FILE): psn.ext
+ EXCLUDE TITLE (NOTITLE):                   NO
+ EXCLUDE COLUMN LABELS (NOLABEL):           NO
+ FORMAT FOR ADDITIONAL FILES (FORMAT):      S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):       TSOL
+ WISHART PRIOR DF INTERPRETATION (WISHTYPE):0
+ KNUTHSUMOFF:                               0
+ INCLUDE LNTWOPI:                           NO
+ INCLUDE CONSTANT TERM TO PRIOR (PRIORC):   NO
+ INCLUDE CONSTANT TERM TO OMEGA (ETA) (OLNTWOPI):NO
+ NESTED LEVEL MAPS:
+  STUDY=(3[1],4[2])
+ Level Weighting Type (LEVWT):0
+ EM OR BAYESIAN METHOD USED:                MCMC BAYESIAN (BAYES)
+ MU MODELING PATTERN (MUM):
+ GRADIENT/GIBBS PATTERN (GRD):
+ AUTOMATIC SETTING FEATURE (AUTO):          OFF
+ CONVERGENCE TYPE (CTYPE):                  0
+ KEEP ITERATIONS (THIN):            1
+ BURN-IN ITERATIONS (NBURN):                4000
+ ITERATIONS (NITER):                        10000
+ ANEAL SETTING (CONSTRAIN):                 1
+ STARTING SEED FOR MC METHODS (SEED):       11456
+ MC SAMPLES PER SUBJECT (ISAMPLE):          1
+ RANDOM SAMPLING METHOD (RANMETHOD):        3U
+ PROPOSAL DENSITY SCALING RANGE
+              (ISCALE_MIN, ISCALE_MAX):     1.000000000000000E-06   ,1000000.00000000
+ SAMPLE ACCEPTANCE RATE (IACCEPT):          0.400000000000000
+ METROPOLIS HASTINGS SAMPLING FOR INDIVIDUAL ETAS:
+ SAMPLES FOR GLOBAL SEARCH KERNEL (ISAMPLE_M1):          2
+ SAMPLES FOR NEIGHBOR SEARCH KERNEL (ISAMPLE_M1A):       0
+ SAMPLES FOR MASS/IMP/POST. MATRIX SEARCH (ISAMPLE_M1B): 2
+ SAMPLES FOR LOCAL SEARCH KERNEL (ISAMPLE_M2):           2
+ SAMPLES FOR LOCAL UNIVARIATE KERNEL (ISAMPLE_M3):       2
+ PWR. WT. MASS/IMP/POST MATRIX ACCUM. FOR ETAS (IKAPPA): 1.00000000000000
+ MASS/IMP./POST. MATRIX REFRESH SETTING (MASSREST):      -1
+ METROPOLIS HASTINGS POPULATION SAMPLING FOR NON-GIBBS
+ SAMPLED THETAS AND SIGMAS:
+ PROPOSAL DENSITY SCALING RANGE
+              (PSCALE_MIN, PSCALE_MAX):   1.000000000000000E-02   ,1000.00000000000
+ SAMPLE ACCEPTANCE RATE (PACCEPT):                       0.500000000000000
+ SAMPLES FOR GLOBAL SEARCH KERNEL (PSAMPLE_M1):          1
+ SAMPLES FOR LOCAL SEARCH KERNEL (PSAMPLE_M2):           11
+ SAMPLES FOR LOCAL UNIVARIATE KERNEL (PSAMPLE_M3):       1
+ METROPOLIS HASTINGS POPULATION SAMPLING FOR NON-GIBBS
+ SAMPLED OMEGAS:
+ SAMPLE ACCEPTANCE RATE (OACCEPT):                       0.500000000000000
+ SAMPLES FOR GLOBAL SEARCH KERNEL (OSAMPLE_M1):          -1
+ SAMPLES FOR LOCAL SEARCH KERNEL (OSAMPLE_M2):           6
+ SAMPLES FOR LOCAL UNIVARIATE SEARCH KERNEL (OSAMPLE_M3):6
+ DEG. FR. FOR T DIST.  PRIOR FOR THETAS (TTDF):        0.00000000000000
+ DEG. FR. FOR LKJ CORRELATION PRIOR FOR OMEGAS (OLKJDF): 0.00000000000000
+ WEIGHT FACTOR FOR STD PRIOR FOR OMEGAS (OVARF): 1.00000000000000
+ DEG. FR. FOR LKJ CORRELATION PRIOR FOR SIGMAS (SLKJDF): 0.00000000000000
+ WEIGHT FACTOR FOR STD PRIOR FOR SIGMAS (SVARF): 1.00000000000000
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=NPRED
+ RES=NRES
+ WRES=NWRES
+ IWRS=NIWRES
+ IPRD=NIPRED
+ IRS=NIRES
+
+ EM/BAYES SETUP:
+ THETAS THAT ARE MU MODELED:
+ 
+ THETAS THAT ARE GIBBS SAMPLED:
+ 
+ THETAS THAT ARE METROPOLIS-HASTINGS SAMPLED:
+   1   2   3   4   5   6   7   8   9  10  11
+ SIGMAS THAT ARE GIBBS SAMPLED:
+ 
+ SIGMAS THAT ARE METROPOLIS-HASTINGS SAMPLED:
+ 
+ OMEGAS ARE GIBBS SAMPLED
+
+ MONITORING OF SEARCH:
+
+ Burn-in Mode
+ iteration        -4000 MCMCOBJ=   -114128.81242989362     
+ iteration        -3999 MCMCOBJ=   -181558.52846443921     
+ iteration        -3998 MCMCOBJ=   -194080.76213690790     
+ iteration        -3997 MCMCOBJ=   -197366.98037611769     
+ iteration        -3996 MCMCOBJ=   -199046.19087321396     
+ iteration        -3995 MCMCOBJ=   -200470.76974205906     
+ iteration        -3994 MCMCOBJ=   -200987.23707261207     
+ iteration        -3993 MCMCOBJ=   -201677.05474498044     
+ iteration        -3992 MCMCOBJ=   -202162.58132297487     
+ iteration        -3991 MCMCOBJ=   -202384.54221238272     
+ iteration        -3990 MCMCOBJ=   -203086.58880136069     
+ iteration        -3989 MCMCOBJ=   -203722.99779222236     
+ iteration        -3988 MCMCOBJ=   -203915.82335244372     
+ iteration        -3987 MCMCOBJ=   -204237.38265543478     
+ iteration        -3986 MCMCOBJ=   -204482.04543061290     
+ iteration        -3985 MCMCOBJ=   -204648.64581415150     
+ iteration        -3984 MCMCOBJ=   -204909.84832056044     
+ iteration        -3983 MCMCOBJ=   -205185.36439814893     
+ iteration        -3982 MCMCOBJ=   -205139.15053667378     
+ iteration        -3981 MCMCOBJ=   -205225.22387922931     
+ iteration        -3980 MCMCOBJ=   -205310.55457847149     
+ iteration        -3979 MCMCOBJ=   -207309.84853042840     
+ iteration        -3978 MCMCOBJ=   -207523.74277591612     
+ iteration        -3977 MCMCOBJ=   -207409.75437668676     
+ iteration        -3976 MCMCOBJ=   -207652.93902873324     
+ iteration        -3975 MCMCOBJ=   -207541.60773559724     
+ iteration        -3974 MCMCOBJ=   -207586.33626445424     
+ iteration        -3973 MCMCOBJ=   -207869.12260977694     
+ iteration        -3972 MCMCOBJ=   -208019.37781642482     
+ iteration        -3971 MCMCOBJ=   -207826.56710729879     
+ iteration        -3970 MCMCOBJ=   -207681.05419149093     
+ iteration        -3969 MCMCOBJ=   -207864.57365889184     
+ iteration        -3968 MCMCOBJ=   -207814.76204306600     
+ iteration        -3967 MCMCOBJ=   -208114.01957471849     
+ iteration        -3966 MCMCOBJ=   -207994.17381038878     
+ iteration        -3965 MCMCOBJ=   -207956.44151685646     
+ iteration        -3964 MCMCOBJ=   -207813.81063497343     
+ iteration        -3963 MCMCOBJ=   -207879.54072212675     
+ iteration        -3962 MCMCOBJ=   -208047.51472388546     
+ iteration        -3961 MCMCOBJ=   -207847.00848790657     
+ iteration        -3960 MCMCOBJ=   -208042.29828309172     
+ iteration        -3959 MCMCOBJ=   -207980.70315060345     
+ iteration        -3958 MCMCOBJ=   -207997.18961975389     
+ iteration        -3957 MCMCOBJ=   -208085.36362145346     
+ iteration        -3956 MCMCOBJ=   -208038.74157204400     
+ iteration        -3955 MCMCOBJ=   -208371.90264475779     
+ iteration        -3954 MCMCOBJ=   -208148.93287142977     
+ iteration        -3953 MCMCOBJ=   -208214.74800036853     
+ iteration        -3952 MCMCOBJ=   -208221.62588231172     
+ iteration        -3951 MCMCOBJ=   -208105.95061114611     
+ iteration        -3950 MCMCOBJ=   -208103.92893382270     
+ iteration        -3949 MCMCOBJ=   -207928.71973111370     
+ iteration        -3948 MCMCOBJ=   -207808.65327042327     
+ iteration        -3947 MCMCOBJ=   -208022.62416017556     
+ iteration        -3946 MCMCOBJ=   -207917.31815367012     
+ iteration        -3945 MCMCOBJ=   -208080.22290701748     
+ iteration        -3944 MCMCOBJ=   -207950.28301492380     
+ iteration        -3943 MCMCOBJ=   -207913.96656093479     
+ iteration        -3942 MCMCOBJ=   -207727.10044877051     
+ iteration        -3941 MCMCOBJ=   -207644.25281635538     
+ iteration        -3940 MCMCOBJ=   -207640.48808724844     
+ iteration        -3939 MCMCOBJ=   -207627.62793864522     
+ iteration        -3938 MCMCOBJ=   -207969.65571891901     
+ iteration        -3937 MCMCOBJ=   -207885.77115048328     
+ iteration        -3936 MCMCOBJ=   -208004.41843326177     
+ iteration        -3935 MCMCOBJ=   -208146.74227968644     
+ iteration        -3934 MCMCOBJ=   -208166.99766455870     
+ iteration        -3933 MCMCOBJ=   -208102.95982407971     
+ iteration        -3932 MCMCOBJ=   -207805.12463969187     
+ iteration        -3931 MCMCOBJ=   -207873.09538145509     
+ iteration        -3930 MCMCOBJ=   -207939.68821019930     
+ iteration        -3929 MCMCOBJ=   -207902.38495041354     
+ iteration        -3928 MCMCOBJ=   -207969.73431519314     
+ iteration        -3927 MCMCOBJ=   -207987.40933781059     
+ iteration        -3926 MCMCOBJ=   -207644.64720408764     
+ iteration        -3925 MCMCOBJ=   -207835.31701054008     
+ iteration        -3924 MCMCOBJ=   -207827.92533004939     
+ iteration        -3923 MCMCOBJ=   -207608.79050332867     
+ iteration        -3922 MCMCOBJ=   -207823.36759518061     
+ iteration        -3921 MCMCOBJ=   -207717.16851237585     
+ iteration        -3920 MCMCOBJ=   -207787.22283353299     
+ iteration        -3919 MCMCOBJ=   -207605.32809153287     
+ iteration        -3918 MCMCOBJ=   -207429.92543280477     
+ iteration        -3917 MCMCOBJ=   -208032.86057488454     
+ iteration        -3916 MCMCOBJ=   -207885.58778449986     
+ iteration        -3915 MCMCOBJ=   -207758.48735075706     
+ iteration        -3914 MCMCOBJ=   -207928.61477024422     
+ iteration        -3913 MCMCOBJ=   -207880.52431170843     
+ iteration        -3912 MCMCOBJ=   -207823.85132114121     
+ iteration        -3911 MCMCOBJ=   -207806.28847247906     
+ iteration        -3910 MCMCOBJ=   -207776.35129914715     
+ iteration        -3909 MCMCOBJ=   -207987.06983979937     
+ iteration        -3908 MCMCOBJ=   -208001.50308303320     
+ iteration        -3907 MCMCOBJ=   -208001.55836807363     
+ iteration        -3906 MCMCOBJ=   -207628.45150168048     
+ iteration        -3905 MCMCOBJ=   -207732.21893088237     
+ iteration        -3904 MCMCOBJ=   -207856.35720755410     
+ iteration        -3903 MCMCOBJ=   -208069.75414721447     
+ iteration        -3902 MCMCOBJ=   -207786.77015313797     
+ iteration        -3901 MCMCOBJ=   -207797.06661067324     
+ iteration        -3900 MCMCOBJ=   -207936.30965059315     
+ iteration        -3899 MCMCOBJ=   -152275.73638309105     
+ iteration        -3898 MCMCOBJ=   -191264.12265809329     
+ iteration        -3897 MCMCOBJ=   -198695.36340069913     
+ iteration        -3896 MCMCOBJ=   -201625.04318198608     
+ iteration        -3895 MCMCOBJ=   -203650.19467276410     
+ iteration        -3894 MCMCOBJ=   -204483.94957965607     
+ iteration        -3893 MCMCOBJ=   -204886.12330618096     
+ iteration        -3892 MCMCOBJ=   -170677.03433836921     
+ iteration        -3891 MCMCOBJ=   -198529.26982237565     
+ iteration        -3890 MCMCOBJ=   -203359.72315883797     
+ iteration        -3889 MCMCOBJ=   -204351.76891467965     
+ iteration        -3888 MCMCOBJ=   -204764.91584170813     
+ iteration        -3887 MCMCOBJ=   -205281.34098738455     
+ iteration        -3886 MCMCOBJ=   -205685.12975388841     
+ OBJECTIVE FUNCTION IS INFINITE. PROBLEM ENDED
+
+ #TERM:
+ STATISTICAL PORTION WAS NOT COMPLETED
+  
+ TOTAL DATA POINTS NORMALLY DISTRIBUTED (N):            0
+ N*LOG(2PI) CONSTANT TO OBJECTIVE FUNCTION:    0.0000000000000000     
+ OBJECTIVE FUNCTION VALUE WITHOUT CONSTANT:   -204550.47772713887     
+ OBJECTIVE FUNCTION VALUE WITH CONSTANT:      -204550.47772713887     
+ REPORTED OBJECTIVE FUNCTION DOES NOT CONTAIN CONSTANT
+  
+ TOTAL EFFECTIVE ETAS (NIND*NETA):                          8984
+ NIND*NETA*LOG(2PI) CONSTANT TO OBJECTIVE FUNCTION:    16511.487564621537     
+ OBJECTIVE FUNCTION VALUE WITHOUT CONSTANT:   -204550.47772713887     
+ OBJECTIVE FUNCTION VALUE WITH CONSTANT:      -188038.99016251735     
+ REPORTED OBJECTIVE FUNCTION DOES NOT CONTAIN CONSTANT
+  
+ #TERE:
+ Elapsed estimation  time in seconds:  1166.07
+ Elapsed covariance  time in seconds:     0.00
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                              MCMC BAYESIAN ANALYSIS                            ********************
+ ********************           EIGENVALUES OF COR MATRIX OF ESTIMATE (From Sample Variance)         ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+             1         2         3         4         5         6         7         8         9        10        11        12
+             13        14        15        16        17
+ 
+         5.95E-14 -1.48E-13 -5.25E-13  2.49E-12  1.02E-11 -1.78E-10  1.15E-02  2.34E-02  3.09E-02  6.19E-02  1.64E-01  2.24E-01
+          3.99E-01  2.24E+00  2.77E+00  4.24E+00  6.83E+00
+ 
+1THERE ARE ERROR MESSAGES IN FILE PRDERR                                                                  
+ #CPUT: Total CPU Time in Seconds,     2140.115
+Stop Time: 
+Sat 05/26/2018 
+11:39 AM

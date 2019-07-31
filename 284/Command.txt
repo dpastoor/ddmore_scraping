@@ -1,0 +1,9 @@
+###### Scenario = 4
+###### Wings for Nonmem = 4.4.0
+###### Original tool version = NM73
+###### Input data = Simulated_pkdata1.csv
+###### Executable model = nmgo/Executable_Simulated_Imnivo_ppk.ctl
+###### Output = Output_simulated_Simnivo_ppk.lst
+
+
+NMGO Executable_Simulated_IMNIVO_PPK

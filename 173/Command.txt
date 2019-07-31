@@ -1,0 +1,10 @@
+###### Scenario = 4
+###### PsN version (if any) = 4.5.2
+###### Original tool version= 7.3
+###### Input data= ColistinMeropenem_Interaction_simulated.csv.csv
+###### Executable model= ColistinMeropenem_Interaction_original.mod
+###### Output= ColistinMeropenem_Interaction_original_real.lst
+               ColistinMeropenem_Interaction_original_simulated.lst
+###### Script used as execution command for NONMEM via PsN: #############
+
+ execute ColistinMeropenem_Interaction_original.mod

@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_simulated_KPD_CTC.count_PSA.mod",
+        "Output_real_SAEM_KPD_CTC.count_PSA.lst",
+        "Command.txt",
+        "Simulated_KPD_CTC.count_PSA.csv",
+        "DDMODEL00000261.rdf",
+        "Output_real_COV_KPD_CTC.count_PSA.lst",
+        "Output_simulated_KPD_CTC.count_PSA.lst"
+    ],
+    "version": 3
+}

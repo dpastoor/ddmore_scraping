@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.foundation//model/DDMODEL00000284">
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This analysis assessed the clinical relevance of demographic and pathophysiological covariates affecting PK of nivolumab. The model also explored the PK of nivolumab across tumor types and was used to determine individual exposures in patients to support exposureÃ¢?? response analyses for target populations. This analysis serves as an example for characterizing time-varying clearance for monoclonal antibodies.</j.2:model-has-description>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">None</j.0:model-implementation-source-discrepancies-freetext>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nivolumab pharmacokinetics is linear with a time-varying clearance. A full covariate model was developed to assess covariate effects on pharmacokinetic parameters. Nivolumab clearance and volume of distribution increase with body weight. The final model  included the effects of baseline performance status (PS), baseline body weight, and baseline estimated glomerular filtration rate  (eGFR), sex, and race on clearance, and effects of baseline body weight and sex on volume of distribution in the central compartment.  Sex, PS, baseline eGFR, age, race, baseline lactate dehydrogenase, mild hepatic impairment, tumor type, tumor burden, and programmed death ligand-1 expression had a significant but not clinically relevant (&lt;20%) effect on nivolumab clearance.</j.2:model-has-description-long>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006023"/>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006009"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+  </rdf:Description>
+</rdf:RDF>

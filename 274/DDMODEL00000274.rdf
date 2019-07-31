@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.foundation//model/DDMODEL00000274">
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000050"/>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Among the drugs considered in the paper, only PACLITAXEL has been used</j.0:model-implementation-source-discrepancies-freetext>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Host features, such as cell proliferation rates, caloric intake, metabolism and energetic conditions, significantly influence tumor growth; at the same time, tumor growth may have a dramatic impact on the host conditions. For example, in clinics, at certain stages of the tumor growth, cachexia (body weight reduction) may become so relevant to be considered as responsible for around 20% of cancer deaths. Unfortunately, anticancer therapies may also contribute to the development of cachexia due to reduced food intake (anorexia), commonly observed during the treatment periods. For this reason, cachexia is considered one of the major toxicity findings to be evaluated also in preclinical studies. However, although various pharmacokinetic-pharmacodynamic (PK-PD) tumor growth inhibition (TGI) models are currently available, the mathematical modelling of cachexia onset and TGI after an anticancer administration in preclinical experiments is still an open issue. To cope with this, a new PK-PD model, based on a set of tumor-host interaction rules taken from Dynamic Energy Budget (DEB) theory and a set of drug tumor inhibition equations taken from the well-known Simeoni TGI model, was developed. The model is able to describe the body weight reduction, splitting the cachexia directly induced by tumor and that caused by the drug treatment under study. It was tested in typical preclinical studies, essentially designed for efficacy evaluation and routinely performed as a part of the industrial drug development plans. For the first time, both the dynamics of tumor and host growth could be predicted in xenograft mice untreated or treated with different anticancer agents and following different schedules. </j.2:model-has-description>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006027"/>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006008"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+  </rdf:Description>
+</rdf:RDF>

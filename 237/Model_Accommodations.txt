@@ -1,0 +1,8 @@
+## Full reference to publication
+## Zurlinden TJ, Reisfeld B
+## Physiologically based modeling of the pharmacokinetics of acetaminophen and 
+## its major metabolites in humans using a Bayesian population approach. 2016
+## Jun;41(3):267-80. 
+###### Scenario = 4
+###### Original publication PubMed ID: 25636597
+###### There are no model differences

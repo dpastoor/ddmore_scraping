@@ -1,0 +1,114 @@
+#' Reproduce resuts from Neutropenia model using the DDMoRe Interoperabilit Framework
+#' =========================================================================================
+#' Scenario = 1 
+#' MDL version = 7.0
+#' PharmML version = 0.6.1
+#' IO Product = Prod4.1 beta release
+#' Input data = Simulated_WBC_pacl_ddmore.csv
+#' Executable model = Executable_Mielosupression.mdl
+#' Output = 
+#' The model is for estimation 
+
+
+#' Initialisation
+#' =========================
+#' Clear workspace and set working directory under 'models' folder
+rm(list=ls(all=F))
+modeldir <- file.path(Sys.getenv("MDLIDE_WORKSPACE_HOME"),"Neutropenia")
+setwd(modeldir)
+
+#' Set name of .mdl file and dataset for future tasks
+datafile <- "Simulated_WBC_pacl_ddmore.csv"
+mdlfile <- "Executable_Mielosupression.mdl"
+
+
+#' Exploratory Data Analysis
+#' =========================
+#' Use ddmoreR function readDataObj() to create an R object from the MDL data object.
+
+myDataObj <- getDataObjects(mdlfile)[[1]]
+myData <- readDataObj(myDataObj)
+
+#' Let's look at the first 6 lines of the data set
+head(myData)
+myData$ID <- as.factor(myData$ID)
+
+#' Extract only observation records
+myEDAData<-myData[myData$EVID==0,]
+
+#' Now plot the data 
+p1 <- ggplot(data=myEDAData, aes(x=TIME, y=DV)) +
+		geom_line(aes(colour=ID)) +
+		labs(x="Time (h)", y="Neutrophils count (10^9/L)") +
+		guides(colour=FALSE)
+
+tiff("Neutrophils time profile.tiff", height=8, width=12, units="cm", res=300)
+ print(p1)
+dev.off()
+
+#' The current framework does not allow especification of additional estimation options suchs as MAXEVAL = 0.
+#' Estimate model parameters with NONMEM
+#' ----------------------------------------
+NM <- estimate(mdlfile, target="NONMEM", subfolder="NONMEM")
+
+#' Estimate model parameters with Monolix
+#' ----------------------------------------
+MLX <- estimate(mdlfile, target="MONOLIX", subfolder="MONOLIX")
+
+#' Compare parameter estimates from both target tools
+nmpar <- getPopulationParameters(NM, what="estimates")$MLE
+nmpar
+mlxpar <- getPopulationParameters(MLX, what="estimates")$MLE
+mlxpar
+
+
+#' The ddmore "VPC.PsN" function can be used to run a VPC using PsN as target tool
+#' Note that parameters in the mdl file correspond already to those in the publication,
+#' so there is no need to update parameter estimates first
+vpcFiles <- VPC.PsN(mdlfile,samples=200, seed=12345,
+		vpcOptions ="-n_simulation=10",
+		subfolder="VPC", plot=TRUE) 
+
+#' To replay the visualisation using information from the VPC SO file
+tiff("Neutrophils_VPC.tiff", height=20, width=20, units="cm", res=300)
+plot(xpose.VPC(vpc.info= file.path("./VPC",vpcFiles@RawResults@DataFiles$PsN_VPC_results$path),
+				vpctab= file.path("./VPC",vpcFiles@RawResults@DataFiles$PsN_VPC_vpctab$path),
+				main="Neutropenia model",
+				xlb="Time (h)",
+				ylb= "Neutrophils count (10^9/L)")
+    )
+dev.off()
+
+
+#' The model behaviour can also be quickly explored using simulx
+myPharmML <- as.PharmML(mdlfile)
+
+#' Use parameter values from the FOCEI estimation
+parValues <- getPopulationParameters(NM, what="estimates")$MLE
+p<- c(parValues, V1I=420, V2I=1000, CLI=340)
+print(p)
+
+
+#' Simulate predicted (Circ) and observed concentration values (Y)
+f   <- list( name = c('CIRC'), time = seq(0,to=504,by=1))
+y   <- list( name = c('Y'), time = seq(0,504,by=7*24))
+
+#' Simulate for a dose of 100mg given at time 0 into the GUT (oral administration)
+adm <- list(target='Ac', time = c(0,15,30), amount = 400, rate=3)
+
+#' Simulate 12 subjects
+g <- list( size = 12, level = 'individual', treatment=adm)
+
+#' Call simulx
+res  <- simulx(model =myPharmML,
+		parameter = p,
+		group = g,
+		output = list(y,f))
+
+
+#' Plot simulated results
+plot(ggplot() + 
+				geom_line(data=res$CIRC, aes(x=time, y=CIRC, colour=id)) +
+				geom_point(data=res$Y, aes(x=time, y=Y, colour=id)) +
+				xlab("time (h)") + ylab("Neutrophils count (10^9/L") )
+

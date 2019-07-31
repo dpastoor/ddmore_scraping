@@ -1,0 +1,8 @@
+## Full reference to publication
+## E Hénin,  B You, E VanCutsem, PM Hoff, J Cassidy, C Twelves, KP Zuideveld, F Sirzen,
+C Dartois, G Freyer, M Tod and P Girard
+## A Dynamic Model of Hand-and-Foot Syndrome in Patients Receiving Capecitabine
+## Clinical Pharmacology & Therapeutics 85.4 (2009): 418-425.:
+###### Scenario = 4
+###### There are no model differences
+

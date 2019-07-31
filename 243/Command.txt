@@ -1,0 +1,21 @@
+###### Prepared and run by Jon Moss
+##### Scenario= 4
+##### NONMEM version=7.3
+##### Input data= Simulated_event_data.csv
+##### Executable models=
+##### 		Executable_runCOMPEV1_101.mod
+##### 		Executable_runCOMPEV2_005.mod
+##### 		Executable_runEV1_201.mod
+##### 		Executable_runEV2_105.mod
+##### Output=
+##### 		Output_simulated_runCOMPEV1_101.res
+##### 		Output_simulated_runCOMPEV2_005.res
+##### 		Output_simulated_runEV1_201.res
+##### 		Output_simulated_runEV2_105.res
+######## end block
+
+###### Scripts used as execution command for NONMEM ##########
+nmfe73.bat Executable_runCOMPEV1_101.mod Output_simulated_runCOMPEV1_101.res
+nmfe73.bat Executable_runCOMPEV2_005.mod Output_simulated_runCOMPEV1_005.res
+nmfe73.bat Executable_runEV1_201.mod Output_simulated_runEV1_201.res
+nmfe73.bat Executable_runEV2_105.mod Output_simulated_runEV2_105.res

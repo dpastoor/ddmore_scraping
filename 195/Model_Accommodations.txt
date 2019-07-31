@@ -1,0 +1,11 @@
+# Changes to the model:
+
+Inter-occasion variability on bioavailability was removed.
+
+In the current version of the DDMoRe framework, encoding bioavailability is only supported with 
+1) depot compartments (explicit definition in the ODE system) or
+2) through PK macros (only standard compartment components).
+
+However, in the associated publication, the model uses bioavailability after IV dosing, amongst others to account for uncertainty in dose level (==> 1 is not possible). 
+Also, it uses a combined linear-nonlinear elimination model (==> 2 is not possible).
+

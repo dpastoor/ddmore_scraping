@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_Simulated_IMNIVO_PPK.CTL",
+        "Output_simulated_SIMNIVO_PPK.lst",
+        "Command.txt",
+        "NIVO-PPKFinalModel-CPT.CTL",
+        "Simulated_pkdata1_dataset.csv",
+        "Output_real_Nivo-PPK.lst",
+        "DDMODEL00000284.rdf"
+    ],
+    "version": 11
+}

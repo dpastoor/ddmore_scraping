@@ -1,0 +1,207 @@
+$PROBLEM    Poisson Estimation 1
+$INPUT      STUD ID MDV DV TIME DAYS TFLA SEX AGE DURP DURD FLAG PCM
+            DRUG DOSE FOLL STRT STR PDV DIF TRA MEAN VAR RATI
+$DATA      simulated_likert_pain_count.csv
+            IGNORE=@
+$PRED 
+
+;-----------------------------------------------
+ ;Covariates
+ IF(NEWIND.NE.2) NFLG=0
+ NFLG=NFLG+1
+
+   ;IF(NEWIND.NE.2) PSDV=0
+   ;PDV=PSDV
+   ;PSDV =  DV
+;-----------------------------------------------
+ ;Placebo parameters
+ TVBAS= THETA(1)/10
+ PHI  = LOG(TVBAS/(1-TVBAS))+ETA(1)
+ BAS  = 10*EXP(PHI)/(1+EXP(PHI))
+
+ PEF  = EXP(LOG(THETA(2)/(1- THETA(2)))+ETA(2))/(1+EXP(LOG(THETA(2)/(1- THETA(2)))+ETA(2)))
+
+ PHA  = THETA(3)*EXP(ETA(3))
+
+ PLC = (1- PEF*(1-EXP(-(LOG(2)/PHA*DAYS))))
+
+ COV = 0
+ IF(PCM.EQ.1) COV = THETA(12)
+;-----------------------------------------------
+ ;Model for lambda
+ TVLAM = BAS*PLC/10
+ PHL = LOG(TVLAM/(1-TVLAM)) +COV
+ LAM  = 10*EXP(PHL)/(1+EXP(PHL))
+
+;-----------------------------------------------
+ ;Markov elements
+ TE = THETA(11)*EXP(ETA(9))
+ TEF = TE*DAYS
+
+ PIN00=EXP(LOG(THETA(4)/(1-THETA(4)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(4)/(1-THETA(4)))+ETA(4)+TEF))
+ PIN09=EXP(LOG(THETA(5)/(1-THETA(5)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(5)/(1-THETA(5)))+ETA(4)+TEF))
+ IF(PDV.EQ.0) PIN0 = PIN00
+ IF(PDV.EQ.1) PIN0 = (8*PIN00+1*PIN09)/9
+ IF(PDV.EQ.2) PIN0 = (7*PIN00+2*PIN09)/9
+ IF(PDV.EQ.3) PIN0 = (6*PIN00+3*PIN09)/9
+ IF(PDV.EQ.4) PIN0 = (5*PIN00+4*PIN09)/9
+ IF(PDV.EQ.5) PIN0 = (4*PIN00+5*PIN09)/9
+ IF(PDV.EQ.6) PIN0 = (3*PIN00+6*PIN09)/9
+ IF(PDV.EQ.7) PIN0 = (2*PIN00+7*PIN09)/9
+ IF(PDV.EQ.8) PIN0 = (1*PIN00+8*PIN09)/9
+ IF(PDV.EQ.9) PIN0 =  PIN09
+ IF(PDV.EQ.10)PIN0 = EXP(LOG(THETA(6)/(1-THETA(6)))+ETA(4)+TEF)/(1+EXP(LOG(THETA(6)/(1-THETA(6)))+ETA(4)+TEF))
+ IF(NEWIND.NE.2) PIN0=0
+;-----------------------------------------------
+ PIN1= .5*EXP(LOG(THETA(7)/(1-THETA(7)))+ETA(5))/(1+EXP(LOG(THETA(7)/(1-THETA(7)))+ETA(5)))
+ PIN1=PIN1*(1-PIN0)
+ IF(NEWIND.NE.2) PIN1=0
+                           PIN1D=PIN1*2
+ IF(PDV.EQ.0.OR.PDV.EQ.10) PIN1D=PIN1
+;-----------------------------------------------
+ PIN2= .5*EXP(LOG(THETA(8)/(1-THETA(8)))+ETA(6))/(1+EXP(LOG(THETA(8)/(1-THETA(8)))+ETA(6)))
+ PIN2=PIN2*(1-PIN0-PIN1D)
+ IF(NEWIND.NE.2) PIN2=0
+                          PIN2D=PIN2*2
+ IF(PDV.LE.1.OR.PDV.GE.9) PIN2D=PIN2
+;-----------------------------------------------
+ PIN3= .5*EXP(LOG(THETA(9)/(1-THETA(9)))+ETA(7))/(1+EXP(LOG(THETA(9)/(1-THETA(9)))+ETA(7)))
+ PIN3=PIN3*(1-PIN0-PIN1D-PIN2D)
+ IF(NEWIND.NE.2) PIN3=0
+                          PIN3D=PIN3*2
+ IF(PDV.LE.2.OR.PDV.GE.8) PIN3D=PIN3
+
+;-----------------------------------------------
+ ;Total probabilities
+ PTOT=PIN0+PIN1D+PIN2D+PIN3D
+
+;-----------------------------------------------
+ PH =  LOG(THETA(10)/(1- THETA(10)))+ETA(8)
+ TH =  EXP(PH)/(1+EXP(PH))
+ DIS = -TH*LAM /(10-LAM)
+
+;-----------------------------------------------
+ ;Truncated Poisson distribution
+ SUM0=1/(LAM*(1-DIS))         *EXP(-(LAM*(1-DIS)))
+ SUM1=                         EXP(-(LAM*(1-DIS)+DIS))
+ SUM2=  (LAM*(1-DIS)+2*DIS)   *EXP(-(LAM*(1-DIS)+ 2*DIS))/2
+ SUM3=  (LAM*(1-DIS)+3*DIS)**2*EXP(-(LAM*(1-DIS)+ 3*DIS))/6
+ SUM4=  (LAM*(1-DIS)+4*DIS)**3*EXP(-(LAM*(1-DIS)+ 4*DIS))/24
+ SUM5=  (LAM*(1-DIS)+5*DIS)**4*EXP(-(LAM*(1-DIS)+ 5*DIS))/120
+ SUM6=  (LAM*(1-DIS)+6*DIS)**5*EXP(-(LAM*(1-DIS)+ 6*DIS))/720
+ SUM7=  (LAM*(1-DIS)+7*DIS)**6*EXP(-(LAM*(1-DIS)+ 7*DIS))/5040
+ SUM8=  (LAM*(1-DIS)+8*DIS)**7*EXP(-(LAM*(1-DIS)+ 8*DIS))/40320
+ SUM9=  (LAM*(1-DIS)+9*DIS)**8*EXP(-(LAM*(1-DIS)+ 9*DIS))/362880
+ SUM10= (LAM*(1-DIS)+10*DIS)**9*EXP(-(LAM*(1-DIS)+ 10*DIS))/3628800
+ SUM =  (LAM*(1-DIS))*(SUM0+SUM1+SUM2+SUM3+SUM4+SUM5+SUM6+SUM7+SUM8+SUM9+SUM10)
+
+ ;-----------------------------------------------
+ ;Y
+ IF(DV.LE.1) THEN
+ LFAC=0
+ ELSE
+ LFAC = DV*LOG(DV)-DV +LOG(DV*(1+4*DV*(1+2*DV)))/6 +LOG(3.1415)/2
+ ENDIF
+
+ GP=EXP(LOG(LAM)+(DV-1)*LOG(LAM*(1-DIS)+DIS*DV)+LOG(1-DIS)-(LAM*(1-DIS)+DIS*DV)- LFAC)
+
+ ;DIF = DV-PDV
+ ;IF(NEWIND.NE.2) DIF = 0
+
+                           YY =      (1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.0)              YY = PIN0+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.1.OR.DIF.EQ.-1) YY = PIN1+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.2.OR.DIF.EQ.-2) YY = PIN2+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.3.OR.DIF.EQ.-3) YY = PIN3+(1-PTOT)*(GP/SUM)
+ IF(NEWIND.NE.2)           YY =      (1-PTOT)*(GP/SUM)
+
+  Y= -2*LOG(YY)
+
+   ;TRA = PDV*100+DV
+
+;-----------------------------------------------
+ ;Simulation
+ IF (ICALL.EQ.4) THEN
+    PRN=0
+    N=0
+       CALL RANDOM (2,R)
+       DO WHILE (R.GT.PRN)
+
+ IF(N.LE.1) THEN
+ LFAC=0
+ ELSE
+ LFAC = N*LOG(N)-N +LOG(N*(1+4*N*(1+2*N)))/6 +LOG(3.1415)/2
+ ENDIF
+
+ GP=EXP(LOG(LAM)+(N-1)*LOG(LAM*(1-DIS)+DIS*N)+LOG(1-DIS)-(LAM*(1-DIS)+DIS*N)- LFAC)
+
+ DIF = N-PDV
+ IF(NEWIND.NE.2) DIF = 0
+
+                           YY =      (1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.0)              YY = PIN0+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.1.OR.DIF.EQ.-1) YY = PIN1+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.2.OR.DIF.EQ.-2) YY = PIN2+(1-PTOT)*(GP/SUM)
+ IF(DIF.EQ.3.OR.DIF.EQ.-3) YY = PIN3+(1-PTOT)*(GP/SUM)
+ IF(NEWIND.NE.2)           YY =      (1-PTOT)*(GP/SUM)
+
+       PRN=YY+PRN
+       IF (R.GT.PRN) N=N+1
+       END DO
+ DV=N
+ PSDV=DV
+
+ ENDIF
+
+ IF (ICALL.EQ.4) THEN
+ TRA=PDV*100+DV
+ ENDIF
+;-----------------------------------------------
+
+    IF (ICALL.EQ.4) THEN
+;mean of observed counts
+ IF(NEWIND.NE.2) MEA=0
+ MEA=MEA+DV
+ IF(NEWIND.NE.2) MEAN=0
+ MEAN=MEA/NFLG
+;variance of observed counts
+ IF(NEWIND.NE.2) MES=0
+   MES=MES+DV**2
+IF(NEWIND.NE.2) MEAS=0
+   MEAS=MES/NFLG
+IF(NEWIND.NE.2) VAR=0
+   VAR=MEAS-MEAN**2
+RATI=VAR/MEAN
+IF(MEAN.EQ.0) RATI=1
+    ENDIF
+
+; IPRED=0
+; IWRES=0
+; IRES=0
+
+$THETA  (0,6.20667,10); BASELINE
+$THETA  (0,0.18986,1) ; PLACEBO_EFFECT
+$THETA  (0,27.7045) ; PLACEBO_HALF_TIME
+$THETA  (0,0.554617,1) ; PROBABILITY_OF_INFLATION_0/0
+$THETA  (0,0.119517,1) ; PROBABILITY_OF_INFLATION_0/9
+$THETA  (0,0.443759,1) ; PROBABILITY_OF_INFLATION_0/10
+$THETA  (0,0.359302,1) ; PROBABILITY_OF_INFLATION_1
+$THETA  (0,0.00472972,1) ; PROBABILITY_OF_INFLATION_2
+$THETA  (0,0.000403033,1) ; PROBABILITY_OF_INFLATION_3
+$THETA  (0,0.99286,1) ; DIS
+$THETA  (0,0.00643534) ; TE0
+$THETA  (0,0.36374) ; COV
+
+$OMEGA  0.568985 ; BASELINE
+$OMEGA  3.77567 ; PLACEBO_EFFECT
+$OMEGA  0.352913 ; PLACEBO_HALF_TIME
+$OMEGA  BLOCK(3) 2.69723 ; PROBABILITY_OF_INFLATION_0/0
+                 2.45376 3.56524 ; PROBABILITY_OF_INFLATION_1
+                -0.755447 0.805685 1.92485 ; PROBABILITY_OF_INFLATION_2
+$OMEGA  0  FIX ; PROBABILITY_OF_INFLATION_3
+$OMEGA  24.3896 ; UNDERDISPERSION
+$OMEGA  1.33918 ; TRANSITION_ELEMENT
+$ESTIMATION METHOD=1 LAPLACE -2LL MAXEVAL=0 PRINT=1 MSFO=msf001
+;$COVARIANCE PRINT=E UNCONDITIONAL
+;$SIM (12345) (678910 UNI) ONLYSIM NOPRED
+

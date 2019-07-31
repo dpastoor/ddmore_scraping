@@ -1,0 +1,11 @@
+## Full reference to publication
+## Lestini G, Dumont C, Mentré F
+## Influence of the Size of Cohorts in Adaptive Design for Nonlinear Mixed 
+## Effects Models: An Evaluation by Simulation for a Pharmacokinetic and 
+## Pharmacodynamic Model for a Biomarker in Oncology.
+## Pharmaceutical research. 2015.
+## Oct;32(10):3159-69. doi: 10.1007/s11095-015-1693-3. Epub 2015 Jun 30.
+## PubMed PMID:26123680
+## Scenario = 4
+## Original publication PubMed ID:26123680
+###### There are no model differences

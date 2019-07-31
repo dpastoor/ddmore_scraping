@@ -1,0 +1,10 @@
+###### Prepared and run by Kyle Baron
+##### Scenario= 4
+##### mrgsolve version=mrgsolve_0.7.6.9028
+##### Input data=Real_opg.pdf
+##### Output=Output_simulated_opg.pdf
+######## end block
+
+library(mrgsolve)
+mod <- mread("opg")
+

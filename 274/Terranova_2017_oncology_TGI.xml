@@ -1,0 +1,1248 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PharmML xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition" xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset" xmlns:uncertml="http://www.uncertml.org/3.0" xmlns:probonto="http://www.pharmml.org/probonto/ProbOnto" xmlns:td="http://www.pharmml.org/pharmml/0.8/TrialDesign" xmlns:msteps="http://www.pharmml.org/pharmml/0.8/ModellingSteps" xmlns="http://www.pharmml.org/pharmml/0.8/PharmML" writtenVersion="0.8.1" metadataFile="DDMODEL00000274.rdf">
+    <ct:Name>Terranova_2017_oncology_TGI</ct:Name>
+    <ct:Description>PKPD model of tumor growth inhibition and toxicity outcome after administration of anticancer agents in xenograft mice</ct:Description>
+    <IndependentVariable symbId="T"/>
+    <ct:FunctionDefinition symbolType="real" symbId="additiveError">
+        <ct:Description>Constant or additive error model</ct:Description>
+        <ct:FunctionArgument symbolType="real" symbId="additive"/>
+        <ct:Definition>
+            <ct:Assign>
+                <ct:SymbRef symbIdRef="additive"/>
+            </ct:Assign>
+        </ct:Definition>
+    </ct:FunctionDefinition>
+    <mdef:ModelDefinition>
+        <mdef:VariabilityModel type="residualError" blkId="vm_err">
+            <mdef:Level symbId="DV"/>
+        </mdef:VariabilityModel>
+        <mdef:ParameterModel blkId="pm">
+            <mdef:PopulationParameter symbId="K10_POP"/>
+            <mdef:PopulationParameter symbId="K12_POP"/>
+            <mdef:PopulationParameter symbId="K21_POP"/>
+            <mdef:PopulationParameter symbId="V1_POP"/>
+            <mdef:PopulationParameter symbId="En_initial_POP"/>
+            <mdef:PopulationParameter symbId="rho_b_POP"/>
+            <mdef:PopulationParameter symbId="xi_POP"/>
+            <mdef:PopulationParameter symbId="ni_POP"/>
+            <mdef:PopulationParameter symbId="gr_POP"/>
+            <mdef:PopulationParameter symbId="V1inf_POP"/>
+            <mdef:PopulationParameter symbId="mu_POP"/>
+            <mdef:PopulationParameter symbId="mu_u_POP"/>
+            <mdef:PopulationParameter symbId="gu_POP"/>
+            <mdef:PopulationParameter symbId="delta_Vmax_POP"/>
+            <mdef:PopulationParameter symbId="W_initial_POP"/>
+            <mdef:PopulationParameter symbId="Vu1_initial_POP"/>
+            <mdef:PopulationParameter symbId="IC50_POP"/>
+            <mdef:PopulationParameter symbId="k1_POP"/>
+            <mdef:PopulationParameter symbId="k2_POP"/>
+            <mdef:PopulationParameter symbId="b_W"/>
+            <mdef:PopulationParameter symbId="b_Wu"/>
+            <mdef:IndividualParameter symbId="K10">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K10_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="K12">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K12_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="K21">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K21_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="V1">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="V1_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="En_initial">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="En_initial_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="rho_b">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="rho_b_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="xi">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="xi_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="ni">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="ni_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="gr">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gr_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="V1inf">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="V1inf_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="mu">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="mu_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="mu_u">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="gu">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gu_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="delta_Vmax">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="W_initial">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="W_initial_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="Vu1_initial">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="Vu1_initial_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="IC50">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="IC50_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="k1">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="k1_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="k2">
+                <ct:Assign>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="k2_POP"/>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="density_V">
+                <ct:Assign>
+                    <ct:Int>1</ct:Int>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="density_Vu">
+                <ct:Assign>
+                    <ct:Int>1</ct:Int>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="omeg">
+                <ct:Assign>
+                    <ct:Real>0.75</ct:Real>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="m">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+                        <math:Binop op="times">
+                            <math:Binop op="power">
+<ct:SymbRef blkIdRef="pm" symbIdRef="V1inf"/>
+<math:Binop op="divide">
+    <ct:Int>1</ct:Int>
+    <ct:Int>3</ct:Int>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="Z_initial">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="W_initial"/>
+                        <math:Binop op="plus">
+                            <ct:Int>1</ct:Int>
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="pm" symbIdRef="En_initial"/>
+<ct:SymbRef blkIdRef="pm" symbIdRef="xi"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </mdef:IndividualParameter>
+            <mdef:RandomVariable symbId="eps_RES_W">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:Int>1</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eps_RES_Wu">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:Int>1</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+        </mdef:ParameterModel>
+        <mdef:StructuralModel blkId="sm">
+            <ct:Variable symbolType="real" symbId="C">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="V1"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="Q1">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="K21"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <math:Binop op="plus">
+<ct:SymbRef blkIdRef="pm" symbIdRef="K10"/>
+<ct:SymbRef blkIdRef="pm" symbIdRef="K12"/>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Q2">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="K12"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="K21"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Q2"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:Variable symbolType="real" symbId="rho">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="rho_b"/>
+                        <math:Binop op="minus">
+                            <ct:Int>1</ct:Int>
+                            <math:Binop op="divide">
+<ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+<math:Binop op="plus">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="IC50"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+</math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="ku">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="switch1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<math:Binop op="times">
+    <math:Binop op="times">
+        <math:Binop op="minus">
+            <ct:Int>1</ct:Int>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+    </math:Binop>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+</math:Binop>
+<math:Binop op="power">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    <math:Binop op="divide">
+        <ct:Int>2</ct:Int>
+        <ct:Int>3</ct:Int>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times">
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+</math:Binop>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+                            <math:Binop op="times">
+<math:Binop op="minus">
+    <ct:Int>1</ct:Int>
+    <math:Binop op="divide">
+        <math:Binop op="times">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+        </math:Binop>
+        <math:Binop op="plus">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+            <math:Binop op="times">
+                <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+            </math:Binop>
+        </math:Binop>
+    </math:Binop>
+</math:Binop>
+<ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="switch2">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<math:Binop op="times">
+    <math:Binop op="times">
+        <math:Binop op="minus">
+            <ct:Int>1</ct:Int>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+    </math:Binop>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+</math:Binop>
+<math:Binop op="power">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    <math:Binop op="divide">
+        <ct:Int>2</ct:Int>
+        <ct:Int>3</ct:Int>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times">
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+</math:Binop>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <math:Binop op="minus">
+<ct:Int>1</ct:Int>
+<math:Binop op="divide">
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    </math:Binop>
+    <math:Binop op="plus">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+        <math:Binop op="times">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+        </math:Binop>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="plus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="omeg"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+</math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="Wu">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="density_Vu"/>
+                        <math:Binop op="plus">
+                            <math:Binop op="plus">
+<math:Binop op="plus">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Vu2"/>
+</math:Binop>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Vu3"/>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu4"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="W">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="density_V"/>
+                            <math:Binop op="plus">
+<ct:Int>1</ct:Int>
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="xi"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+</math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="W_err">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="b_W"/>
+                        <math:Uniop op="sqrt">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="W"/>
+                        </math:Uniop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="Wu_err">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="b_Wu"/>
+                        <math:Uniop op="sqrt">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Wu"/>
+                        </math:Uniop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="Z">
+                <ct:Assign>
+                    <math:Piecewise>
+                        <math:Piece>
+                            <math:Binop op="divide">
+<math:Binop op="minus">
+    <math:Binop op="times">
+        <math:Binop op="times">
+            <math:Binop op="times">
+                <math:Binop op="minus">
+                    <ct:Int>1</ct:Int>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+            </math:Binop>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+        </math:Binop>
+        <math:Binop op="power">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+            <math:Binop op="divide">
+                <ct:Int>2</ct:Int>
+                <ct:Int>3</ct:Int>
+            </math:Binop>
+        </math:Binop>
+    </math:Binop>
+    <math:Binop op="times">
+        <math:Binop op="times">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+            <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    </math:Binop>
+</math:Binop>
+<math:Binop op="plus">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+    <math:Binop op="times">
+        <math:Binop op="minus">
+            <ct:Int>1</ct:Int>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+<math:LogicBinop op="geq">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="switch1"/>
+    <ct:Int>0</ct:Int>
+</math:LogicBinop>
+                            </math:Condition>
+                        </math:Piece>
+                        <math:Piece>
+                            <math:Binop op="divide">
+<math:Binop op="minus">
+    <math:Binop op="times">
+        <math:Binop op="times">
+            <math:Binop op="times">
+                <math:Binop op="minus">
+                    <ct:Int>1</ct:Int>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+            </math:Binop>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+        </math:Binop>
+        <math:Binop op="power">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+            <math:Binop op="divide">
+                <ct:Int>2</ct:Int>
+                <ct:Int>3</ct:Int>
+            </math:Binop>
+        </math:Binop>
+    </math:Binop>
+    <math:Binop op="times">
+        <math:Binop op="times">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+            <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    </math:Binop>
+</math:Binop>
+<math:Binop op="times">
+    <math:Binop op="minus">
+        <ct:Int>1</ct:Int>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+    </math:Binop>
+    <math:Binop op="plus">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+        <math:Binop op="times">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="omeg"/>
+            <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+        </math:Binop>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+<math:LogicBinop op="and">
+    <math:LogicBinop op="lt">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="switch1"/>
+        <ct:Int>0</ct:Int>
+    </math:LogicBinop>
+    <math:LogicBinop op="leq">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="switch2"/>
+        <math:Uniop op="minus">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax"/>
+        </math:Uniop>
+    </math:LogicBinop>
+</math:LogicBinop>
+                            </math:Condition>
+                        </math:Piece>
+                        <math:Piece>
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax"/>
+                            </math:Uniop>
+                            <math:Condition>
+<math:Otherwise/>
+                            </math:Condition>
+                        </math:Piece>
+                    </math:Piecewise>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="Z_initial"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="En">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <math:Binop op="divide">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+                            <math:Binop op="power">
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+<math:Binop op="divide">
+    <ct:Int>1</ct:Int>
+    <ct:Int>3</ct:Int>
+</math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="rho"/>
+<math:Binop op="power">
+    <math:Binop op="divide">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="V1inf"/>
+        <math:Binop op="plus">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+        </math:Binop>
+    </math:Binop>
+    <math:Binop op="divide">
+        <ct:Int>2</ct:Int>
+        <ct:Int>3</ct:Int>
+    </math:Binop>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="En_initial"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Vu1">
+                <ct:Assign>
+                    <math:Piecewise>
+                        <math:Piece>
+                            <math:Binop op="minus">
+<math:Binop op="minus">
+    <math:Binop op="divide">
+        <math:Binop op="times">
+            <math:Binop op="plus">
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+                    <math:Binop op="power">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                        <math:Binop op="divide">
+                            <ct:Int>2</ct:Int>
+                            <ct:Int>3</ct:Int>
+                        </math:Binop>
+                    </math:Binop>
+                </math:Binop>
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                </math:Binop>
+            </math:Binop>
+            <math:Binop op="times">
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+            </math:Binop>
+        </math:Binop>
+        <math:Binop op="plus">
+            <math:Binop op="times">
+                <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="gu"/>
+            </math:Binop>
+            <math:Binop op="times">
+                <math:Binop op="times">
+                    <math:Binop op="minus">
+                        <ct:Int>1</ct:Int>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+                    </math:Binop>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gu"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+            </math:Binop>
+        </math:Binop>
+    </math:Binop>
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="mu"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    </math:Binop>
+</math:Binop>
+<math:Binop op="times">
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="k2"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    </math:Binop>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+<math:LogicBinop op="geq">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="switch1"/>
+    <ct:Int>0</ct:Int>
+</math:LogicBinop>
+                            </math:Condition>
+                        </math:Piece>
+                        <math:Piece>
+                            <math:Binop op="minus">
+<math:Binop op="minus">
+    <math:Binop op="divide">
+        <math:Binop op="times">
+            <math:Binop op="times">
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="m"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u"/>
+            </math:Binop>
+            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="pm" symbIdRef="gu"/>
+    </math:Binop>
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="mu"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    </math:Binop>
+</math:Binop>
+<math:Binop op="times">
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="k2"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+    </math:Binop>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+<math:LogicBinop op="and">
+    <math:LogicBinop op="and">
+        <math:LogicBinop op="lt">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="switch1"/>
+            <ct:Int>0</ct:Int>
+        </math:LogicBinop>
+        <math:LogicBinop op="lt">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="switch2"/>
+            <ct:Int>0</ct:Int>
+        </math:LogicBinop>
+    </math:LogicBinop>
+    <math:LogicBinop op="geq">
+        <ct:SymbRef blkIdRef="sm" symbIdRef="switch2"/>
+        <math:Uniop op="minus">
+            <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax"/>
+        </math:Uniop>
+    </math:LogicBinop>
+</math:LogicBinop>
+                            </math:Condition>
+                        </math:Piece>
+                        <math:Piece>
+                            <math:Binop op="minus">
+<math:Binop op="minus">
+    <math:Binop op="times">
+        <math:Binop op="divide">
+            <ct:SymbRef blkIdRef="sm" symbIdRef="ku"/>
+            <ct:SymbRef blkIdRef="pm" symbIdRef="gu"/>
+        </math:Binop>
+        <math:Binop op="plus">
+            <math:Binop op="plus">
+                <math:Binop op="times">
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="ni"/>
+                    </math:Binop>
+                    <math:Binop op="power">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                        <math:Binop op="divide">
+                            <ct:Int>2</ct:Int>
+                            <ct:Int>3</ct:Int>
+                        </math:Binop>
+                    </math:Binop>
+                </math:Binop>
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax"/>
+                    <ct:SymbRef blkIdRef="sm" symbIdRef="En"/>
+                </math:Binop>
+            </math:Binop>
+            <math:Binop op="times">
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax"/>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="omeg"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="gr"/>
+            </math:Binop>
+        </math:Binop>
+    </math:Binop>
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="mu"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+    </math:Binop>
+</math:Binop>
+<math:Binop op="times">
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="k2"/>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+    </math:Binop>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Condition>
+<math:Otherwise/>
+                            </math:Condition>
+                        </math:Piece>
+                    </math:Piecewise>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="Vu1_initial"/>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Vu2">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="pm" symbIdRef="k2"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="C"/>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu1"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="k1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu2"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Vu3">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="k1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu2"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="k1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu3"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Vu4">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="k1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu3"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="k1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Vu4"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+        </mdef:StructuralModel>
+        <mdef:ObservationModel blkId="om1">
+            <mdef:ContinuousData>
+                <mdef:Standard symbId="Y1">
+                    <mdef:Output>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="W"/>
+                    </mdef:Output>
+                    <mdef:ErrorModel>
+                        <ct:Assign>
+                            <math:FunctionCall>
+<ct:SymbRef symbIdRef="additiveError"/>
+<math:FunctionArgument symbId="additive">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="W_err"/>
+</math:FunctionArgument>
+                            </math:FunctionCall>
+                        </ct:Assign>
+                    </mdef:ErrorModel>
+                    <mdef:ResidualError>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eps_RES_W"/>
+                    </mdef:ResidualError>
+                </mdef:Standard>
+            </mdef:ContinuousData>
+        </mdef:ObservationModel>
+        <mdef:ObservationModel blkId="om2">
+            <mdef:ContinuousData>
+                <mdef:Standard symbId="Y2">
+                    <mdef:Output>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Wu"/>
+                    </mdef:Output>
+                    <mdef:ErrorModel>
+                        <ct:Assign>
+                            <math:FunctionCall>
+<ct:SymbRef symbIdRef="additiveError"/>
+<math:FunctionArgument symbId="additive">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Wu_err"/>
+</math:FunctionArgument>
+                            </math:FunctionCall>
+                        </ct:Assign>
+                    </mdef:ErrorModel>
+                    <mdef:ResidualError>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eps_RES_Wu"/>
+                    </mdef:ResidualError>
+                </mdef:Standard>
+            </mdef:ContinuousData>
+        </mdef:ObservationModel>
+    </mdef:ModelDefinition>
+    <td:TrialDesign>
+        <td:ExternalDataSet toolName="NONMEM" oid="nm_ds">
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="T"/>
+            </td:ColumnMapping>
+            <td:MultipleDVMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <td:Piecewise>
+                    <math:Piece>
+                        <ct:SymbRef blkIdRef="om1" symbIdRef="Y1"/>
+                        <math:Condition>
+                            <math:LogicBinop op="eq">
+<ds:ColumnRef columnIdRef="DVID"/>
+<ct:Int>1</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                    <math:Piece>
+                        <ct:SymbRef blkIdRef="om2" symbIdRef="Y2"/>
+                        <math:Condition>
+                            <math:LogicBinop op="eq">
+<ds:ColumnRef columnIdRef="DVID"/>
+<ct:Int>2</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                </td:Piecewise>
+            </td:MultipleDVMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="AMT"/>
+                <math:Piecewise>
+                    <math:Piece>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Q1"/>
+                        <math:Condition>
+                            <math:LogicBinop op="gt">
+<ds:ColumnRef columnIdRef="AMT"/>
+<ct:Int>0</ct:Int>
+                            </math:LogicBinop>
+                        </math:Condition>
+                    </math:Piece>
+                </math:Piecewise>
+            </td:ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="int" columnNum="1"/>
+                    <ds:Column columnId="TIME" columnType="idv" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
+                    <ds:Column columnId="DVID" columnType="dvid" valueType="int" columnNum="4"/>
+                    <ds:Column columnId="AMT" columnType="dose" valueType="real" columnNum="5"/>
+                    <ds:Column columnId="EVID" columnType="evid" valueType="real" columnNum="6"/>
+                    <ds:Column columnId="CMT" columnType="cmt" valueType="int" columnNum="7"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="id">
+                    <ds:path>Simulated_DEB_TGI_data.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </td:ExternalDataSet>
+    </td:TrialDesign>
+    <msteps:ModellingSteps>
+        <msteps:EstimationStep oid="estimStep_1">
+            <msteps:ExternalDataSetReference>
+                <ct:OidRef oidRef="nm_ds"/>
+            </msteps:ExternalDataSetReference>
+            <msteps:ParametersToEstimate>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K10_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>20.832</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K12_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>0.144</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="K21_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>2.011</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="V1_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>813.1</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="En_initial_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>1.3</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="xi_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>0.184</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="ni_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>1.2242</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gr_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>12.2</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="V1inf_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Real>22.6</ct:Real>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="rho_b_POP"/>
+                    <msteps:InitialEstimate fixed="true">
+                        <ct:Int>1</ct:Int>
+                    </msteps:InitialEstimate>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="mu_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.0223</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="mu_u_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>13.3</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="gu_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>11.7</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="delta_Vmax_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.185</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="W_initial_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>21.2</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="Vu1_initial_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.0023</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="IC50_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.461</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="k1_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.462</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="k2_POP"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>6.53E-4</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="b_W"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.101</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+                <msteps:ParameterEstimation>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="b_Wu"/>
+                    <msteps:InitialEstimate fixed="false">
+                        <ct:Real>0.134</ct:Real>
+                    </msteps:InitialEstimate>
+                    <msteps:LowerBound>
+                        <ct:Int>0</ct:Int>
+                    </msteps:LowerBound>
+                </msteps:ParameterEstimation>
+            </msteps:ParametersToEstimate>
+            <msteps:Operation order="1" opType="generic">
+                <msteps:Property name="algo">
+                    <ct:Assign>
+                        <ct:String>foce</ct:String>
+                    </ct:Assign>
+                </msteps:Property>
+            </msteps:Operation>
+        </msteps:EstimationStep>
+        <msteps:StepDependencies>
+            <msteps:Step>
+                <ct:OidRef oidRef="estimStep_1"/>
+            </msteps:Step>
+        </msteps:StepDependencies>
+    </msteps:ModellingSteps>
+</PharmML>

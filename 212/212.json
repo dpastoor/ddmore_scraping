@@ -1,0 +1,14 @@
+{
+    "files": [
+        "Executable_tamoxifen.xml",
+        "Output_simulated_tamoxifen.lst",
+        "Command.txt",
+        "Model_Accommodations.txt",
+        "Output_simulated_tamoxifen_SO.xml",
+        "Executable_tamoxifen.mdl",
+        "Output_real_tamoxifen.pdf",
+        "Simulated_tamoxifen.csv",
+        "DDMODEL00000212.rdf"
+    ],
+    "version": 8
+}

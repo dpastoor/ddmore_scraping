@@ -1,0 +1,14 @@
+{
+    "files": [
+        "Terranova_2017_oncology_TGI.xml",
+        "Terranova_2017_oncology_TGI.ctl",
+        "Model_Accomodations.txt",
+        "Executable_Terranova_2017_oncology_TGI_HM.ctl",
+        "DDMODEL00000274.rdf",
+        "Command.txt",
+        "Terranova_2017_oncology_TGI.mdl",
+        "Simulated_DEB_TGI_data.csv",
+        "Output_simulated_Terranova_2017.pdf"
+    ],
+    "version": 5
+}

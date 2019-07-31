@@ -1,0 +1,138 @@
+###################### 
+###### Scenario = 2
+###### MDL version= 1.0
+###### IO product= an update version of 2.0.0, available at http://aimed11.unipv.it/DDMoReIOF+WinBUGSplugin2.0 
+###### Input data= Simulated_DEB_TGI_data.csv
+###### Executable model= Executable_Terranova_2017_oncology_TGI_HM.ctl (even if as described below you can start from Terranova_2017_oncology_TGI.mdl)
+###### Output= Output_simulated_Terranova2017.pdf
+######################
+
+##################### Script start
+# Simulation with NONMEM
+# Commands to execute (partially) within the DDMoRe framework
+#
+# TWO STEP PROCEDURE
+#
+# Commands to execute within the DDMoRe framework to obtain an automatically-generated NONMEM code
+# The obtained ctl file can be subsequently modified to be run in simulation with Nonmem 
+
+# STEP 1
+# results file: "Terranova_2017_oncology_TGI.ctl", which will be used in SETP 2
+#
+rm(list=ls(all=F))
+
+#Set name of working directory, mdl file and dataset for future tasks
+setwd("C:/see-full/MDL_IDE/workspace/Terranova_2017_oncology_TGI/models")
+mdlfile <- "Terranova_2017_oncology_TGI.mdl"
+datafile <- "Simulated_DEB_TGI_data.csv"
+nm <- estimate(mdlfile, target="NONMEM", subfolder="NONMEM")
+
+#The automatically-generated "Terranova_2017_oncology_TGI.ctl" file is the only output of interest for these commands
+#Modifications and instructions to run the modified file are reported in STEP 2
+
+# STEP 2 
+#
+# input file: "Terranova_2017_oncology_TGI.ctl"
+# results file: included in "Output_simulated_Terranova2017.pdf"
+
+#To run "Terranova_2017_oncology_TGI.ctl" in simulation, the following modification is needed:
+########## cut and replace ####################
+# In the $MODEL section
+;COMP (COMP1) 	;Z
+;COMP (COMP2) 	;Q1
+COMP (COMP1) 	;Q1
+COMP (COMP2) 	;Z
+
+# In the $PK section
+;A_0(1) = Z_INITIAL
+;A_0(2) = 0
+A_0(1) = 0
+A_0(2) = Z_INITIAL
+
+# In the $DES section
+;Z_DES = A(1)
+;Q1_DES = A(2)
+Z_DES = A(2)
+Q1_DES = A(1)
+
+IF (SWITCH1_DES.GE.0) THEN
+	DEV_VU1 = ((((((NI*(Z_DES**(2/3)))+(M*Z_DES))*((GR*KU_DES)*EN_DES))/(((GR*GU)+(((1-KU_DES)*GU)*EN_DES))+1.0E-5))-(MU*VU1_DES))-((K2*VU1_DES)*C_DES)) 
+ENDIF
+IF (SWITCH1_DES.LT.0.AND.SWITCH2_DES.LT.0.AND.SWITCH2_DES.GE.-(DELTA_VMAX)) THEN
+	DEV_VU1 = ((((((GR*M)*KU_DES)*Z_DES)/((GU*(1-KU_DES))+1.0E-5))-(MU*VU1_DES))-((K2*C_DES)*VU1_DES)) 
+ENDIF
+IF (SWITCH1_DES.LT.0.AND.SWITCH2_DES.LE.-(DELTA_VMAX)) THEN
+	DEV_VU1 = ((((KU_DES/(GU+1.0E-5))*((((EN_DES*NI)*(Z_DES**(2/3)))+(DELTA_VMAX*EN_DES))+((DELTA_VMAX*OMEG)*GR)))-(MU*VU1_DES))-((K2*C_DES)*VU1_DES)) 
+ENDIF
+IF (SWITCH1_DES.GE.0) THEN
+	DEV_Z = ((((((1-KU_DES)*NI)*EN_DES)*(Z_DES**(2/3)))-((GR*M)*Z_DES))/((GR+((1-KU_DES)*EN_DES))+1.0E-5)) 
+ENDIF
+IF (SWITCH1_DES.LT.0.AND.SWITCH2_DES.LT.0.AND.SWITCH2_DES.GE.-(DELTA_VMAX)) THEN
+	DEV_Z = ((((((1-KU_DES)*NI)*EN_DES)*(Z_DES**(2/3)))-((GR*M)*Z_DES))/(((1-KU_DES)*(EN_DES+(OMEG*GR)))+1.0E-5)) 
+ENDIF
+IF (SWITCH1_DES.LT.0.AND.SWITCH2_DES.LE.-(DELTA_VMAX)) THEN
+	DEV_Z = -(DELTA_VMAX) 
+ENDIF
+
+DADT(1) = ((K21*Q2_DES)-((K10+K12)*Q1_DES))
+;DADT(2) = ((K21*Q2_DES)-((K10+K12)*Q1_DES))
+DADT(2)= DEV_Z
+;DADT(5) = ((((KU_DES/GU)*((((EN_DES*NI)*(Z_DES**(2/3)))+(DELTA_VMAX*EN_DES))+((DELTA_VMAX*OMEG)*GR)))-(MU*VU1_DES))-((K2*C_DES)*VU1_DES))
+DADT(5)= DEV_VU1
+
+# In the $ERROR section
+;Z = A(1)
+;Q1 = A(2)
+Z = A(2)
+Q1 = A(1)
+
+# At the end of the ctl file
+$SIM (12345) (54321) ONLYSIM
+$TABLE ID TIME DV DVID AMT EVID
+FILE=simtab NOPRINT NOAPP
+; $EST METHOD=COND NSIG=3 SIGL=9 MAXEVALS=9999 PRINT=10 NOABORT
+; 
+;$TABLE ID TIME DVID AMT EVID CMT PRED RES WRES DV IPRED IRES IWRES Y NOAPPEND NOPRINT FILE=sdtab
+;
+;$TABLE ID K10 K12 K21 V1 EN_INITIAL RHO_B XI NI GR V1INF MU MU_U GU DELTA_VMAX W_INITIAL VU1_INITIAL IC50 K1 K2 DENSITY_V DENSITY_VU OMEG M Z_INITIAL NOAPPEND NOPRINT FILE=patab
+
+############### end of cut and replace ################
+
+#Save this hand-modified file as "Executable_Terranova_2017_oncology_TGI_HM.ctl" 
+# you can start directly here by using the provided file 
+#copy it in a proper working directory for NONMEM and execute it via NONMEM:
+
+execute Executable_Terranova_2017_oncology_TGI_HM.ctl
+
+#The obtained simulated DV in simtab can be compared with the DV in the "Simulated_DEB_TGI_data.csv" dataset, provided by the authors and obtained via simulation with original target code.
+# You can use the following R instruction to produce the provided output 
+
+
+library(ggplot2)
+data<-read.csv("Simulated_DEB_TGI_data.csv", header=TRUE)
+data$DV<-as.numeric(as.character(data$DV))
+TYPE_FACTOR <- as.factor(data$ID)
+
+sim_NM<-read.table (file='simtab', skip=1, header=T)
+
+pdf("Output_simulated_Terranova_2017.pdf")
+print( ggplot()+ 
+         geom_line(data=sim_NM[which(sim_NM$DVID==2),], aes(x=TIME, y=DV, group=ID, colour=factor(ID) ))+ 
+         geom_point(data=data[which(data$DVID==2 & data$EVID==0),], aes(x=TIME, y=DV, colour=factor(ID)))+
+         labs(title="TERRANOVA 2017 TGI", x = "Time [days]", y="Tumor weight [g]")+
+         theme_bw()+
+         ylim(0,6)+
+         xlim(0,30)+
+         scale_colour_manual(name="",values=unique(TYPE_FACTOR), labels=c('Treated','Control'))
+)
+
+print( ggplot()+ 
+        geom_line(data=sim_NM[which(sim_NM$DVID==1 & data$EVID==0),], aes(x=TIME, y=DV, group=ID, colour=factor(ID) ))+ 
+        geom_point(data=data[which(data$DVID==1),], aes(x=TIME, y=DV, colour=factor(ID)))+
+        labs(title="TERRANOVA 2017 TGI", x = "Time [days]", y="Mice body weight [g]")+
+        theme_bw()+
+        ylim(0,35)+
+        xlim(0,30)+
+        scale_colour_manual(name="",values=unique(TYPE_FACTOR), labels=c('Treated','Control'))
+)  
+dev.off()

@@ -1,0 +1,16 @@
+###### Prepared and run by Melanie Wilbaux
+##### PsN version = 4.7.0
+##### Original tool version = nm_7.3.0
+##### Input data = Original data not shared 
+#####  Simulated data: Simulated_KPD_CTC.count_PSA.csv
+##### Executable model = Executable_simulated_KPD_CTC.count_PSA.mod
+##### Output = Output_simulated_KPD_CTC.count_PSA.lst
+######## end block
+
+###### Script used as execution command for NONMEM via PsN: ##########
+execute Executable_simulated_KPD_CTC.count_PSA.mod
+
+
+###### Nonmem outputs from the original model: ##########
+# 2 Nonmem outputs: (i) Parameter estimations using SAEM: Output_real_SAEM_KPD_CTC.count_PSA.lst
+# (ii) Covariance and uncertainty estimation ($COV): Output_real_COV_KPD_CTC.count_PSA.lst

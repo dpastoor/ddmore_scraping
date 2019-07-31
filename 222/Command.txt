@@ -1,0 +1,14 @@
+### please fill in commented lines
+# this file is mandatory for submission scenarios 1, 2 and 4.
+###################### if the executable model is written in original language #####
+###################### please specify the block below
+###### Scenario = 4
+###### PsN version = 4.6.9
+###### Original tool version = 7.3
+###### Input data = Simulated_Fatigue_GIST.txt
+###### Executable model = Executable_Fatigue_GIST.mod
+###### Output = Output_simulated_Fatigue_GIST.lst
+###################### end block
+
+###### Script used as execution command for NONMEM via PsN: #############
+execute Executable_Fatigue_GIST.mod

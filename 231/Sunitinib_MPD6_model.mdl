@@ -1,0 +1,328 @@
+# MPD6: Sutent model
+
+
+  
+MPD6_ODE_dat = dataObj {
+	DECLARED_VARIABLES{D Y1 Y2 Y3 Y4 Y5 Y6 Y7}
+
+	DATA_INPUT_VARIABLES {
+		ID : { use is id }
+		TIME : { use is idv}
+		AMT : { use is amt, variable = D } #(DOSE in file)
+		DVID : { use is dvid }
+		DV : { use is dv, define={1 in DVID as Y1, 2 in DVID as Y2, 3 in DVID as Y3, 4 in DVID as Y4, 5 in DVID as Y5, 6 in DVID as Y6, 7 in DVID as Y7} }
+		MDV : { use is mdv }		
+	} # end DATA_INPUT_VARIABLES
+	
+	SOURCE {
+	    srcfile : {file = "MPD6_data.csv", 
+            inputFormat is nonmemFormat }
+	} # end SOURCE
+} # end data object
+
+MPD6_ODE_par = parObj {
+	DECLARED_VARIABLES{ETA_d1 ETA_d2 ETA_d3 ETA_d4 ETA_st1 ETA_pdm ETA_lam ETA_pd2 ETA_pd3 ETA_pd4 ETA_Cl ETA_V1 ETA_Clm ETA_Vm1}
+
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		POP_d1 : { value = 0.111 }
+		POP_d2 : { value = 0.101 } 
+		POP_d3 : { value = 0.169 }
+		POP_d4 : { value = 0.00659 }
+		POP_QQm : { value = 159 }
+		POP_pdr : { value = 0.0286 }
+		POP_st1 : { value = 0.0 }
+		POP_st2 : { value = 0.0 }
+		POP_st3 : { value = 0.0 }
+		POP_st4 : { value = 0.0 }
+		POP_x0 : { value = 0.0 }
+		POP_pdm : { value = 0.129 } 
+		POP_lam : { value = 0.000193 }
+		POP_lam0 : { value = 0.00189 }
+		POP_alphres : { value = 0.0102 }
+		POP_pd1 : { value = 144 } 
+		POP_pd2 : { value = 22 }
+		POP_pd3 : { value = 36.4 }
+		POP_pd4 : { value = 98.1 }
+		POP_Cl : { value = 26.9 }
+		POP_V1 : { value = 3.22e3 }
+		POP_QQ : { value = 17.5 }
+		POP_V2 : { value = 127 }
+		POP_Clm : { value = 15.6 }
+		POP_Vm1 : { value = 3.71e3 }
+		POP_Vm2 : { value = 156 }
+		POP_Ka : { value = 0.0715 }
+		POP_Kam : { value = 0.177 }
+		b_1 : { value = 0.512 }	
+		b_2 : { value = 0.429 }	
+		b_3 : { value = 0.503 }	
+		b_4 : { value = 0.137 }	
+		b_5 : { value = 0.28 }	
+		b_6 : { value = 0.135 }	
+		a_7 : { value = 0.241 }	
+		b_7 : { value = 0.0856 }	
+		} # end STRUCTURAL
+	VARIABILITY {
+		omega_d1 : { value = 4.94, type is sd }
+		omega_d2 : { value = 0.485, type is sd }
+		omega_d3 : { value = 0.517, type is sd }
+		omega_d4 : { value = 0.468, type is sd }
+		omega_QQm : { value = 0.0, type is sd }
+		omega_pdr : { value = 0.0, type is sd }
+		omega_st1 : { value = 0.348, type is sd }
+		omega_st2 : { value = 0.0, type is sd }
+		omega_st3 : { value = 0.0, type is sd }
+		omega_st4 : { value = 0.0, type is sd }
+		omega_x0 : { value = 0.0, type is sd }
+		omega_pdm : { value = 1.74, type is sd }
+		omega_lam : { value = 2.11, type is sd }
+		omega_lam0 : { value = 0.0, type is sd }
+		omega_alphres : { value = 0.0, type is sd }
+		omega_pd1 : { value = 0.0, type is sd }
+		omega_pd2 : { value = 0.468, type is sd }
+		omega_pd3 : { value = 0.988, type is sd }
+		omega_pd4 : { value = 0.384, type is sd }
+		omega_Cl : { value = 0.297, type is sd }
+		omega_V1 : { value = 1.3, type is sd }
+		omega_QQ : { value = 0.0, type is sd }
+		omega_V2 : { value = 0.0, type is sd }
+		omega_Clm : { value = 0.444, type is sd }
+		omega_Vm1 : { value = 0.908, type is sd }
+		omega_Vm2 : { value = 0.0, type is sd }
+		omega_Ka : { value = 0.0, type is sd }
+		omega_Kam : { value = 0.0, type is sd }
+		OMEGA : { parameter=[ETA_d1,ETA_d2,ETA_d3,ETA_d4,ETA_st1,ETA_pdm,ETA_lam,ETA_pd2,ETA_pd3,ETA_pd4,ETA_Cl,ETA_V1,ETA_Clm,ETA_Vm1], value = [0,0,-0.01,0,0,0,-0.03,0,0,0,0,0,0,0,0,0,0,0,0,0,-0.02,0,-0.03,0,0,0,0,0,0,0,-0.01,0,0,0,0,0,0,0,0,-0.07,0,0,0,-0.01,0,0,0,0,0,0,-0.01,0,-0.03,-0.01,-0.02,0,-0.01,-0.01,0,0,0,0,0,0,0,-0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-0.01], type is corr }
+		
+	} # end VARIABILITY
+} # end of parameter object 
+
+MPD6_ODE_mdl = mdlObj {
+	IDV{ T }
+
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	} 
+
+	STRUCTURAL_PARAMETERS { 
+		POP_d1
+		POP_d2
+		POP_d3
+		POP_d4
+		POP_QQm
+		POP_pdr
+		POP_st1
+		POP_st2
+		POP_st3
+		POP_st4
+		POP_x0
+		POP_pdm
+		POP_lam
+		POP_lam0
+		POP_alphres
+		POP_pd1
+		POP_pd2
+		POP_pd3
+		POP_pd4
+		POP_Cl
+		POP_V1
+		POP_QQ
+		POP_V2
+		POP_Clm
+		POP_Vm1
+		POP_Vm2
+		POP_Ka
+		POP_Kam
+		b_1
+		b_2
+		b_3
+		b_4
+		b_5
+		b_6
+		a_7
+		b_7
+	} # end STRUCTURAL_PARAMETERS
+	
+	VARIABILITY_PARAMETERS {
+		omega_d1
+		omega_d2
+		omega_d3
+		omega_d4
+		omega_QQm
+		omega_pdr
+		omega_st1
+		omega_st2
+		omega_st3
+		omega_st4
+		omega_x0
+		omega_pdm
+		omega_lam
+		omega_lam0
+		omega_alphres
+		omega_pd1
+		omega_pd2
+		omega_pd3
+		omega_pd4
+		omega_Cl
+		omega_V1
+		omega_QQ
+		omega_V2
+		omega_Clm
+		omega_Vm1
+		omega_Vm2
+		omega_Ka
+		omega_Kam
+	} # end VARIABILITY_PARAMETERS 
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_d1 ~ Normal(mean = 0, sd = omega_d1)
+		ETA_d2 ~ Normal(mean = 0, sd = omega_d2)
+		ETA_d3 ~ Normal(mean = 0, sd = omega_d3)
+		ETA_d4 ~ Normal(mean = 0, sd = omega_d4)
+		ETA_QQm ~ Normal(mean = 0, sd = omega_QQm)
+		ETA_pdr ~ Normal(mean = 0, sd = omega_pdr)
+		ETA_st1~ Normal(mean = 0, sd = omega_st1)
+		ETA_st2 ~ Normal(mean = 0, sd = omega_st2)
+		ETA_st3 ~ Normal(mean = 0, sd = omega_st3)
+		ETA_st4 ~ Normal(mean = 0, sd = omega_st4)
+		ETA_x0 ~ Normal(mean = 0, sd = omega_x0)
+		ETA_pdm ~ Normal(mean = 0, sd = omega_pdm)
+		ETA_lam ~ Normal(mean = 0, sd = omega_lam)
+		ETA_lam0 ~ Normal(mean = 0, sd = omega_lam0)
+		ETA_alphres ~ Normal(mean = 0, sd = omega_alphres)
+		ETA_pd1 ~ Normal(mean = 0, sd = omega_pd1)
+		ETA_pd2 ~ Normal(mean = 0, sd = omega_pd2)
+		ETA_pd3 ~ Normal(mean = 0, sd = omega_pd3)
+		ETA_pd4 ~ Normal(mean = 0, sd = omega_pd4)
+		ETA_Cl ~ Normal(mean = 0, sd = omega_Cl)
+		ETA_V1 ~ Normal(mean = 0, sd = omega_V1)
+		ETA_QQ ~ Normal(mean = 0, sd = omega_QQ)
+		ETA_V2 ~ Normal(mean = 0, sd = omega_V2)
+		ETA_Clm ~ Normal(mean = 0, sd = omega_Clm)
+		ETA_Vm1 ~ Normal(mean = 0, sd = omega_Vm1)
+		ETA_Vm2 ~ Normal(mean = 0, sd = omega_Vm2)
+		ETA_Ka ~ Normal(mean = 0, sd = omega_Ka)
+		ETA_Kam ~ Normal(mean = 0, sd = omega_Kam)
+	} # end RANDOM_VARIABLE_DEFINITION 
+
+	
+	INDIVIDUAL_VARIABLES { # This maps to the "Type 3" individual parameter definition in PharmML
+		ln(d1) = linear( trans is ln, pop = POP_d1, ranEff = [ETA_d1] )
+		ln(d2) = linear( trans is ln, pop = POP_d2, ranEff = [ETA_d2] )
+		ln(d3) = linear( trans is ln, pop = POP_d3, ranEff = [ETA_d3] )
+		ln(d4) = linear( trans is ln, pop = POP_d4, ranEff = [ETA_d4] )
+		ln(QQm) = linear( trans is ln, pop = POP_QQm, ranEff = [ETA_QQm] )
+		ln(pdr) = linear( trans is ln, pop = POP_pdr, ranEff = [ETA_pdr] )
+		ln(st1) = linear( trans is ln, pop = POP_st1, ranEff = [ETA_st1] )
+		ln(st2) = linear( trans is ln, pop = POP_st2, ranEff = [ETA_st2] )
+		ln(st3) = linear( trans is ln, pop = POP_st3, ranEff = [ETA_st3] )
+		ln(st4) = linear( trans is ln, pop = POP_st4, ranEff = [ETA_st4] )
+		ln(x0) = linear( trans is ln, pop = POP_x0, ranEff = [ETA_x0] )
+		ln(pdm) = linear( trans is ln, pop = POP_pdm, ranEff = [ETA_pdm] )
+		ln(lam) = linear( trans is ln, pop = POP_lam, ranEff = [ETA_lam] )
+		ln(lam0) = linear( trans is ln, pop = POP_lam0, ranEff = [ETA_lam0] )
+		ln(alphres) = linear( trans is ln, pop = POP_alphres, ranEff = [ETA_alphres] )
+		ln(pd1) = linear( trans is ln, pop = POP_pd1, ranEff = [ETA_pd1] )
+		ln(pd2) = linear( trans is ln, pop = POP_pd2, ranEff = [ETA_pd2] )
+		ln(pd3) = linear( trans is ln, pop = POP_pd3, ranEff = [ETA_pd3] )
+		ln(pd4) = linear( trans is ln, pop = POP_pd4, ranEff = [ETA_pd4] )
+		ln(Cl) = linear( trans is ln, pop = POP_Cl, ranEff = [ETA_Cl] )
+		ln(V1) = linear( trans is ln, pop = POP_V1, ranEff = [ETA_V1] )
+		ln(QQ) = linear( trans is ln, pop = POP_QQ, ranEff = [ETA_QQ] )
+		ln(V2) = linear( trans is ln, pop = POP_V2, ranEff = [ETA_V2] )
+		ln(Clm) = linear( trans is ln, pop = POP_Clm, ranEff = [ETA_Clm] )
+		ln(Vm1) = linear( trans is ln, pop = POP_Vm1, ranEff = [ETA_Vm1] )
+		ln(Vm2) = linear( trans is ln, pop = POP_Vm2, ranEff = [ETA_Vm2] )
+		ln(Ka) = linear( trans is ln, pop = POP_Ka, ranEff = [ETA_Ka] )
+		ln(Kam) = linear( trans is ln, pop = POP_Kam, ranEff = [ETA_Kam] )
+	} # end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		D # dosing variable
+		
+		dres=0
+		fp=0.21
+		th1=1
+		th2=1
+		th3=1
+		th4=1
+		thettum=1
+		Kah=Ka*24
+		Kamh=Kam*24
+		q = 24*Cl/V1
+		qm = 24*Clm/Vm1
+		k12 = 24*QQ/V1
+		k21 = 24*QQ/V2
+
+		km12 = 24*QQm/Vm1
+		km21 = 24*QQm/Vm2
+		
+		stst1=exp(st1)
+		stst2=exp(st2)
+		stst3=exp(st3)
+		stst4=exp(st4)
+		
+		
+		kin1=stst1*d1
+		kin2=stst2*d2
+		kin3=stst3*d3
+		kin4=stst4*d4
+		maxgr=ln(2)/30	
+		DEQ{
+			A1 : { deriv = Kah*A14*(1-fp) - k12*A1 + k21*A2-q*A1, init = 0, x0 = 0 }
+			A2 : { deriv = k12*A1 - k21*A2, init = 0, x0 = 0 }
+			A3 : { deriv = Kamh*A15*fp - km12*A3 + km21*A4-qm*A3, init = 0, x0 = 0 }
+			A4 : { deriv = km12*A3 - km21*A4, init = 0, x0 = 0 }
+			A5 : { deriv = kin1-d1*A5/(1+pd1*(th1*A1/V1+(1-th1)*A3/Vm1)), init = stst1, x0 = 0 }
+			A6 : { deriv = kin2/(1+pd2*(th2*A1/V1+(1-th2)*A3/Vm1))-d2*A6, init = stst2, x0 = 0 }
+			A7 : { deriv = kin3/(1+pd3*(th3*A1/V1+(1-th3)*A3/Vm1))-d3*A7, init = stst3, x0 = 0 }
+			A8 : { deriv = kin4/(1+pd4*(th4*A1/V1+(1-th4)*A3/Vm1))-d4*A8, init = stst4, x0 = 0 }
+			RATEIN = if(A9 > 0) then (min(maxgr,A13)-(lam0/pdr)*A12+lam0*A11)*A9 
+					 else 0
+			A9 : { deriv = RATEIN, init = (4/3)*3.1416*exp(x0)^3, x0 = 0 }
+			A10 : { deriv = pdr*(thettum*max(0,A1/V1)+(1-thettum)*max(0,A3/Vm1))-dres*max(0,A10), init = 0, x0 = 0 }
+			A11 : { deriv = A12-pdr*A11, init = 0, x0 = 0 }
+			A12 : { deriv = A1/V1-pdm*A12, init = 0, x0 = 0 }
+			A13 : { deriv = alphres*A13, init = lam, x0 = 0 }
+			A14 : { deriv = -Kah*A14, init = D, x0 = 0 }
+			A15 : { deriv = -Kamh*A15, init = D, x0 = 0 }
+		}
+		output1 = A1/V1
+		output2 = A3/Vm1
+		output3 = A5
+		output4 = A6
+		output5 = A7
+		output6 = A8
+		output7 = ((3/(4*3.1416))*max(A9,0))^(1/3)
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_Y ~ Normal(mean = 0, var = 1) # This maps the standard error model in PharmML. The error model is predefined.
+	}
+
+	OBSERVATION {
+		Y1 = proportionalError(proportional = b_1, eps = EPS_Y, prediction = output1)
+	    Y2 = proportionalError(proportional = b_2, eps = EPS_Y, prediction = output2)
+	    Y3 = proportionalError(proportional = b_3, eps = EPS_Y, prediction = output3)
+	    Y4 = proportionalError(proportional = b_4, eps = EPS_Y, prediction = output4)
+	    Y5 = proportionalError(proportional = b_5, eps = EPS_Y, prediction = output5)
+	    Y6 = proportionalError(proportional = b_6, eps = EPS_Y, prediction = output6)
+	    Y7 = combinedError1(additive = a_7, proportional = b_7, eps = EPS_Y, prediction = output7)
+	    		} # end OBSERVATION
+} # end of model object
+
+MPD6_ODE_task = taskObj {
+	ESTIMATE{ 
+		set algo is saem
+	}
+} # end of task object
+
+
+MPD6_ODE_mog = mogObj {
+	OBJECTS{
+		MPD6_ODE_dat : { type is dataObj }
+		MPD6_ODE_mdl : { type is mdlObj }
+		MPD6_ODE_par : { type is parObj }
+		MPD6_ODE_task : { type is taskObj }
+	}
+}

@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.foundation//model/DDMODEL00000295">
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Interpretation of concentration results of a prospective observational study aimed to clarify the dosage adaptation required for CMS/colistin in CRRT patients</j.2:model-has-description>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001024"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CMS and colistin pharmacokinetics were assessed prospectively in 10 critically ill patients requiring CRRT. Extensive pharmacokinetic sampling was performed on treatment day 1, 3 and 5 after administration of a loading dose of CMS, followed by a maintenance dosage every eight hours. The disposition of CMS and colistin was described using a 6-compartment model with first-order transfer rates for metabolic transformation of CMS into colistin, metabolic elimination of colistin and exchanges of both compounds within the filter and cartridge compartments of CRRT apparatus. The systemic distributions of CMS and colistin were assumed to correspond to a single-compartment volume each (VCMS and VCol). The fraction of the CMS dose escaping elimination through CRRT was assumed to be completely transformed into colistin through metabolic clearance (CLM CMS); then colistin in turn was considered to be eliminated through both CRRT and metabolic clearance (CLM Col). Both compounds were assumed to be transferred into a CRRT filter of fixed volume (Vfilter = 0.2 L) at the flow rate read on the CRRT device (Qblood), corrected for the patient's hematocrit (1 - Ht), set to the average HT value (0.25) when unknown. Non-filtered amounts of CMS and colistin were driven back into the patient's circulation with the same blood flow, while filtered amounts passed into the filter cartridge (Vcartridge = 0.3 L), continuously rinsed with the effluent rate read on the CRRT device (Qeffl). Sieving coefficients were assumed to characterize the filter permeability for CMS and colistin (SCMS and Scol), multiplying Qeffl to give the respective filtration clearances.</j.2:model-has-description-long>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">None - this is the model presented in the original publication</j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006034"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+  </rdf:Description>
+</rdf:RDF>

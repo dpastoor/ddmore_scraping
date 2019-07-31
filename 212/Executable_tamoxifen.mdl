@@ -1,0 +1,172 @@
+# Population pharmacokinetic model to describe tamoxifen and endoxifen concentrations at
+# steady state, using the model published by Ter Heine et al. BJCP 2014
+# Dosing regimen: multiple oral administrations encoded in the dataset
+# Structural model : 1 compartment model for tamoxifen (CL20,V2,k12,CL23, Q1)
+# 					 1 compartment model for endoxifen (CL30,V3) 
+# Covariate model : PHENO2D6 on CL23, PHENO3A41 on CL23 
+# Variability model: 
+#   - IIV on CL20, V2 and CL23
+#   - Correlation between CL20 and V2 random variables
+#   - Proportional residual error model
+
+#setwd("C:/SEE_PublicBeta/see-full/MDL_IDE/workspace/terheine")
+tam_endx_SS_dat = dataObj{
+
+   DECLARED_VARIABLES{TAM_OBS; ENDX_OBS; GUT}
+
+   DATA_INPUT_VARIABLES{
+		ID : { use is id }
+		TIME : { use is idv }
+		DV : { use is dv, define={2 in DVID as TAM_OBS, 3 in DVID as ENDX_OBS} }
+		IPR: {use is ignore}
+		AMT : { use is amt, variable = GUT }
+		DVID : { use is dvid} #corresponding to CMT
+		MDV : { use is mdv }
+		EVID : { use is ignore }
+		II: {use is ii}
+		TAD: {use is covariate}
+		L2:{ use is ignore}
+		CYP3A4: {use is covariate}
+		CYP2D6: {use is covariate}
+        SS: {use is ss }     
+		
+
+   }# end DATA_INPUT_VARIABLES
+
+   SOURCE{
+      srcFile : {file="Simulated_tamoxifen.csv", 
+      			inputFormat is nonmemFormat}
+   }# end SOURCE
+} # end data object
+
+tam_endx_SS_par = parObj {
+	DECLARED_VARIABLES{ETA_CL20 ETA_V2}
+
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		POP_CL20 : { value = 10, lo = 0, hi = 10000 }
+		POP_V2 : { value = 800, lo = 5, hi = 20000 } 
+		POP_K12 : { value = 2, lo = 0.01, hi = 10 }
+		POP_CL23 : { value = 0.3, lo = 0, hi = 10000 }
+		POP_Q1 : { value = 10, lo = 0, hi = 10000 }
+		POP_ALAG1 : { value = 0.5, lo = 0, hi = 10 }
+		BETA_CL23_PHENO2D6 : { value = 0.2, lo=0.01, hi = 10 }
+		BETA_CL23_PHENO3A4 : { value = 0.2, lo=0.01, hi = 10 }
+				#SIGMA
+		RUV_TAM : { value = 0.1}
+		RUV_ENDX : { value = 0.1}
+		
+		} # end STRUCTURAL
+	VARIABILITY {
+		#OMEGA
+		PPV_CL20 : { value = 0.1, type is var }
+		PPV_V2 : { value = 0.1, type is var }
+		PPV_CL23 : { value = 0.1, type is var }
+		OMEGA : { parameter=[ETA_CL20, ETA_V2], value = [0.01], type is cov }
+
+	} # end VARIABILITY
+} # end of parameter object 
+
+tam_endx_SS_mdl = mdlObj {
+	IDV{ T }
+
+	COVARIATES{
+		CYP3A4
+		CYP2D6
+		logPHENO2D6 = ln(CYP2D6/1560)	# Influence of CYP2D6 on formation of endoxifen, median CYP2D6=1560 ng/L
+	    logPHENO3A4 = ln(CYP3A4/44.7)  # Influence of CYP3A4 on formation of endoxifen, median CYP3A4=44.7 ng/L
+	}
+
+	VARIABILITY_LEVELS{
+		ID : { level=2, type is parameter }
+		DV : { level=1, type is observation }
+	} 
+
+	STRUCTURAL_PARAMETERS { 
+		POP_CL20
+		POP_V2
+		POP_K12
+		POP_CL23
+		POP_Q1
+		POP_ALAG1
+		BETA_CL23_PHENO2D6
+		BETA_CL23_PHENO3A4
+		RUV_TAM
+		RUV_ENDX
+		
+	} # end STRUCTURAL_PARAMETERS
+	
+	VARIABILITY_PARAMETERS {
+		PPV_CL20
+		PPV_V2
+		PPV_CL23
+	} # end VARIABILITY_PARAMETERS 
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_CL20 ~ Normal(mean = 0, sd = PPV_CL20)
+		ETA_V2 ~ Normal(mean = 0, sd = PPV_V2)
+		ETA_CL23 ~ Normal(mean = 0, sd = PPV_CL23)
+	} # end RANDOM_VARIABLE_DEFINITION 
+	
+
+	INDIVIDUAL_VARIABLES { # This maps to the "Type 3" individual parameter definition in PharmML
+	    ln(CL20) = linear( trans is ln, pop = POP_CL20, ranEff = [ETA_CL20] )
+	    ln(V2) = linear( trans is ln, pop = POP_V2, ranEff = [ETA_V2] )
+	    K12=POP_K12
+	    ln(CL23) = linear( trans is ln, pop = POP_CL23, fixEff = [{coeff=BETA_CL23_PHENO2D6, cov=logPHENO2D6},{coeff=BETA_CL23_PHENO3A4, cov=logPHENO3A4}], ranEff = [ETA_CL23] )
+	    Q1=POP_Q1
+	    ALAG1=POP_ALAG1
+	   	} # end INDIVIDUAL_VARIABLES
+	GROUP_VARIABLES {
+	Mtam = 371.51456		# g/mol
+	Mendx = 373.48738		# g/mol
+	V3 = 400 				# L, Ahmad et al, CPT Vol 88, 2010
+	CL30 = 5.1      		# L/h, Ahmad et al, CPT Vol 88, 2010
+	K30 = CL30/V3
+	}
+	    
+
+
+	MODEL_PREDICTION {
+	SC2=V2*Mtam/10^6			# scale for TAM
+	SC3 = V3*Mendx/10^6		# scale for ENDX
+	
+		DEQ{
+		C2=CMT_TAM/V2
+		
+			RATEIN = if(T>= ALAG1) then GUT * K12
+					else 0	
+			C_HEP=(RATEIN+Q1*C2)/(Q1+CL23)
+			GUT : { deriv =(- RATEIN), init = 0, x0 = 0 }
+			CMT_TAM : { deriv =(Q1*C_HEP-Q1*C2-CL20*C2), init = 0, x0 = 0 } 
+			CMT_ENDX: {deriv =(CL23*C_HEP-K30*CMT_ENDX), init = 0, x0 = 0 }
+		}
+	    CTAM = CMT_TAM/SC2
+	    CENDX = CMT_ENDX/SC3 
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_TAM ~ Normal(mean = 0, var = 1) # This maps the standard error model in PharmML. The error model is predefined.
+        EPS_ENDX ~ Normal(mean = 0, var = 1) 	
+	}
+
+	OBSERVATION {
+	    TAM_OBS = proportionalError(proportional = RUV_TAM, eps = EPS_TAM, prediction = CTAM) 
+	    ENDX_OBS = proportionalError(proportional = RUV_ENDX, eps = EPS_ENDX, prediction = CENDX)
+	} # end OBSERVATION
+} # end of model object
+
+tam_endx_SS_task = taskObj {
+	ESTIMATE{ 
+		set algo is focei
+	}
+} # end of task object
+
+warfarin_PK_SS_mog=mogObj{
+	OBJECTS{
+		tam_endx_SS_dat : { type is dataObj }
+		tam_endx_SS_par : { type is parObj }
+		tam_endx_SS_mdl : { type is mdlObj }
+		tam_endx_SS_task : { type is taskObj }
+	}
+}

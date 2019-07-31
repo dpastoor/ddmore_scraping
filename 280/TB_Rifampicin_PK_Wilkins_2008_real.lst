@@ -1,0 +1,329 @@
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM)    DOUBLE PRECISION NONMEM    VERSION VI LEVEL 1.0  
+ DEVELOPED AND PROGRAMMED BY STUART BEAL AND LEWIS SHEINER
+ 
+ PROBLEM NO.:         1
+ RIF Run71 newinits                                                      
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET: 5085
+ NO. OF DATA ITEMS IN DATA SET:  13
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ DEP VARIABLE IS DATA ITEM NO.:   4
+ MDV DATA ITEM IS DATA ITEM NO.:  5
+0INDICES PASSED TO SUBROUTINE PRED:
+  7  3  6  0  0  0  0  0  0
+  0  0
+0LABELS FOR DATA ITEMS:
+   ID     OCC    TIME      DV     MDV     AMT    EVID     AGE      WT
+   HT     HIV     FDC     LOC
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+   CL      V2       K      KA     AA1     AA2      CP    IPRE    IWRE
+0FORMAT FOR DATA:
+ (E4.0,E2.0,E7.0,E6.0,E2.0,E4.0,E2.0,E3.0,E5.0,E7.0,3E2.0)                       
+ 
+ TOT. NO. OF OBS RECS:    2913
+ TOT. NO. OF INDIVIDUALS:  263
+0LENGTH OF THETA:  9
+0OMEGA HAS BLOCK FORM:
+  1
+  1  1
+  0  0  2
+  0  0  0  3
+  0  0  0  0  4
+  0  0  0  0  0  4
+  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:  1
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.1920E+02     0.1000E+07
+  0.0000E+00     0.5320E+02     0.1000E+03
+  0.0000E+00     0.1150E+01     0.1000E+07
+  0.0000E+00     0.9230E-01     0.1000E+07
+  0.0000E+00     0.2220E+00     0.1000E+07
+  0.0000E+00     0.4240E+00     0.1000E+07
+  0.1000E+01     0.7130E+01     0.8000E+02
+ -0.1000E+01     0.1040E+01     0.5000E+01
+ -0.1000E+01     0.2360E+00     0.5000E+01
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.2790E+00
+                  0.2170E+00   0.1880E+00
+        2                                                                                   NO 
+                  0.4390E+00
+        3                                                                                   NO 
+                  0.3610E+00
+        4                                                                                   NO 
+                  0.5080E-01
+        5                                                                                   NO 
+                  0.4610E+00
+        6                                                                                   NO 
+                  0.2440E+01
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+0ESTIMATION STEP OMITTED:           NO 
+ CONDITIONAL ESTIMATES USED:       YES 
+ CENTERED ETA:                      NO 
+ EPS-ETA INTERACTION:              YES 
+ LAPLACIAN OBJ. FUNC.:              NO 
+ NO. OF FUNCT. EVALS. ALLOWED:    9999
+ NO. OF SIG. FIGURES REQUIRED:       3
+ INTERMEDIATE PRINTOUT:            YES 
+ ESTIMATE OUTPUT TO MSF:           YES 
+0COVARIANCE STEP OMITTED:    NO 
+ R MATRIX SUBSTITUTED:       NO 
+ S MATRIX SUBSTITUTED:      YES 
+ EIGENVLS. PRINTED:         YES 
+ SPECIAL COMPUTATION:        NO 
+ COMPRESSED FORMAT:          NO 
+0TABLES STEP OMITTED:    NO 
+ NO. OF TABLES:           4
+0-- TABLE  1 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS 
+ IN THE ORDER THEY WILL APPEAR IN THE TABLE:
+   ID    TIME    IPRE    IWRE    ETA1    ETA2    ETA3    ETA4    ETA5    ET11    ET17     AA1     AA2      CP
+0-- TABLE  2 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS 
+ IN THE ORDER THEY WILL APPEAR IN THE TABLE:
+   ID      CL      V2      KA       K
+0-- TABLE  3 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS 
+ IN THE ORDER THEY WILL APPEAR IN THE TABLE:
+   ID      WT     AGE
+0-- TABLE  4 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS 
+ IN THE ORDER THEY WILL APPEAR IN THE TABLE:
+   ID     HIV     LOC     FDC
+1DOUBLE PRECISION PREDPP VERSION VI LEVEL 1.0L 
+ 
+ GENERAL NONLINEAR KINETICS MODEL (ADVAN6)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:   7
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         DEPOT        ON         YES        YES        YES        NO 
+    2         CENTRAL      ON         YES        YES        NO         YES
+    3         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE FROM SUBROUTINE TOL:   4
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1           *           9           *           *           *
+    2           8           *           *           *           *
+    3           *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      7
+   TIME DATA ITEM IS DATA ITEM NO.:          3
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   6
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0DURING SIMULATION, ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.    
+ OTHERWISE, ERROR SUBROUTINE CALLED ONLY WITH OBSERVATION EVENTS.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES COMPACT STORAGE MODE.
+1
+ MONITORING OF SEARCH:
+
+0ITERATION NO.:    0    OBJECTIVE VALUE:  0.36606E+04    NO. OF FUNC. EVALS.:11
+ CUMULATIVE NO. OF FUNC. EVALS.:   11
+ PARAMETER:  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00
+             0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00
+ GRADIENT:   0.5728E+07  0.5728E+07  0.5728E+07  0.5728E+07  0.5727E+07  0.5729E+07  0.5728E+07  0.5729E+07  0.5728E+07 -0.6762E+01
+            -0.1036E+03  0.2441E+01  0.1358E+02  0.1795E+02 -0.3933E+02 -0.8678E+01 -0.2702E+00
+0ITERATION NO.:    3    OBJECTIVE VALUE:  0.36606E+04    NO. OF FUNC. EVALS.:30
+ CUMULATIVE NO. OF FUNC. EVALS.:   81
+ PARAMETER:  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.1000E+00
+             0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00
+ GRADIENT:   0.2495E+02 -0.7638E+02  0.3154E+02 -0.2353E+03 -0.8249E+03  0.1026E+04  0.3391E+03  0.6111E+03  0.3594E+02 -0.6661E+01
+            -0.1048E+03  0.2377E+01  0.1354E+02  0.1792E+02 -0.3942E+02 -0.8771E+01 -0.2976E+00
+0ITERATION NO.:    4    OBJECTIVE VALUE:  0.36606E+04    NO. OF FUNC. EVALS.:47
+ CUMULATIVE NO. OF FUNC. EVALS.:  128
+ PARAMETER:  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.9967E-01  0.1000E+00
+             0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00  0.1000E+00
+ GRADIENT:  -0.7610E+05  0.7613E+05 -0.5945E+01  0.3808E+05 -0.7616E+05  0.1966E+06  0.1875E+02 -0.3808E+05 -0.7610E+05  0.7613E+05
+            -0.3818E+05  0.3808E+05 -0.7615E+05  0.5487E+02 -0.3398E+02 -0.8714E+01 -0.3281E+01
+0MINIMIZATION TERMINATED
+ DUE TO PROXIMITY OF LAST ITERATION EST. TO A VALUE
+ AT WHICH THE OBJ. FUNC. IS INFINITE (ERROR=136)
+0AT THE LAST COMPUTED INFINITE VALUE OF THE OBJ. FUNCT.:
+ ERROR IN NCONTR WITH INDIVIDUAL   13   ID=0.13000000E+02
+ NUMERICAL HESSIAN OF OBJ. FUNC. FOR COMPUTING CONDITIONAL ESTIMATE
+ IS NON POSITIVE DEFINITE
+ THETA=
+  1.92E+01   5.32E+01   1.15E+00   9.23E-02   2.22E-01   4.24E-01   7.13E+00   1.04E+00   2.36E-01
+ 
+ NO. OF FUNCTION EVALUATIONS USED:  128
+ NO. OF SIG. DIGITS UNREPORTABLE
+
+ ETABAR IS THE ARITHMETIC MEAN OF THE ETA-ESTIMATES,
+ AND THE P-VALUE IS GIVEN FOR THE NULL HYPOTHESIS THAT THE TRUE MEAN IS 0.
+
+ ETABAR:  -0.22E-01 -0.29E-01  0.89E-01  0.10E+00  0.40E-03  0.82E-02 -0.48E-02  0.18E-01 -0.23E-02  0.54E-03
+           0.97E-01 -0.50E-02  0.39E-01  0.59E-02 -0.14E-02 -0.53E-02  0.13E+00
+ SE:       0.31E-01  0.25E-01  0.29E-01  0.24E-01  0.97E-02  0.54E-02  0.67E-02  0.53E-02  0.21E-02  0.31E-02
+           0.28E-01  0.15E-01  0.14E-01  0.14E-01  0.20E-02  0.36E-02  0.58E-01
+
+ P VAL.:   0.48E+00  0.25E+00  0.21E-02  0.24E-04  0.97E+00  0.13E+00  0.47E+00  0.61E-03  0.26E+00  0.86E+00
+           0.63E-03  0.74E+00  0.61E-02  0.68E+00  0.50E+00  0.14E+00  0.29E-01
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                           MINIMUM VALUE OF OBJECTIVE FUNCTION                  ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ **************************************************       3660.604     **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                                  FINAL PARAMETER ESTIMATE                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+            TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9
+ 
+         1.92E+01  5.32E+01  1.15E+00  9.23E-02  2.22E-01  4.24E-01  7.13E+00  1.04E+00  2.36E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12
+             ET13      ET14      ET15      ET16      ET17
+ 
+ ETA1
++        2.79E-01
+ 
+ ETA2
++        2.17E-01  1.88E-01
+ 
+ ETA3
++        0.00E+00  0.00E+00  4.39E-01
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  3.61E-01
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.08E-02
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.61E-01
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.61E-01
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          4.61E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  4.61E-01
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  4.61E-01
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12
+             ET13      ET14      ET15      ET16      ET17
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  4.61E-01
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.44E+00
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1
+ 
+ EPS1
++        1.00E+00
+ 
+This file was created using the NONMEM version in directory /export/home/nmvi
+Started  Thu Aug 31 11:17:55 CEST 2006
+Finished Thu Aug 31 14:49:17 CEST 2006

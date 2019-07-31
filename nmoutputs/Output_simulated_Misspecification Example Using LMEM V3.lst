@@ -1,0 +1,488 @@
+                                                                                                 09:16 Tuesday, March 26, 2019   9
+
+                                                       The Mixed Procedure
+
+                                                        Model Information
+
+                                      Data Set                     WORK.CONCQT
+                                      Dependent Variable           dqtcf
+                                      Covariance Structure         Variance Components
+                                      Subject Effect               sid
+                                      Estimation Method            ML
+                                      Residual Variance Method     Profile
+                                      Fixed Effects SE Method      Kenward-Roger
+                                      Degrees of Freedom Method    Kenward-Roger
+
+
+                                                     Class Level Information
+
+                                       Class      Levels    Values
+
+                                       sid            36    101 102 103 104 105 106 201
+                                                            202 203 204 205 206 301 302
+                                                            303 304 305 306 401 402 403
+                                                            404 405 406 501 502 503 504
+                                                            505 506 601 602 603 604 605
+                                                            606
+                                       nomtime         9    0.5 1 2 3 4 6 8 12 24
+                                       trt             2    1 0
+
+
+                                                           Dimensions
+
+                                               Covariance Parameters             3
+                                               Columns in X                     14
+                                               Columns in Z per Subject          2
+                                               Subjects                         36
+                                               Max Obs per Subject               9
+
+
+                                                     Number of Observations
+
+                                           Number of Observations Read             324
+                                           Number of Observations Used             324
+                                           Number of Observations Not Used           0
+
+
+                                                        Iteration History
+
+                                   Iteration    Evaluations        -2 Log Like       Criterion
+
+                                           0              1      2056.02906187
+                                           1              2      1911.28252913      0.11000562
+                                           2              1      1910.88623354      0.00030127
+                                           3              1      1910.84290551      0.00003294
+                                           4              1      1910.84218653      0.00000055
+
+
+                                    Convergence criteria met but final hessian is not positive
+                                                            definite.
+
+
+                                                 Covariance Parameter Estimates
+
+                                                Cov Parm      Subject    Estimate
+
+                                                Intercept     sid         13.3220
+                                                dv            sid        1.953E-6
+                                                Residual                  16.1508
+
+
+                                                         Fit Statistics
+
+                                              -2 Log Likelihood              1910.8
+                                              AIC (Smaller is Better)        1940.8
+                                              AICC (Smaller is Better)       1942.4
+                                              BIC (Smaller is Better)        1964.6
+                                                                                                 09:16 Tuesday, March 26, 2019  10
+
+                                                       The Mixed Procedure
+
+                                                    Solution for Fixed Effects
+
+                                  Nominal
+                                  Time                                Standard
+                     Effect       (h)        Treatment    Estimate       Error      DF    t Value    Pr > |t|
+
+                     Intercept                             -1.7787      1.7166    39.2      -1.04      0.3065
+                     trt                     1              9.9637      1.9792    38.6       5.03      <.0001
+                     trt                     0                   0           .       .        .         .
+                     nomtime      0.5                      -0.7504      0.9865     290      -0.76      0.4475
+                     nomtime        1                      -0.8057      0.9489     268      -0.85      0.3965
+                     nomtime        2                      -0.5999      0.9711     282      -0.62      0.5372
+                     nomtime        3                      -0.4267      1.0022     298      -0.43      0.6706
+                     nomtime        4                      -0.6559      1.0155     304      -0.65      0.5188
+                     nomtime        6                      -1.1406      1.0155     303      -1.12      0.2622
+                     nomtime        8                     -0.02414      1.0022     298      -0.02      0.9808
+                     nomtime       12                      -0.3923      0.9760     285      -0.40      0.6880
+                     nomtime       24                            0           .       .        .         .
+                     chgbase                              -0.05918     0.07162    42.8      -0.83      0.4132
+                     dv                                   0.003191    0.000721    37.8       4.43      <.0001
+
+
+                                                  Type 3 Tests of Fixed Effects
+
+                                                        Num     Den
+                                          Effect         DF      DF    F Value    Pr > F
+
+                                          trt             1    38.6      25.34    <.0001
+                                          nomtime         8     282       0.30    0.9650
+                                          chgbase         1    42.8       0.68    0.4132
+                                          dv              1    37.8      19.62    <.0001
+                                                                                                 09:16 Tuesday, March 26, 2019  11
+
+                                                      The NLMIXED Procedure
+
+                                                          Specifications
+
+                                 Data Set                                    WORK.CONCQT
+                                 Dependent Variable                          dqtcf
+                                 Distribution for Dependent Variable         Normal
+                                 Random Effects                              eta1 eta2
+                                 Distribution for Random Effects             Normal
+                                 Subject Variable                            sid
+                                 Optimization Technique                      Dual Quasi-Newton
+                                 Integration Method                          Adaptive Gaussian
+                                                                             Quadrature
+
+
+                                                            Dimensions
+
+                                             Observations Used                    324
+                                             Observations Not Used                  0
+                                             Total Observations                   324
+                                             Subjects                              36
+                                             Max Obs per Subject                    9
+                                             Parameters                            15
+                                             Quadrature Points                      1
+
+
+                                                        Initial Parameters
+
+   theta1    theta2    theta3    theta4    theta5    theta6    theta7    theta8    theta9   theta10   theta11   theta12      std1
+
+     -3.7       8.1      -0.6       0.8       0.3       0.8      -0.9      -0.7       0.9      -0.3       0.1         0       2.2
+
+                                                        Initial Parameters
+
+                                                                          Negative
+                                                                               Log
+                                                    std2       sigma    Likelihood
+
+                                                   0.001           5    1091.99294
+
+
+                                                         Iteration History
+
+                                                     Negative
+                                                          Log                   Maximum
+                               Iteration Calls     Likelihood    Difference    Gradient       Slope
+
+                                      1     18       995.7537      96.23919     2150.48    -9.416E7
+                                      2     31       982.7881      12.96561     771.138    -0.40403
+                                      3     34       982.6740      0.114099     436.776    -1.64094
+                                      4     37       982.6552      0.018887     263.574    -0.26913
+                                      5     39       982.6367      0.018478     70.6395    -0.03820
+                                      6     43       982.4935      0.143222     849.431    -0.00942
+                                      7     45       982.2483      0.245156     52.4547    -0.25549
+                                      8     47       981.8965      0.351762     1297.84    -0.25751
+                                      9     51       978.5707      3.325788     2824.95    -0.58667
+                                     10     54       976.6568       1.91395     700.809    -1.92955
+                                     11     57       976.5734      0.083446     238.777    -0.24427
+                                     12     60       976.5639      0.009457     52.8041    -0.02142
+                                     13     63       976.5624      0.001483     32.3420    -0.00152
+                                     14     69       976.4622      0.100215     997.841    -0.00133
+                                     15     71       976.3424      0.119748     55.5363    -0.23484
+                                     16     74       976.2913      0.051196     222.335    -0.01842
+                                     17     80       971.8714      4.419833     3703.50    -0.07457
+                                     18     83       969.2230      2.648378     1135.93    -3.79232
+                                     19     88       968.8484      0.374656     1800.32    -0.59047
+                                     20     92       968.0526      0.795799     811.284    -1.21395
+                                     21     94       966.6734      1.379207     294.454    -0.58701
+                                     22     97       966.4806      0.192752     123.820    -0.44594
+                                     23    100       966.4770      0.003611     14.9244    -0.00695
+                                     24    103       966.4764      0.000579     40.3108    -0.00027
+                                     25    109       966.4105      0.065982     484.655    -0.00077
+                                     26    111       966.3442      0.066257     129.556    -0.11461
+                                     27    114       966.3280       0.01617     131.491    -0.01539
+                                     28    120       965.3450      0.983039     3366.24    -0.01865
+                                     29    122       964.1560      1.188999     177.708    -2.95537
+                                                                                                 09:16 Tuesday, March 26, 2019  12
+
+                                                      The NLMIXED Procedure
+
+                                                         Iteration History
+
+                                                     Negative
+                                                          Log                   Maximum
+                               Iteration Calls     Likelihood    Difference    Gradient       Slope
+
+                                     30    124       963.3869       0.76908     1125.41    -0.17853
+                                     31    128       958.8216      4.565361     1574.61    -1.06001
+                                     32    131       957.1285       1.69303     515.155    -1.48447
+                                     33    134       957.0063      0.122233     269.782    -0.16955
+                                     34    137       956.9894      0.016937     45.0447    -0.03572
+                                     35    140       956.9888      0.000513     9.09791    -0.00093
+                                     36    143       956.9888      0.000051     4.57372    -0.00008
+                                     37    146       956.9888      0.000029     5.26460    -0.00002
+                                     38    152       956.9873      0.001465     36.1833    -0.00004
+                                     39    154       956.9854      0.001889     9.67708    -0.00271
+                                     40    158       956.9649      0.020533     17.1512    -0.00050
+                                     41    160       956.9397       0.02517     9.87098    -0.03811
+                                     42    164       956.5826      0.357053     108.354    -0.00618
+                                     43    167       956.3405      0.242128     29.1414    -0.39270
+                                     44    171       955.6180      0.722491     287.165    -0.04505
+                                     45    174       955.4260      0.192075     30.7269    -0.39466
+                                     46    177       955.4047      0.021205     14.2702    -0.01910
+                                     47    180       955.3976      0.007159     2.27382    -0.00846
+                                     48    183       955.3975      0.000048     0.81155    -0.00010
+                                     49    185       955.3975       0.00002     2.37858    -3.25E-6
+
+
+                                           NOTE: GCONV convergence criterion satisfied.
+
+
+                                                          Fit Statistics
+
+                                             -2 Log Likelihood                 1910.8
+                                             AIC (smaller is better)           1940.8
+                                             AICC (smaller is better)          1942.4
+                                             BIC (smaller is better)           1964.5
+
+
+                                                       Parameter Estimates
+
+                                        Standard                                      95% Confidence
+               Parameter    Estimate       Error      DF    t Value    Pr > |t|           Limits           Gradient
+
+               theta1        -1.9019      1.8811      34      -1.01      0.3191     -5.7247      1.9209    -0.15248
+               theta2         9.5246      2.2149      34       4.30      0.0001      5.0234     14.0257    -0.28766
+               theta3        0.07526      1.0031      34       0.08      0.9406     -1.9633      2.1138     0.81451
+               theta4        -0.3347      0.9383      34      -0.36      0.7235     -2.2416      1.5722    -0.09597
+               theta5       -0.04283      0.9708      34      -0.04      0.9651     -2.0157      1.9300    -0.01117
+               theta6        0.03222      1.0174      34       0.03      0.9749     -2.0354      2.0999    -0.28240
+               theta7        0.09804      1.0361      34       0.09      0.9252     -2.0076      2.2037     0.37671
+               theta8        -0.5321      1.0361      34      -0.51      0.6109     -2.6377      1.5735    0.046016
+               theta9         0.4919      1.0164      34       0.48      0.6315     -1.5737      2.5576    -0.14771
+               theta10        0.3181      0.9773      34       0.33      0.7468     -1.6679      2.3042     0.33662
+               theta11      -0.06369     0.07650      34      -0.83      0.4109     -0.2191     0.09178    0.009690
+               theta12      0.003079    0.000852      34       3.61      0.0010    0.001348    0.004810     2.17994
+               std1           4.1200      0.6922      34       5.95      <.0001      2.7133      5.5267    -0.43485
+               std2         0.001334    0.000554      34       2.41      0.0217    0.000207    0.002460     2.37858
+               sigma          3.9655      0.1743      34      22.76      <.0001      3.6114      4.3197    -0.00577
+
+
+                                                      Additional Estimates
+
+                                             Standard
+            Label                Estimate       Error      DF    t Value    Pr > |t|    Alpha       Lower       Upper
+
+            Variance(ETA1)        16.9744      5.7036      34       2.98      0.0053     0.05      5.3834     28.5654
+            Variance(ETA2)       1.778E-6    1.478E-6      34       1.20      0.2373     0.05    -1.23E-6    4.783E-6
+            Residual Variance     15.7256      1.3820      34      11.38      <.0001     0.05     12.9169     18.5342
+            87.4                   9.7937      2.1826      34       4.49      <.0001      0.1      6.1032     13.4842
+            172.46                10.0556      2.1531      34       4.67      <.0001      0.1      6.4149     13.6964
+            462.45                10.9485      2.0687      34       5.29      <.0001      0.1      7.4505     14.4466
+            886.16                12.2532      1.9946      34       6.14      <.0001      0.1      8.8805     15.6259
+            1240.74               13.3450      1.9816      34       6.73      <.0001      0.1      9.9943     16.6957
+            1727.56               14.8440      2.0379      34       7.28      <.0001      0.1     11.3981     18.2899
+                                                                                                 09:16 Tuesday, March 26, 2019  13
+
+                                                      The NLMIXED Procedure
+
+                                                      Additional Estimates
+
+                                             Standard
+            Label                Estimate       Error      DF    t Value    Pr > |t|    Alpha       Lower       Upper
+
+            2196.63               16.2883      2.1671      34       7.52      <.0001      0.1     12.6239     19.9528
+            2595.18               17.5155      2.3258      34       7.53      <.0001      0.1     13.5829     21.4482
+            3194.85               19.3620      2.6298      34       7.36      <.0001      0.1     14.9152     23.8088
+                                                                                                 09:16 Tuesday, March 26, 2019  14
+
+                                                       The MEANS Procedure
+
+                                             Analysis Variable : Pred Predicted Value
+
+                                                                Std Dev
+                                                           ------------
+                                                              3.7383409
+                                                           ------------
+                                                                                                 09:16 Tuesday, March 26, 2019  15
+
+                                                     The UNIVARIATE Procedure
+                                                 Variable:  residuals  (Residual)
+
+                                                             Moments
+
+                                 N                         324    Sum Weights                324
+                                 Mean               -0.0074005    Sum Observations     -2.397777
+                                 Std Deviation      3.73834092    Variance            13.9751929
+                                 Skewness           -0.0027721    Kurtosis            -0.2372309
+                                 Uncorrected SS     4514.00504    Corrected SS        4513.98729
+                                 Coeff Variation    -50514.392    Std Error Mean      0.20768561
+
+
+                                                    Basic Statistical Measures
+
+                                          Location                    Variability
+
+                                      Mean     -0.00740     Std Deviation            3.73834
+                                      Median    0.13217     Variance                13.97519
+                                      Mode       .          Range                   19.87760
+                                                            Interquartile Range      5.15526
+
+
+                                                    Tests for Location: Mu0=0
+
+                                         Test           -Statistic-    -----p Value------
+
+                                         Student's t    t  -0.03563    Pr > |t|    0.9716
+                                         Sign           M         4    Pr >= |M|   0.6974
+                                         Signed Rank    S      -189    Pr >= |S|   0.9110
+
+
+                                                       Tests for Normality
+
+                                    Test                  --Statistic---    -----p Value------
+
+                                    Shapiro-Wilk          W     0.996049    Pr < W      0.5967
+                                    Kolmogorov-Smirnov    D     0.038691    Pr > D     >0.1500
+                                    Cramer-von Mises      W-Sq  0.051145    Pr > W-Sq  >0.2500
+                                    Anderson-Darling      A-Sq  0.332593    Pr > A-Sq  >0.2500
+
+
+                                                     Quantiles (Definition 5)
+
+                                                     Level           Quantile
+
+                                                     100% Max        9.746966
+                                                     99%             7.924611
+                                                     95%             6.156444
+                                                     90%             4.963109
+                                                     75% Q3          2.488622
+                                                     50% Median      0.132172
+                                                     25% Q1         -2.666637
+                                                     10%            -4.485953
+                                                     5%             -6.176770
+                                                     1%             -8.642036
+                                                     0% Min        -10.130634
+
+
+                                                       Extreme Observations
+
+                                           ------Lowest------        -----Highest-----
+
+                                               Value      Obs           Value      Obs
+
+                                           -10.13063      271         7.87419      264
+                                           -10.03182      243         7.92461      248
+                                            -9.71491      123         8.90629       14
+                                            -8.64204      214         8.98293      100
+                                            -8.09211      103         9.74697      105
+                                                                                                 09:16 Tuesday, March 26, 2019  16
+
+                                                     The UNIVARIATE Procedure
+                                              Variable:  conc  (Drug Concentration)
+
+                                                             Moments
+
+                                 N                         324    Sum Weights                324
+                                 Mean               1246.30892    Sum Observations     403804.09
+                                 Std Deviation      1091.06481    Variance            1190422.43
+                                 Skewness           0.45684472    Kurtosis            -1.0188961
+                                 Uncorrected SS      887771083    Corrected SS         384506444
+                                 Coeff Variation    87.5436897    Std Error Mean      60.6147119
+
+
+                                                    Basic Statistical Measures
+
+                                          Location                    Variability
+
+                                      Mean     1246.309     Std Deviation               1091
+                                      Median   1001.330     Variance                 1190422
+                                      Mode        0.000     Range                       3850
+                                                            Interquartile Range         2022
+
+
+                                                    Tests for Location: Mu0=0
+
+                                         Test           -Statistic-    -----p Value------
+
+                                         Student's t    t  20.56116    Pr > |t|    <.0001
+                                         Sign           M       135    Pr >= |M|   <.0001
+                                         Signed Rank    S   18292.5    Pr >= |S|   <.0001
+
+
+                                                     Quantiles (Definition 5)
+
+                                                     Level          Quantile
+
+                                                     100% Max       3850.490
+                                                     99%            3703.870
+                                                     95%            3073.720
+                                                     90%            2765.600
+                                                     75% Q3         2196.345
+                                                     50% Median     1001.330
+                                                     25% Q1          173.935
+                                                     10%               0.000
+                                                     5%                0.000
+                                                     1%                0.000
+                                                     0% Min            0.000
+
+
+                                                       Extreme Observations
+
+                                             ----Lowest----        -----Highest-----
+
+                                             Value      Obs           Value      Obs
+
+                                                 0       54         3688.10      310
+                                                 0       53         3703.87      312
+                                                 0       52         3753.23      293
+                                                 0       51         3793.32      311
+                                                 0       50         3850.49      294
+                                                                                                 09:16 Tuesday, March 26, 2019  17
+
+           Obs    decile    _TYPE_    _FREQ_     obsmean    meanconc     obsp5    obsp95    obslowerclm    obsupperclm
+
+             1       1         0        54       -2.3067        0.00    -11.85      3.74       -3.3535        -1.2599
+             2       2         0        11        0.8045       87.40     -8.86     10.45       -2.6103         4.2194
+             3       3         0        33        3.4564      172.46     -6.18     10.74        2.0483         4.8645
+             4       4         0        32        8.0544      462.45     -2.34     18.12        6.2488         9.8600
+             5       5         0        32       11.1253      886.16      1.77     22.11        9.4195        12.8311
+             6       6         0        33       14.3573     1240.74      1.27     24.39       12.4496        16.2650
+             7       7         0        32       16.1419     1727.56      7.95     28.21       14.5223        17.7615
+             8       8         0        33       15.0852     2196.63      4.38     29.11       13.3022        16.8681
+             9       9         0        32       16.6775     2595.18      7.19     29.12       14.6656        18.6894
+            10      10         0        32       19.3881     3194.85     11.05     29.55       17.8438        20.9325
+                                                                                                 09:16 Tuesday, March 26, 2019  18
+
+                                                                               5th                     95th
+                                                            Simulated      Percentile               Percentile
+                                             Predicted         Mean          of Mean                  of Mean
+        Obs    decile    _TYPE_    _FREQ_       Mean      Concentration    Prediction    pred2p5    Prediction    pred2p95
+
+          1       1         0        1000      9.5244             0           5.9708          0       13.0443          0
+          2       2         0        1000      9.7745           100           6.0828        100       13.5651        100
+          3       3         0        1000     10.2497           200           6.7624        200       14.0857        200
+          4       4         0        5000     11.0878           500           7.3059        300       14.8570        700
+          5       5         0        3000     12.2926           900           8.3022        800       16.2278       1000
+          6       6         0        4000     13.3460          1250           9.2165       1100       17.5850       1400
+          7       7         0        5000     14.7938          1700          10.3854       1500       19.1840       1900
+          8       8         0        5000     16.3577          2200          11.5108       2000       21.1663       2400
+          9       9         0        3000     17.5102          2600          12.2121       2500       22.7968       2700
+         10      10         0       13000     20.0146          3400          13.9241       2800       26.4347       4000
+                                                                                                 09:16 Tuesday, March 26, 2019  19
+
+                                                  Observed                                                    Observed
+                                                Change From                      Observed      Observed     Change From
+                                                  Baseline          Drug            5th          95th         Baseline
+           Obs    decile    _TYPE_    _FREQ_    QTcF (msec)    Concentration    Percentile    Percentile    QTcF (msec)
+
+             1       1         0        1000       -2.3067           0.00         -11.85          3.74         -3.3535
+             2       2         0        1000        0.8045          87.40          -8.86         10.45         -2.6103
+             3       3         0        1000        3.4564         172.46          -6.18         10.74          2.0483
+             4       4         0        5000        8.0544         462.45          -2.34         18.12          6.2488
+             5       5         0        3000       11.1253         886.16           1.77         22.11          9.4195
+             6       6         0        4000       14.3573        1240.74           1.27         24.39         12.4496
+             7       7         0        5000       16.1419        1727.56           7.95         28.21         14.5223
+             8       8         0        5000       15.0852        2196.63           4.38         29.11         13.3022
+             9       9         0        3000       16.6775        2595.18           7.19         29.12         14.6656
+            10      10         0       13000       19.3881        3194.85          11.05         29.55         17.8438
+
+                    Observed                                       5th                     95th
+                  Change From                   Simulated      Percentile               Percentile
+                    Baseline     Predicted         Mean          of Mean                  of Mean
+           Obs    QTcF (msec)       Mean      Concentration    Prediction    pred2p5    Prediction    pred2p95
+
+             1       -1.2599       9.5244             0           5.9708          0       13.0443          0
+             2        4.2194       9.7745           100           6.0828        100       13.5651        100
+             3        4.8645      10.2497           200           6.7624        200       14.0857        200
+             4        9.8600      11.0878           500           7.3059        300       14.8570        700
+             5       12.8311      12.2926           900           8.3022        800       16.2278       1000
+             6       16.2650      13.3460          1250           9.2165       1100       17.5850       1400
+             7       17.7615      14.7938          1700          10.3854       1500       19.1840       1900
+             8       16.8681      16.3577          2200          11.5108       2000       21.1663       2400
+             9       18.6894      17.5102          2600          12.2121       2500       22.7968       2700
+            10       20.9325      20.0146          3400          13.9241       2800       26.4347       4000

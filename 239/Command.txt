@@ -1,0 +1,7 @@
+###### Scenario = 4
+###### Original tool version = NONMEM 7.3.0
+###### Input data = Simulated_P241.csv
+###### Executable model = Executable_P241.ctl
+###### Output = Output_simulated_P241.res
+
+nmfe73 Executable_P241.ctl Output_simulated_P241.res

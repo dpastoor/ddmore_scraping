@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000195">
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Two-compartment PK model with combined linear and saturable elimination. Inter-individual variability on linear and nonlinear clearance and volumes of distribution. Inter-occasion variability on bioavailability after repeated IV dosing (also accounts for uncertainty in actual dose level). Body weight is used as a covariate on linear and nonlinear clearance and volumes of distribution.</j.2:model-has-description-long>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Contary to the original publication, inter-occasion variability on bioavailability was not implemented.</j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> To understand PK and variability in cancer patients of a new monoclonal antibody</j.2:model-has-description>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006029"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006009"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000212">
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Joint parent-metabolite (tamoxifen and endoxifen) PK model  with one compartment each and an additonal hypothetical liver compartment  to account for the fraction of tamoxifen directly metabolised to endoxifen. CYP2D6 and CYP3A4/5 phenotypes (dextromethorphan model-based individual CL values)  have been implemented as power functions and centred around the population median on the formation of endoxifen (CL23).</j.2:model-has-description-long>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">To better understand the highly variable pharmacokinetics  of tamoxifen and its major metabolite endoxifen in breast cancer patients  considering CYP2D6 and CYP3A4/5 phenotypes.</j.2:model-has-description>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006029"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> a) EVID and L2 item (as in dataset and used in original model)  not us for the estimation task utilising DDMoRe framework; b) Residual error for parent (tamoxifen) and metabolite (endoxifen)  estimated without considering correlations and as standard deviations  (thus as structural parameters in NONMEM as THETAs); c) lag time handled differently by ddmore products than by NONMEM. These differences led to minor differences in estimates (esp. tlag).</j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+  </rdf:Description>
+</rdf:RDF>

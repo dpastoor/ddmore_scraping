@@ -1,0 +1,26 @@
+{
+    "files": [
+        "Executable_real_TB_Rifampicin_PK_Wilkins_2008.mod",
+        "Simulated_TB_Rifampicin_PK_Wilkins_2008.csv",
+        "catab.simulated_TB_Rifampicin_PK_Wilkins_2008",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.phi",
+        "Output_real_TB_Rifampicin_PK_Wilkins_2008",
+        "cotab.simulated_TB_Rifampicin_PK_Wilkins_2008",
+        "Command.txt",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.lst",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.shm",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.xml",
+        "TB_Rifampicin_PK_Wilkins_2008_real.lst",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.shk",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.cor",
+        "Output_simulated_TB_Rifampicin_PK_Wilkins_2008",
+        "Executable_simulated_TB_Rifampicin_PK_Wilkins_2008.mod",
+        "sdtab.simulated_TB_Rifampicin_PK_Wilkins_2008",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.cov",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.ext",
+        "TB_Rifampicin_PK_Wilkins_2008_simulated.coi",
+        "DDMODEL00000280.rdf",
+        "patab.simulated_TB_Rifampicin_PK_Wilkins_2008"
+    ],
+    "version": 3
+}

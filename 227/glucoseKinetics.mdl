@@ -1,0 +1,255 @@
+# By Roberto Bizzotto, Institute of Neuroscience, CNR, Padua, Italy
+# Copyright 2016
+
+gu_v1_mog  = mogObj{
+    INFO{
+        set name = "Glucose kinetics",
+        problemStmt = "Model for glucose kinetics in humans as from doi: 10.1152/ajpendo.00045.2016. By Roberto Bizzotto, Institute of Neuroscience, CNR, Padua, Italy. Copyright 2016"        
+        }
+	OBJECTS{
+		gu_v1_dat: {type is dataObj}
+		gu_v1_par: {type is parObj}
+		gu_v1_mdl: {type is mdlObj}
+		gu_v1_sim: {type is taskObj}
+	}
+}
+
+gu_v1_dat = dataObj{
+
+   DECLARED_VARIABLES{Y::observation in_X1::dosingTarget in_X::dosingTarget in_Z1::dosingTarget in_Z::dosingTarget phi1::dosingTarget phi2::dosingTarget}
+   
+   DATA_INPUT_VARIABLES{
+      TIME: {use is idv} # min
+      DV: {use is dv, variable=Y} # mM
+      MDV: {use is mdv}
+      AMT: {use is amt, define={1 in CMT as in_X1, 2 in CMT as in_X, 3 in CMT as in_Z1, 4 in CMT as in_Z, 5 in CMT as phi1, 6 in CMT as phi2}} # micromol/m^2
+      RATE: {use is rate} # micromol/m^2/min
+      ID: {use is id}
+      INS: {use is variable} # pM
+      GLU: {use is variable} # mM
+      CMT: {use is cmt}
+      TOBS: {use is variable} # min
+      T1: {use is variable} # previous time if target is NONMEM, following time if target is simulx or Monolix # min
+      GLU1: {use is variable} # previous glucose if target is NONMEM, following glucose if target is simulx or Monolix # mM
+      INS1: {use is variable} # previous insulin if target is NONMEM, following insulin if target is simulx or Monolix # pM
+   }# end DATA_INPUT_VARIABLES
+
+   SOURCE{
+      srcfile: {file="Simulated_glucoseKinetics.csv",
+      inputFormat is nonmemFormat}
+   }# end SOURCE
+
+} # end data object
+
+# final parameter estimates from related publication
+gu_v1_par = parObj{
+
+   STRUCTURAL{
+      typ_KmG: {value=3.88, lo=0} # mmol/l
+      typ_Vmax0: {value=338, lo=0} # micromol/min/m^2
+      typ_Emax: {value=4812, lo=0} # micromol/min/m^2
+      typ_gamma: {value=1.62, lo=0} # dimensionless
+      typ_KmI: {value=784, lo=0} # pmol/l
+      typ_t12I: {value=15.9, lo=0} # min
+      typ_t12G: {value=0.7, fix=true} # min FIXED
+      typ_V: {value=12648, lo=0} # ml
+      typ_flambda3: {value=0.0582, lo=0, hi=1}
+      typ_flambda2: {value=0.154, lo=0, hi=1}
+      typ_w1: {value=0.609, lo=0, hi=1}
+      typ_fw2: {value=0.901, lo=0, hi=1}
+      typ_F: {value=2688, fix=true} # ml/min/m^2 3200*0.84 FIXED
+   }# end STRUCTURAL
+
+   VARIABILITY{
+      var_KmG: {value=0.219, type is var}
+      var_Vmax0: {value=0, type is var, fix=true}
+      var_Emax: {value=0.112, type is var}
+      var_gamma: {value=0.111, type is var}
+      var_KmI: {value=0.263, type is var}
+      var_t12I: {value=0.151, type is var}
+      var_t12G: {value=0, type is var, fix=true}
+      var_V: {value=0.0557, type is var}
+      var_flambda3: {value=0.179, type is var}
+      var_flambda2: {value=0, type is var}
+      var_w1: {value=0.773, type is var}
+      var_fw2: {value=0, type is var}
+      var_F: {value=0, type is var, fix=true}
+      corr_gamma_KmI: {value=-0.44}
+      alpha: {value=0.014, lo=0}
+      sigma: {value=1, type is var, fix=true}
+   }# end VARIABILITY
+   
+} # end of parameter object
+
+gu_v1_mdl = mdlObj{
+
+   IDV{T}
+
+   VARIABILITY_LEVELS{
+      DV: {type is observation, level=1}
+      ID: {type is parameter, level=2}
+   }# end VARIABILITY_LEVELS
+
+   STRUCTURAL_PARAMETERS{
+      typ_KmG # mM
+      typ_Vmax0 # micromol/min/m^2
+      typ_Emax # micromol/min/m^2
+      typ_gamma # dimensionless
+      typ_KmI # pM
+      typ_t12I # min
+      typ_t12G # min
+      typ_V # ml
+      typ_flambda3
+      typ_flambda2
+      typ_w1
+      typ_fw2
+      typ_F # ml/min/m^2
+   }# end STRUCTURAL_PARAMETERS
+
+   VARIABILITY_PARAMETERS{
+      var_KmG
+      var_Vmax0
+      var_Emax
+      var_gamma
+      var_KmI
+      var_t12I
+      var_t12G
+      var_V
+      var_flambda3
+      var_flambda2
+      var_w1
+      var_fw2
+      var_F
+      corr_gamma_KmI
+      alpha
+      sigma
+   }# end VARIABILITY_PARAMETERS
+
+   RANDOM_VARIABLE_DEFINITION (level=ID) {
+      eta_KmG ~ Normal(mean=0, var=var_KmG)
+      eta_Vmax0 ~ Normal(mean=0, var=var_Vmax0)
+      eta_Emax ~ Normal(mean=0, var=var_Emax)
+      eta_gamma ~ Normal(mean=0, var=var_gamma)
+      eta_KmI ~ Normal(mean=0, var=var_KmI)
+      eta_t12I ~ Normal(mean=0, var=var_t12I)
+      eta_t12G ~ Normal(mean=0, var=var_t12G)
+      eta_V ~ Normal(mean=0, var=var_V)
+      eta_flambda3 ~ Normal(mean=0, var=var_flambda3)
+      eta_flambda2 ~ Normal(mean=0, var=var_flambda2)
+      eta_w1 ~ Normal(mean=0, var=var_w1)
+      eta_fw2 ~ Normal(mean=0, var=var_fw2)
+      eta_F ~ Normal(mean=0, var=var_F)
+      :: {type is correlation, rv1=eta_gamma, rv2=eta_KmI, value=corr_gamma_KmI}
+   }# end RANDOM_VARIABLE_DEFINITION (level=ID)
+
+   INDIVIDUAL_VARIABLES{
+      KmG: {type is linear, trans is ln, pop = typ_KmG, ranEff = eta_KmG}
+      Vmax0: {type is linear, trans is ln, pop = typ_Vmax0, ranEff = eta_Vmax0}
+      Emax: {type is linear, trans is ln, pop = typ_Emax, ranEff = eta_Emax}
+      gamma: {type is linear, trans is ln, pop = typ_gamma, ranEff = eta_gamma}
+      KmI: {type is linear, trans is ln, pop = typ_KmI, ranEff = eta_KmI}
+      t12I: {type is linear, trans is ln, pop = typ_t12I, ranEff = eta_t12I}
+      t12G: {type is linear, trans is ln, pop = typ_t12G, ranEff = eta_t12G}
+      V: {type is linear, trans is ln, pop = typ_V, ranEff = eta_V}
+      flambda3: {type is linear, trans is logit, pop = typ_flambda3, ranEff = eta_flambda3}
+      flambda2: {type is linear, trans is logit, pop = typ_flambda2, ranEff = eta_flambda2}
+      w1: {type is linear, trans is logit, pop = typ_w1, ranEff = eta_w1}
+      fw2: {type is linear, trans is logit, pop = typ_fw2, ranEff = eta_fw2}
+      F: {type is linear, trans is ln, pop = typ_F, ranEff = eta_F}
+   }
+
+   MODEL_PREDICTION{
+
+      # regressors
+      INS # pM
+      GLU # mM
+      TOBS # min
+      T1 # min
+      GLU1 # mM
+      INS1 # mM
+      
+      # constants
+      VHL = 700 # ml/m^2
+      deltaHL = 15 # min^-1
+      delta = 10 # min^-1
+      
+      # derived individual parameters
+      w2 = (1-w1)*fw2
+      w3 = 1-w1-w2
+      lambda1 = (w1*flambda2*flambda3+w2*flambda3+w3)/(flambda2*flambda3)*delta*F/(delta*(V-VHL)-F) # min^-1
+      lambda2 = lambda1*flambda2 # min^-1
+      lambda3 = lambda2*flambda3 # min^-1
+      c1 = deltaHL*F / (deltaHL*VHL - 2*F)
+      c2 = -deltaHL*F / (deltaHL*VHL - F)
+
+      # piecewise linear interpolation of insulin
+      I = (T-T1)/(TOBS-T1)*(INS-INS1) + INS1
+      # piecewise linear interpolation of glucose
+      GL = (T-T1)/(TOBS-T1)*(GLU-GLU1) + GLU1# not named G to avoid translation issues to NMTRAN!!!!!!!!!!!!!!!!!!!
+
+      t0 = 0
+
+      COMPARTMENT{		
+         in_X1: {type is direct, to=X1} 		
+         in_X: {type is direct, to=X} 
+         in_Z1: {type is direct, to=Z1}
+         in_Z: {type is direct, to=Z}        
+         phi1: {type is direct, to=xHL1, finput=1/F}
+         phi2: {type is direct, to=xHL2, finput=1/F}
+      }# end COMPARTMENT
+      
+   	  DEQ{
+
+          # Two-compartment delays on interpolated insulin and glucose concentrations
+          X1: {deriv= (GL-X1)*ln(2)/t12G, init= 0, x0 = t0}
+          X: {deriv= (X1-X)*ln(2)/t12G, init= 0, x0 = t0}
+          Z1: {deriv= (I-Z1)*ln(2)/t12I, init= 0, x0 = t0}
+          Z: {deriv= (Z1-Z)*ln(2)/t12I, init= 0, x0 = t0}
+
+          # Glucose clearance
+          Vmax = Vmax0 + Emax*Z^gamma/(KmI^gamma+Z^gamma)
+          cl = Vmax/(KmG+X)
+
+          # Glucose fractional extraction of the periphery block
+          E = cl/F
+          
+          # Model of glucose kinetics
+          # Heart-lung block HL
+          xHL1: {deriv= c2*xHL1 + Gv, init= 0, x0 = t0}
+          xHL2: {deriv= -deltaHL*xHL2 + Gv, init= 0, x0 = t0}
+          G = c1*xHL1 - c1*xHL2
+
+          # Periphery block PER
+          xPER1: {deriv= -lambda1*xPER1 + w1*(1-E)*G, init= 0, x0 = t0}
+          xPER2: {deriv= -lambda2*xPER2 + w2*(1-E)*G, init= 0, x0 = t0}
+          xPER3: {deriv= -lambda3*xPER3 + w3*(1-E)*G, init= 0, x0 = t0}
+          xPER4: {deriv= lambda1*xPER1 + lambda2*xPER2 + lambda3*xPER3 - delta*xPER4, init= 0, x0 = t0}
+          # Coupling of heart-lung and periphery blocks
+          Gv = delta*xPER4
+
+      }# end DEQ
+
+   }# end MODEL_PREDICTION
+
+   RANDOM_VARIABLE_DEFINITION(level=DV) {
+      epsilon ~ Normal(mean = 0, var = sigma)
+   } # end RANDOM_VARIABLE_DEFINITION
+
+   OBSERVATION {
+      Y: {type is additiveError, prediction=G, additive=alpha, eps=epsilon} # mM
+   }
+} # end of model object
+
+gu_v1_sim  = taskObj {
+	SIMULATE {
+	} #end SIMULATE sub block
+} # end of task object
+
+gu_v1_est  = taskObj {
+	ESTIMATE {
+		set algo is saem
+ 	} #end ESTIMATE sub block
+} # end of task object
+
+
+

@@ -1,0 +1,4 @@
+###### Model differences = The PK model was extended to include one peripheral compartment, in addition to the central compartment. The model parameters were re-evaluated using the same data as in the original publication.
+
+
+###### Reasons = When comparing the parameter values estimated in Monolix to their values estimated in the original study by Jager et al. PLoS One 2011, some slight differences were observed. Furthermore, the original work estimated the parameters in a step-wise fashion, while here our approach was to estimate all the parameters simultaneously. In cosequence, we found that a two-compartment PK model provides better description of the data, judging by statistical criteria (AIC, BIC). 

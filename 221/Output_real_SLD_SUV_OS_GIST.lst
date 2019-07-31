@@ -1,0 +1,1550 @@
+Sun Nov  1 11:08:23 CET 2015
+;; 1. Based on:
+;; 2. Description: exp-exp - RCFB1MAX
+;; x1. Author: user
+$SIZES      NO=1000 LIM6=1000 LNP4=16000 DIMTMP=6000 LVR=50
+$PROBLEM    OS - IL_SUV - SLD
+$INPUT      STUD=DROP IDX=DROP ID CYCL=DROP WEEK=DROP TIME TOND FLAG
+            AM=DROP ; time in hours
+            DVX=DROP DV DOSX=DROP PLAC=DROP ; lnDV
+            CL V2=DROP Q=DROP V3=DROP KA=DROP TTP=DROP TTPC=DROP
+            TTD=DROP TTDC=DROP EVID EVI=DROP VBAS=DROP VMRT=DROP
+            VEC=DROP VSLO=DROP BAS2=DROP MRT2=DROP EC52=DROP BAS3=DROP
+            MRT3=DROP EC53=DROP SBAS=DROP SMRT=DROP SEC5=DROP SLO=DROP
+            IFBM=DROP BSUV BSLD DVX=DROP LDVX=DROP CENS DOS SIBAS=DROP
+            SKOUT=DROP SALPH=DROP SDRUG=DROP LESI ; lesion number
+            MIBAS=DROP MKOUT=DROP MALPH=DROP MDRUG=DROP MBSUV=DROP ; baseline SUVmean
+            L2 ; lesion number
+            NOBL=DROP IBSLD=DROP KLSLD=DROP DRUGSLD=DROP KDSSLD=DROP
+            KD3SLD=DROP LAMSLD=DROP TLDOS=DROP DUM SIM TLSLD=DROP
+            SIMDRP TLSUV=DROP SIMFLG
+$DATA      GIST_SUV_max_mean_BM_SLD_Survival_20150313_M6.csv
+            IGNORE=(FLAG.EQ.5,FLAG.EQ.6,FLAG.EQ.7,FLAG.EQ.8)
+            IGNORE=(FLAG.EQ.9,FLAG.EQ.10,FLAG.EQ.14,FLAG.EQ.16)
+            IGNORE=(SIM.EQ.1)
+ ; dropout,SUVmax,SUVmean,SUVmean_lesion
+ ; rows added for simulations
+
+; FLAG1 = dose
+
+; FLAG3 = survival
+
+; FLAG4 = tumor (SLD)
+
+; FLAG5 = VEGF
+
+; FLAG6 = sVEGFR-2
+
+; FLAG7 = sVEGFR-3 (not here)
+
+; FLAG8 = sKIT
+
+; FLAG9 = dropout from SLD
+
+; FLAG10= summed SUVmax
+
+; FLAG11= ?
+
+; FLAG13= cens survival
+
+; FLAG14= SUVmean sum
+
+; FLAG15= SUVmax indiv lesion
+
+; FLAG16= SUVmean indiv lesion
+$SUBROUTINE ADVAN6 TOL=6
+$MODEL      NCOMPS=9
+$PK   
+
+AUC     =    DOS/CL
+
+; --- Initialize flags used in $ERROR
+
+IF(NEWIND.NE.2) THEN
+ISLES1 = 0
+ISLES2 = 0
+ISLES3 = 0
+ISLES4 = 0
+ISLES5 = 0
+
+LES1=0
+LES2=0
+LES3=0
+LES4=0
+LES5=0
+IBASMAX=0
+
+WK1A1 = 0
+WK1A2 = 0
+WK1A3 = 0
+WK1A4 = 0
+WK1A5 = 0
+
+RCFB1A1 = 0
+RCFB1A2 = 0
+RCFB1A3 = 0
+RCFB1A4 = 0
+RCFB1A5 = 0
+
+RCFB1MAX= 0
+
+SUVREL  = 0
+SLDREL  = 0
+ENDIF
+
+;=======================================
+; Parameters and variables for SUV model
+;=======================================
+;----- Parameters for IDR model --------------
+; ~~~~~~~~ Kout
+TVKOUT  =   THETA(1)/1000/24/7
+
+KOUT1   =   TVKOUT*EXP(ETA(1)+ETA(2))      ; lesion 1
+KOUT2   =   TVKOUT*EXP(ETA(1)+ETA(3))      ; lesion 2
+KOUT3   =   TVKOUT*EXP(ETA(1)+ETA(4))      ; lesion 3
+KOUT4   =   TVKOUT*EXP(ETA(1)+ETA(5))      ; lesion 4
+KOUT5   =   TVKOUT*EXP(ETA(1)+ETA(6))      ; lesion 5
+
+; ~~~~~~~~ Disease progression parameter
+TVALPHA =   THETA(2)/1000/24/7
+
+ALPHA1  =   TVALPHA*EXP(ETA(7)+ETA(8))     ; lesion 1
+ALPHA2  =   TVALPHA*EXP(ETA(7)+ETA(9))     ; lesion 2
+ALPHA3  =   TVALPHA*EXP(ETA(7)+ETA(10))    ; lesion 3
+ALPHA4  =   TVALPHA*EXP(ETA(7)+ETA(11))    ; lesion 4
+ALPHA5  =   TVALPHA*EXP(ETA(7)+ETA(12))    ; lesion 5
+
+; ~~~~~~~~ Drug effect parameter
+TVDRUG  =   THETA(3)
+
+DRUG1   =   TVDRUG*EXP(ETA(14)+ETA(15))    ; lesion 1
+DRUG2   =   TVDRUG*EXP(ETA(14)+ETA(16))    ; lesion 2
+DRUG3   =   TVDRUG*EXP(ETA(14)+ETA(17))    ; lesion 3
+DRUG4   =   TVDRUG*EXP(ETA(14)+ETA(18))    ; lesion 4
+DRUG5   =   TVDRUG*EXP(ETA(14)+ETA(19))    ; lesion 5
+
+; ~~~~~~~~ Baseline SUVmax
+
+TVBASE  =   THETA(4)
+
+IBASE1  =   TVBASE*EXP(ETA(21)+ETA(22))   ; lesion 1
+IBASE2  =   TVBASE*EXP(ETA(21)+ETA(23))   ; lesion 2
+IBASE3  =   TVBASE*EXP(ETA(21)+ETA(24))   ; lesion 3
+IBASE4  =   TVBASE*EXP(ETA(21)+ETA(25))   ; lesion 4
+IBASE5  =   TVBASE*EXP(ETA(21)+ETA(26))   ; lesion 5
+
+;----- Parameters for Cholesky decomposition--
+; ~~~~~~~~ Diagonal (Variance)
+VD11    =   THETA(5)
+VD22    =   THETA(5)
+VD33    =   THETA(5)
+VD44    =   THETA(5)
+VD55    =   THETA(5)
+
+; ~~~~~~~~ Off-diagonal (Correlation)
+CR12    =   THETA(6)
+CR13    =   THETA(6)
+CR14    =   THETA(6)
+CR15    =   THETA(6)
+CR23    =   THETA(6)
+CR24    =   THETA(6)
+CR25    =   THETA(6)
+CR34    =   THETA(6)
+CR35    =   THETA(6)
+CR45    =   THETA(6)
+
+;=======================================
+; Parameters and variables for SLD model
+;=======================================
+  TVKG    =    THETA(7)/24/7/1000 ; THETA in /wk
+  KG      =    TVKG  *EXP(ETA(27))
+  TVLAM   =    THETA(8)/24/7/1000
+  LAMBDA  =    TVLAM *EXP(ETA(28))
+  TVDRU   =    THETA(9)/24/7/1000
+  KDRUG   =    TVDRU *EXP(ETA(13))
+  IBASE   =    THETA(10)*EXP(ETA(20))
+  KEO     =    LOG(2)/50
+
+;=======================================
+; Parameters for time-to-event models
+;=======================================
+LAMBH     =   THETA(12)/24/7      ; Scale parameter in the Weibull pdf for the survival model
+ALPHH     =   THETA(13)           ; Shape parameter in the Weibull pdf for the survival model
+LAMBD     =   THETA(14)/24/7      ; Scale parameter in the Weibull pdf for the drop out model
+ALPHD     =   THETA(15)           ; Shape parameter in the Weibull pdf for the drop out model
+
+
+;-----Compartment initialization-----
+A_0(1)  =   IBASE1                         ; lesion 1
+A_0(2)  =   IBASE2                         ; lesion 2
+A_0(3)  =   IBASE3                         ; lesion 3
+A_0(4)  =   IBASE4                         ; lesion 4
+A_0(5)  =   IBASE5                         ; lesion 5
+
+A_0(6)  =   IBASE                          ; SLD
+
+$DES   
+
+;=======================================
+;             SUV model
+;=======================================
+; ~~~~~~~~ Kin
+KIN1    =   KOUT1*IBASE1                   ; lesion 1
+KIN2    =   KOUT2*IBASE2                   ; lesion 2
+KIN3    =   KOUT3*IBASE3                   ; lesion 3
+KIN4    =   KOUT4*IBASE4                   ; lesion 4
+KIN5    =   KOUT5*IBASE5                   ; lesion 5
+
+; ~~~~~~~~ Drug effect
+EFF1    =   DRUG1*A(9)                      ; lesion 1
+EFF2    =   DRUG2*A(9)                      ; lesion 2
+EFF3    =   DRUG3*A(9)                      ; lesion 3
+EFF4    =   DRUG4*A(9)                      ; lesion 4
+EFF5    =   DRUG5*A(9)                      ; lesion 5
+
+; ~~~~~~~~ Differential equations
+DADT(1) =   KIN1*(1+ALPHA1*T)-KOUT1*(1+EFF1)*A(1)      ; lesion 1
+DADT(2) =   KIN2*(1+ALPHA2*T)-KOUT2*(1+EFF2)*A(2)      ; lesion 2
+DADT(3) =   KIN3*(1+ALPHA3*T)-KOUT3*(1+EFF3)*A(3)      ; lesion 3
+DADT(4) =   KIN4*(1+ALPHA4*T)-KOUT4*(1+EFF4)*A(4)      ; lesion 4
+DADT(5) =   KIN5*(1+ALPHA5*T)-KOUT5*(1+EFF5)*A(5)      ; lesion 5
+DADT(9) =   KEO*(AUC-A(9))
+;=======================================
+;             SLD model
+;=======================================
+AUC1    =   A(9)*KDRUG                             ; exposure driven drug effect
+DADT(6) =   KG*A(6)- AUC1*EXP(-(LAMBDA*T))*A(6)   ; longitudinal model describing tumor growth
+
+;=======================================
+;             Time-to-event model
+;=======================================
+; ~~~~~~~~ Model-predicted timecourse of summed SUV across lesions
+;  SUVTOTX = A(1)*ISLES1 + A(2)*ISLES2 + A(3)*ISLES3 + A(4)*ISLES4 + A(5)*ISLES5
+; ~~~~~~~~ Model-predicted baseline of summed SUV across lesions
+;   IBASTOTX= IBASE1*ISLES1 + IBASE2*ISLES2 + IBASE3*ISLES3 + IBASE4*ISLES4 + IBASE5*ISLES5
+; ~~~~~~~~ Model-predicted change from baseline in summed SUV across lesions
+;   SUVRELX = (SUVTOTX-IBASTOTX)/IBASTOTX
+; ~~~~~~~~ Model-predicted change from baseline in SLD
+;   SLDRELX = (A(6)-IBASE)/IBASE
+
+; ~~~~~~~~ Weibull model for survival
+DELX=1E-16
+DADT(7) = LAMBH*ALPHH*(T+DELX)**(ALPHH-1)* EXP(THETA(16)*RCFB1MAX)
+
+; ~~~~~~~~ Weibull model for censoring
+DADT(8) = LAMBD*ALPHD*(T+DELX)**(ALPHD-1)
+
+
+$ERROR   
+;=======================================
+;              SUV model
+;=======================================
+;---- Cholesky decomposition ----------------
+; ~~~~~~~~ Off-diagonal (Covariance)
+CV12    =   SQRT(VD11*VD22)*CR12
+CV13    =   SQRT(VD11*VD33)*CR13
+CV14    =   SQRT(VD11*VD44)*CR14
+CV15    =   SQRT(VD11*VD55)*CR15
+CV23    =   SQRT(VD22*VD33)*CR23
+CV24    =   SQRT(VD22*VD44)*CR24
+CV25    =   SQRT(VD22*VD55)*CR25
+CV34    =   SQRT(VD33*VD44)*CR34
+CV35    =   SQRT(VD33*VD55)*CR35
+CV45    =   SQRT(VD44*VD55)*CR45
+
+; ~~~~~~~~ Cholesky decomposition matrix
+CD11    =   SQRT(VD11)
+CD12    =   CV12 / CD11
+CD13    =   CV13 / CD11
+CD14    =   CV14 / CD11
+CD15    =   CV15 / CD11
+
+CD22    =   SQRT(VD22 - (CD12*CD12))
+CD23    =   (CV23 - CD13*CD12) / CD22
+CD24    =   (CV24 - CD14*CD12) / CD22
+CD25    =   (CV25 - CD15*CD12) / CD22
+
+CD33    =   SQRT(VD33 - (CD13*CD13 + CD23*CD23))
+CD34    =   (CV34 - (CD14*CD13 + CD23*CD24)) / CD33
+CD35    =   (CV35 - (CD15*CD13 + CD23*CD25)) / CD33
+
+CD44    =   SQRT(VD44 - (CD14*CD14 + CD24*CD24 + CD34*CD34))
+CD45    =   (CV45 - (CD14*CD15 + CD24*CD25 + CD34*CD35)) / CD44
+
+CD55    =   SQRT(VD55 - (CD15*CD15 + CD25*CD25 + CD35*CD35 + CD45*CD45))
+
+EPS1    =   CD11*EPS(1)
+EPS2    =   CD12*EPS(1)+CD22*EPS(2)
+EPS3    =   CD13*EPS(1)+CD23*EPS(2)+CD33*EPS(3)
+EPS4    =   CD14*EPS(1)+CD24*EPS(2)+CD34*EPS(3)+CD44*EPS(4)
+EPS5    =   CD15*EPS(1)+CD25*EPS(2)+CD35*EPS(3)+CD45*EPS(4)+CD55*EPS(5)
+
+; --- INDIVIDUAL LESION MODEL
+IF(FLAG.EQ.15) IPRED=0
+
+IF(FLAG.EQ.15.AND.LESI.EQ.1.AND.A(1).GT.0) IPRED = LOG(A(1))                 ; lesion 1
+IF(FLAG.EQ.15.AND.LESI.EQ.2.AND.A(2).GT.0) IPRED = LOG(A(2))                 ; lesion 2
+IF(FLAG.EQ.15.AND.LESI.EQ.3.AND.A(3).GT.0) IPRED = LOG(A(3))                 ; lesion 3
+IF(FLAG.EQ.15.AND.LESI.EQ.4.AND.A(4).GT.0) IPRED = LOG(A(4))                 ; lesion 4
+IF(FLAG.EQ.15.AND.LESI.EQ.5.AND.A(5).GT.0) IPRED = LOG(A(5))                 ; lesion 5
+
+
+IF(FLAG.EQ.15.AND.LESI.EQ.1) EPSN = EPS1                                     ; lesion 1
+IF(FLAG.EQ.15.AND.LESI.EQ.2) EPSN = EPS2                                     ; lesion 2
+IF(FLAG.EQ.15.AND.LESI.EQ.3) EPSN = EPS3                                     ; lesion 3
+IF(FLAG.EQ.15.AND.LESI.EQ.4) EPSN = EPS4                                     ; lesion 4
+IF(FLAG.EQ.15.AND.LESI.EQ.5) EPSN = EPS5                                     ; lesion 5
+
+IF(FLAG.EQ.15) THEN
+  IRES  = DV-IPRED
+  W     = 1
+  IWRES = IRES/W
+  F_FLAG = 0                       ; prediction
+  Y = IPRED+EPSN
+ENDIF
+
+;=======================================
+;              SLD model
+;=======================================
+IF(FLAG.EQ.4) THEN       ; SLD
+  IPRED   =   A(6)
+  IRES    =   DV-IPRED
+  W1      =   IPRED*THETA(11)
+ENDIF
+IF (W1.EQ.0) W1 = 1
+IF(FLAG.EQ.4) THEN
+  IWRES   =   IRES/W1
+  F_FLAG  =   0
+  Y       =   IPRED+W1*EPS(6)
+ENDIF
+
+;=======================================
+;             Time-to-event model
+;=======================================
+; --- Flag for presence of lesion in dataset; switches from 0 to 1 if lesion present
+IF(LESI.EQ.1) ISLES1 = 1
+IF(LESI.EQ.2) ISLES2 = 1
+IF(LESI.EQ.3) ISLES3 = 1
+IF(LESI.EQ.4) ISLES4 = 1
+IF(LESI.EQ.5) ISLES5 = 1
+
+AA1 = A(1)*ISLES1
+AA2 = A(2)*ISLES2
+AA3 = A(3)*ISLES3
+AA4 = A(4)*ISLES4
+AA5 = A(5)*ISLES5
+; AA6 = A(6)
+;
+; SUVTOT  = AA1 + AA2 + AA3 + AA4 + AA5      ; predicted summed SUV
+; IBASTOT = IBASE1*ISLES1 + IBASE2*ISLES2 + IBASE3*ISLES3 + IBASE4*ISLES4 + IBASE5*ISLES5
+;  SUVREL  = (SUVTOT-IBASTOT)/IBASTOT
+; SLDREL  = (AA6-IBASE)/IBASE
+; 
+; ; --- Lesion with largest SUV at baseline
+; 
+; IF(FLAG.EQ.15.AND.LESI.EQ.1.AND.TIME.EQ.0.AND.A(1).GT.0) LES1 = IBASE1
+; IF(FLAG.EQ.15.AND.LESI.EQ.2.AND.TIME.EQ.0.AND.A(2).GT.0) LES2 = IBASE2
+; IF(FLAG.EQ.15.AND.LESI.EQ.3.AND.TIME.EQ.0.AND.A(3).GT.0) LES3 = IBASE3
+; IF(FLAG.EQ.15.AND.LESI.EQ.4.AND.TIME.EQ.0.AND.A(4).GT.0) LES4 = IBASE4
+; IF(FLAG.EQ.15.AND.LESI.EQ.5.AND.TIME.EQ.0.AND.A(5).GT.0) LES5 = IBASE5
+; 
+; IF(FLAG.EQ.111.AND.TIME.EQ.0.AND.LES1.GT.LES2.AND.LES1.GT.LES3.AND.LES1.GT.LES4.AND.LES1.GT.LES5) IBASMAX = LES1
+; IF(FLAG.EQ.111.AND.TIME.EQ.0.AND.LES2.GT.LES1.AND.LES2.GT.LES3.AND.LES2.GT.LES4.AND.LES2.GT.LES5) IBASMAX = LES2
+; IF(FLAG.EQ.111.AND.TIME.EQ.0.AND.LES3.GT.LES1.AND.LES3.GT.LES2.AND.LES3.GT.LES4.AND.LES3.GT.LES5) IBASMAX = LES3
+; IF(FLAG.EQ.111.AND.TIME.EQ.0.AND.LES4.GT.LES1.AND.LES4.GT.LES2.AND.LES4.GT.LES3.AND.LES4.GT.LES5) IBASMAX = LES4
+; IF(FLAG.EQ.111.AND.TIME.EQ.0.AND.LES5.GT.LES1.AND.LES5.GT.LES2.AND.LES5.GT.LES3.AND.LES5.GT.LES4) IBASMAX = LES5
+; 
+; 
+; ; --- Lesion with largest relative change in SUV from baseline at week 1
+
+IF(FLAG.EQ.1.AND.TIME.EQ.168) THEN
+ WK1A1 = AA1                                ; SUV at week 1 for lesion 1
+ WK1A2 = AA2                                ; SUV at week 1 for lesion 2
+ WK1A3 = AA3                                ; SUV at week 1 for lesion 3
+ WK1A4 = AA4                                ; SUV at week 1 for lesion 4
+ WK1A5 = AA5                                ; SUV at week 1 for lesion 5
+ 
+ RCFB1A1 = (WK1A1-IBASE1)/IBASE1*ISLES1     ; relative change in SUV from baseline at week 1 - lesion 1
+ RCFB1A2 = (WK1A2-IBASE2)/IBASE2*ISLES2     ; relative change in SUV from baseline at week 1 - lesion 2
+ RCFB1A3 = (WK1A3-IBASE3)/IBASE3*ISLES3     ; relative change in SUV from baseline at week 1 - lesion 3
+ RCFB1A4 = (WK1A4-IBASE4)/IBASE4*ISLES4     ; relative change in SUV from baseline at week 1 - lesion 4
+ RCFB1A5 = (WK1A5-IBASE5)/IBASE5*ISLES5     ; relative change in SUV from baseline at week 1 - lesion 5
+ENDIF
+
+IF(FLAG.EQ.1.AND.TIME.EQ.168.AND.RCFB1A1.LT.RCFB1A2.AND.RCFB1A1.LT.RCFB1A3.AND.RCFB1A1.LT.RCFB1A4.AND.RCFB1A1.LT.RCFB1A5) RCFB1MAX = RCFB1A1
+IF(FLAG.EQ.1.AND.TIME.EQ.168.AND.RCFB1A2.LT.RCFB1A1.AND.RCFB1A2.LT.RCFB1A3.AND.RCFB1A2.LT.RCFB1A4.AND.RCFB1A2.LT.RCFB1A5) RCFB1MAX = RCFB1A2
+IF(FLAG.EQ.1.AND.TIME.EQ.168.AND.RCFB1A3.LT.RCFB1A1.AND.RCFB1A3.LT.RCFB1A2.AND.RCFB1A3.LT.RCFB1A4.AND.RCFB1A3.LT.RCFB1A5) RCFB1MAX = RCFB1A3
+IF(FLAG.EQ.1.AND.TIME.EQ.168.AND.RCFB1A4.LT.RCFB1A1.AND.RCFB1A4.LT.RCFB1A2.AND.RCFB1A4.LT.RCFB1A3.AND.RCFB1A4.LT.RCFB1A5) RCFB1MAX = RCFB1A4
+IF(FLAG.EQ.1.AND.TIME.EQ.168.AND.RCFB1A5.LT.RCFB1A1.AND.RCFB1A5.LT.RCFB1A2.AND.RCFB1A5.LT.RCFB1A3.AND.RCFB1A5.LT.RCFB1A4) RCFB1MAX = RCFB1A5
+
+
+;-----TTD (Time to death)--------------
+
+CHZ     =   A(7)           ; cumulative hazard for survival
+DCHZ    =   A(8)           ; cumulative hazard for drop out
+
+
+SUR     =   EXP(-CHZ)      ; survival probability
+SURD    =   EXP(-DCHZ)     ; drop out probability
+DEL     =   1E-16
+
+HAZNOW  =   0
+HAZDNOW =   0
+HAZNOW  = LAMBH*ALPHH*(TIME+DEL)**(ALPHH-1)* EXP(THETA(16)*RCFB1MAX)
+HAZDNOW = LAMBD*ALPHD*(TIME+DEL)**(ALPHD-1)
+
+IF(FLAG.EQ.3.AND.EVID.EQ.0.AND.CENS.EQ.0) THEN    ; survival
+F_FLAG = 1                                      ; prediction
+Y = SUR                  ; probability of survival (censored event)
+ENDIF
+
+IF(FLAG.EQ.3.AND.EVID.EQ.0.AND.CENS.EQ.1) THEN    ; survival
+F_FLAG = 1                                      ; prediction
+Y = SUR*HAZNOW           ; probability of event (death) at time=TIME
+ENDIF
+
+IF(FLAG.EQ.13.AND.CENS.EQ.1) THEN                 ; censored
+F_FLAG = 1                                      ; likelihood
+Y = SURD                 ; probability of not dropping out
+ENDIF
+
+IF(FLAG.EQ.13.AND.CENS.EQ.0) THEN                 ; censored
+F_FLAG = 1                                      ; likelihood
+Y = SURD*HAZDNOW         ; probability of dropping out at time=TIME
+ENDIF
+
+
+;-----INITIAL ESTIMATES THETAs -----------------
+; ----------- SUV model  --------------
+$THETA  555.634 FIX ; 1  KOUT
+$THETA  0 FIX ; 2  ALPHA
+$THETA  0.94569 FIX ; 3  DRUG
+$THETA  7.58866 FIX ; 4  IBASE
+$THETA  0.173794 FIX ; 5  VAR RUV
+$THETA  0.466827 FIX ; 6  CORR RUV
+; ----------- SLD model  --------------
+$THETA  10.4796 FIX ; 7 KG*1000
+$THETA  20.0529 FIX ; 8 LAMBDA*1000
+$THETA  16.5971 FIX ; 9 KDRUG*1000
+$THETA  263.064 FIX ; 10 IBASE
+$THETA  0.0667619 FIX ; 11 RUV
+; ----------- TTE model  --------------
+$THETA  (0,0.018792) ; 12  LAMBH
+$THETA  1 FIX ; 13  ALPHH
+$THETA  (0,0.02) ; 14  LAMBD
+$THETA  1 FIX ; 15 ALPHD
+$THETA  5.17 ; 16 Predictor
+;-----INITIAL ESTIMATES OMEGAs -----------------
+$OMEGA  0  FIX  ; 1  KOUT IIV
+$OMEGA  0  FIX  ; 2  KOUT LES1
+$OMEGA  0  FIX  ; 3  KOUT LES2
+$OMEGA  0  FIX  ; 4  KOUT LES3
+$OMEGA  0  FIX  ; 5  KOUT LES4
+$OMEGA  0  FIX  ; 6  KOUT LES5
+$OMEGA  0  FIX  ; 7  ALPHA IIV
+$OMEGA  0  FIX  ; 8  ALPHA LES1
+$OMEGA  0  FIX  ; 9  ALPHA LES2
+$OMEGA  0  FIX  ; 10 ALPHA LES3
+$OMEGA  0  FIX  ; 11 ALPHA LES4
+$OMEGA  0  FIX  ; 12 ALPHA LES5
+$OMEGA  BLOCK(2) FIX
+ 0.398557  ; 13 KDRUG SLD
+ 0.397941 0.548112  ; 14 DRUG IIV
+$OMEGA  BLOCK(1) FIX
+ 0.324481  ; 15 DRUG LES1
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  0.288669  FIX  ; 20 IBASE SLD
+$OMEGA  0.105177  FIX  ; 21 IBASE IIV
+$OMEGA  BLOCK(1) FIX
+ 0.0549036  ; 22 IBASE LES1
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1) SAME
+$OMEGA  0.361258  FIX  ;      27 KG
+$OMEGA  0  FIX  ;  28 LAMBDA
+$SIGMA  1  FIX  ;   lesion 1
+ 1  FIX  ;   lesion 2
+ 1  FIX  ;   lesion 3
+ 1  FIX  ;   lesion 4
+ 1  FIX  ;   lesion 5
+ 1  FIX  ;        SLD
+$ESTIMATION MAXEVAL=9999 METHOD=1 LAPLACIAN NOABORT PRINT=1 NSIG=2
+            SIGL=6
+$COVARIANCE UNCONDITIONAL MATRIX=R PRINT=E
+;$TABLE ID FLAG LESI TIME TOND EVID ONEHEADER NOPRINT FILE=sdtab104
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  3) THERE MAY BE AN ERROR IN THE ABBREVIATED CODE. THE FOLLOWING
+ ONE OR MORE RANDOM VARIABLES ARE DEFINED WITH "IF" STATEMENTS THAT DO NOT
+ PROVIDE DEFINITIONS FOR BOTH THE "THEN" AND "ELSE" CASES. IF ALL
+ CONDITIONS FAIL, THE VALUES OF THESE VARIABLES WILL BE ZERO.
+  
+   EPSN IRES IWRES W1 Y
+
+             
+ (WARNING  25) NO. OF ETAS EXCEEDS CONSTANT LVR2 AND "LAPLACIAN" IS
+ SPECIFIED.
+MAY NOT USE -prdefault: LVR IN SIZES.f90 WOULD NEED TO BE INCREASED TO   50
+THEREFORE, OVER-RIDING -prdefault
+
+License Registered to: Uppsala University
+Expiration Date:    14 MAR 2016
+Current Date:        1 NOV 2015
+Days until program expires : 138
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ OS - IL_SUV - SLD                                                       
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:    20853
+ NO. OF DATA ITEMS IN DATA SET:  18
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ L2 DATA ITEM IS DATA ITEM NO.:  13
+ DEP VARIABLE IS DATA ITEM NO.:   5
+ MDV DATA ITEM IS DATA ITEM NO.: 18
+0INDICES PASSED TO SUBROUTINE PRED:
+   7   2   0   0   0   0   0   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ ID TIME TOND FLAG DV CL EVID BSUV BSLD CENS DOS LESI L2 DUM SIM SIMDRP SIMFLG MDV
+0FORMAT FOR DATA:
+ (E3.0,2E16.0,E3.0,E16.0,E10.0,E1.0,E6.0,E5.0/E1.0,E2.0,6E2.0,1F2.0)             
+ 
+ TOT. NO. OF OBS RECS:     1041
+ TOT. NO. OF INDIVIDUALS:     66
+0LENGTH OF THETA:  16
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS BLOCK FORM:
+  1
+  0  2
+  0  0  3
+  0  0  0  4
+  0  0  0  0  5
+  0  0  0  0  0  6
+  0  0  0  0  0  0  7
+  0  0  0  0  0  0  0  8
+  0  0  0  0  0  0  0  0  9
+  0  0  0  0  0  0  0  0  0 10
+  0  0  0  0  0  0  0  0  0  0 11
+  0  0  0  0  0  0  0  0  0  0  0 12
+  0  0  0  0  0  0  0  0  0  0  0  0 13
+  0  0  0  0  0  0  0  0  0  0  0  0 13 13
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0 14
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 14
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 14
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 14
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 14
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 15
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 16
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 17
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 17
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 17
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 17
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 17
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 18
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 19
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   6
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.5556E+03     0.5556E+03     0.5556E+03
+  0.0000E+00     0.0000E+00     0.0000E+00
+  0.9457E+00     0.9457E+00     0.9457E+00
+  0.7589E+01     0.7589E+01     0.7589E+01
+  0.1738E+00     0.1738E+00     0.1738E+00
+  0.4668E+00     0.4668E+00     0.4668E+00
+  0.1048E+02     0.1048E+02     0.1048E+02
+  0.2005E+02     0.2005E+02     0.2005E+02
+  0.1660E+02     0.1660E+02     0.1660E+02
+  0.2631E+03     0.2631E+03     0.2631E+03
+  0.6676E-01     0.6676E-01     0.6676E-01
+  0.0000E+00     0.1879E-01     0.1000E+07
+  0.1000E+01     0.1000E+01     0.1000E+01
+  0.0000E+00     0.2000E-01     0.1000E+07
+  0.1000E+01     0.1000E+01     0.1000E+01
+ -0.1000E+07     0.5170E+01     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                  YES 
+                  0.0000E+00
+        2                                                                                  YES 
+                  0.0000E+00
+        3                                                                                  YES 
+                  0.0000E+00
+        4                                                                                  YES 
+                  0.0000E+00
+        5                                                                                  YES 
+                  0.0000E+00
+        6                                                                                  YES 
+                  0.0000E+00
+        7                                                                                  YES 
+                  0.0000E+00
+        8                                                                                  YES 
+                  0.0000E+00
+        9                                                                                  YES 
+                  0.0000E+00
+       10                                                                                  YES 
+                  0.0000E+00
+       11                                                                                  YES 
+                  0.0000E+00
+       12                                                                                  YES 
+                  0.0000E+00
+       13                                                                                  YES 
+                  0.3986E+00
+                  0.3979E+00   0.5481E+00
+       14                                                                                  YES 
+                  0.3245E+00
+       15                                                                                  YES 
+                  0.2887E+00
+       16                                                                                  YES 
+                  0.1052E+00
+       17                                                                                  YES 
+                  0.5490E-01
+       18                                                                                  YES 
+                  0.3613E+00
+       19                                                                                  YES 
+                  0.0000E+00
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+ 0.0000E+00   0.1000E+01
+ 0.0000E+00   0.0000E+00   0.1000E+01
+ 0.0000E+00   0.0000E+00   0.0000E+00   0.1000E+01
+ 0.0000E+00   0.0000E+00   0.0000E+00   0.0000E+00   0.1000E+01
+ 0.0000E+00   0.0000E+00   0.0000E+00   0.0000E+00   0.0000E+00   0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+0COVARIANCE STEP OMITTED:        NO 
+ R MATRIX SUBSTITUTED:          YES 
+ S MATRIX SUBSTITUTED:           NO 
+ EIGENVLS. PRINTED:             YES 
+ COMPRESSED FORMAT:              NO 
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+ 
+ GENERAL NONLINEAR KINETICS MODEL (ADVAN6)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:  30
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         COMP 1       ON         YES        YES        YES        YES
+    2         COMP 2       ON         YES        YES        NO         NO 
+    3         COMP 3       ON         YES        YES        NO         NO 
+    4         COMP 4       ON         YES        YES        NO         NO 
+    5         COMP 5       ON         YES        YES        NO         NO 
+    6         COMP 6       ON         YES        YES        NO         NO 
+    7         COMP 7       ON         YES        YES        NO         NO 
+    8         COMP 8       ON         YES        YES        NO         NO 
+    9         COMP 9       ON         YES        YES        NO         NO 
+   10         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE FROM SUBROUTINE TOL:   6
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1            *           *           *           *           *
+    2            *           *           *           *           *
+    3            *           *           *           *           *
+    4            *           *           *           *           *
+    5            *           *           *           *           *
+    6            *           *           *           *           *
+    7            *           *           *           *           *
+    8            *           *           *           *           *
+    9            *           *           *           *           *
+   10            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      7
+   TIME DATA ITEM IS DATA ITEM NO.:          2
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES COMPACT STORAGE MODE.
+
+ #PARA: PARAFILE=/opt/local64/nonmem/nm_7.2.0_g/runfiles/mpilinux8.pnm, PROTOCOL=MPI, NODES= 10
+
+1
+
+
+ #TBLN:      1
+ #METH: Laplacian Conditional Estimation
+
+ ESTIMATION STEP OMITTED:                 NO  
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     NO  
+ LAPLACIAN OBJ. FUNC.:                    YES 
+ NUMERICAL 2ND DERIVATIVES:               NO  
+ NO. OF FUNCT. EVALS. ALLOWED:            9999
+ NO. OF SIG. FIGURES REQUIRED:            2
+ INTERMEDIATE PRINTOUT:                   YES 
+ ESTIMATE OUTPUT TO MSF:                  NO  
+ ABORT WITH PRED EXIT CODE 1:             NO  
+ IND. OBJ. FUNC. VALUES SORTED:           NO  
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    6           
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   6           
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=NPRED
+ RES=NRES
+ WRES=NWRES
+ IWRS=NIWRES
+ IPRD=NIPRED
+ IRS=NIRES
+
+ MONITORING OF SEARCH:
+
+
+0ITERATION NO.:    0    OBJECTIVE VALUE:   3609.96702023703        NO. OF FUNC. EVALS.:   5
+ CUMULATIVE NO. OF FUNC. EVALS.:        5
+ NPARAMETR:  1.8792E-02  2.0000E-02  5.1700E+00
+ PARAMETER:  1.0000E-01  1.0000E-01  1.0000E-01
+ GRADIENT:  -1.5170E+00  4.5737E-01 -4.5263E+01
+
+0ITERATION NO.:    1    OBJECTIVE VALUE:   3609.82708369983        NO. OF FUNC. EVALS.:   9
+ CUMULATIVE NO. OF FUNC. EVALS.:       14
+ NPARAMETR:  1.8794E-02  1.9999E-02  5.3442E+00
+ PARAMETER:  1.0011E-01  9.9966E-02  1.0337E-01
+ GRADIENT:  -2.2117E+00  4.5361E-01 -2.2435E+01
+
+0ITERATION NO.:    2    OBJECTIVE VALUE:   3609.82274183378        NO. OF FUNC. EVALS.:   8
+ CUMULATIVE NO. OF FUNC. EVALS.:       22
+ NPARAMETR:  1.9042E-02  1.9959E-02  5.3655E+00
+ PARAMETER:  1.1319E-01  9.7931E-02  1.0378E-01
+ GRADIENT:  -2.0373E+00  2.2905E-01 -2.1789E+01
+
+0ITERATION NO.:    3    OBJECTIVE VALUE:   3609.82245567748        NO. OF FUNC. EVALS.:  11
+ CUMULATIVE NO. OF FUNC. EVALS.:       33
+ NPARAMETR:  1.9044E-02  1.9960E-02  5.3657E+00
+ PARAMETER:  1.1331E-01  9.8018E-02  1.0379E-01
+ GRADIENT:  -2.0358E+00  2.3864E-01 -2.1778E+01
+
+0ITERATION NO.:    4    OBJECTIVE VALUE:   3609.82245567748        NO. OF FUNC. EVALS.:  13
+ CUMULATIVE NO. OF FUNC. EVALS.:       46
+ NPARAMETR:  1.9044E-02  1.9960E-02  5.3657E+00
+ PARAMETER:  1.1331E-01  9.8018E-02  1.0379E-01
+ GRADIENT:  -2.0373E+00  2.3272E-01 -2.1990E+01
+
+0ITERATION NO.:    5    OBJECTIVE VALUE:   3609.81569211322        NO. OF FUNC. EVALS.:  19
+ CUMULATIVE NO. OF FUNC. EVALS.:       65             RESET HESSIAN, TYPE I
+ NPARAMETR:  1.9022E-02  1.9886E-02  5.3498E+00
+ PARAMETER:  1.1217E-01  9.4295E-02  1.0348E-01
+ GRADIENT:  -1.9943E+00 -1.7094E-01 -2.4351E+01
+
+0ITERATION NO.:    6    OBJECTIVE VALUE:   3609.80793371442        NO. OF FUNC. EVALS.:   6
+ CUMULATIVE NO. OF FUNC. EVALS.:       71
+ NPARAMETR:  1.9030E-02  1.9924E-02  5.3558E+00
+ PARAMETER:  1.1258E-01  9.6216E-02  1.0359E-01
+ GRADIENT:  -2.0101E+00  4.0175E-02 -2.3241E+01
+
+0ITERATION NO.:    7    OBJECTIVE VALUE:   3609.80793371442        NO. OF FUNC. EVALS.:  11
+ CUMULATIVE NO. OF FUNC. EVALS.:       82
+ NPARAMETR:  1.9030E-02  1.9924E-02  5.3558E+00
+ PARAMETER:  1.1258E-01  9.6216E-02  1.0359E-01
+ GRADIENT:  -2.0116E+00  3.4264E-02 -2.3454E+01
+
+0ITERATION NO.:    8    OBJECTIVE VALUE:   3609.80793371442        NO. OF FUNC. EVALS.:  10
+ CUMULATIVE NO. OF FUNC. EVALS.:       92
+ NPARAMETR:  1.9030E-02  1.9924E-02  5.3558E+00
+ PARAMETER:  1.1258E-01  9.6216E-02  1.0359E-01
+ GRADIENT:  -1.0497E+00  3.4264E-02  2.9146E+01
+
+ #TERM:
+0MINIMIZATION SUCCESSFUL
+ HOWEVER, PROBLEMS OCCURRED WITH THE MINIMIZATION.
+ REGARD THE RESULTS OF THE ESTIMATION STEP CAREFULLY, AND ACCEPT THEM ONLY
+ AFTER CHECKING THAT THE COVARIANCE STEP PRODUCES REASONABLE OUTPUT.
+ NO. OF FUNCTION EVALUATIONS USED:       92
+ NO. OF SIG. DIGITS IN FINAL EST.:  2.5
+
+ ETABAR IS THE ARITHMETIC MEAN OF THE ETA-ESTIMATES,
+ AND THE P-VALUE IS GIVEN FOR THE NULL HYPOTHESIS THAT THE TRUE MEAN IS 0.
+
+ ETABAR:         0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+                 0.0000E+00  0.0000E+00  1.0295E-01  1.1941E-01  5.5290E-03 -2.6390E-03  3.6135E-02 -6.7597E-03  3.4841E-03  1.2723E-02
+                 2.3185E-02 -4.8952E-02  3.1754E-02  3.5940E-02 -5.4911E-03 -1.1475E-03  1.1282E-01  0.0000E+00
+ SE:             0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+                 0.0000E+00  0.0000E+00  5.3597E-02  6.3304E-02  3.7907E-02  3.5354E-02  2.9829E-02  1.5664E-02  3.4576E-03  6.3134E-02
+                 3.1007E-02  1.9322E-02  1.5884E-02  1.1312E-02  5.0148E-03  1.1387E-03  4.5942E-02  0.0000E+00
+ N:                      66          66          66          66          66          66          66          66          66          66
+                         66          66          66          66          66          66          66          66          66          66
+                         66          66          66          66          66          66          66          66
+
+ P VAL.:         1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00
+                 1.0000E+00  1.0000E+00  5.4748E-02  5.9264E-02  8.8403E-01  9.4050E-01  2.2575E-01  6.6607E-01  3.1362E-01  8.4029E-01
+                 4.5463E-01  1.1291E-02  4.5596E-02  1.4876E-03  2.7353E-01  3.1362E-01  1.4065E-02  1.0000E+00
+
+ ETAshrink(%):   1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02  1.0000E+02
+                 1.0000E+02  1.0000E+02  3.0500E+01  3.0002E+01  4.5523E+01  4.9192E+01  5.7132E+01  7.7489E+01  9.5031E+01  3.8056E+00
+                 2.1731E+01  3.2496E+01  4.4506E+01  6.0479E+01  8.2480E+01  9.6022E+01  3.7426E+01  1.0000E+02
+ EBVshrink(%):   0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+                 0.0000E+00  0.0000E+00  3.0594E+01  3.0664E+01  4.6555E+01  4.8124E+01  5.6052E+01  8.3869E+01  9.3290E+01  7.2945E-01
+                 2.4483E+01  3.8523E+01  4.0561E+01  4.6586E+01  8.6275E+01  9.5093E+01  3.4336E+01  0.0000E+00
+ EPSshrink(%):   1.5623E+01  1.4762E+01  1.6271E+01  1.0000E-10  2.9106E+01  3.4149E+01
+
+ #TERE:
+ Elapsed estimation time in seconds:  2443.06
+ Elapsed covariance time in seconds:   276.02
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************     3609.808       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16     
+ 
+         5.56E+02  0.00E+00  9.46E-01  7.59E+00  1.74E-01  4.67E-01  1.05E+01  2.01E+01  1.66E+01  2.63E+02  6.68E-02  1.90E-02
+          1.00E+00  1.99E-02  1.00E+00  5.36E+00
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++        0.00E+00
+ 
+ ETA2
++        0.00E+00  0.00E+00
+ 
+ ETA3
++        0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          3.99E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          3.98E-01  5.48E-01
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  3.24E-01
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  3.24E-01
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.24E-01
+ 
+ ET18
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.24E-01
+ 
+ ET19
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.24E-01
+ 
+ ET20
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.89E-01
+ 
+ ET21
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.05E-01
+ 
+ ET22
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.49E-02
+ 
+ ET23
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.49E-02
+ 
+ ET24
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.49E-02
+ 
+ ET25
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         5.49E-02
+ 
+ ET26
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  5.49E-02
+ 
+ ET27
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  3.61E-01
+ 
+ ET28
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+1
+
+            EPS1      EPS2      EPS3      EPS4      EPS5      EPS6   
+ 
+ EPS1
++        1.00E+00
+ 
+ EPS2
++        0.00E+00  1.00E+00
+ 
+ EPS3
++        0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS4
++        0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++        0.00E+00
+ 
+ ETA2
++        0.00E+00  0.00E+00
+ 
+ ETA3
++        0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          6.31E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          8.51E-01  7.40E-01
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  5.70E-01
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  5.70E-01
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.70E-01
+ 
+ ET18
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.70E-01
+ 
+ ET19
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.70E-01
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET20
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.37E-01
+ 
+ ET21
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.24E-01
+ 
+ ET22
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.34E-01
+ 
+ ET23
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.34E-01
+ 
+ ET24
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.34E-01
+ 
+ ET25
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         2.34E-01
+ 
+ ET26
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  2.34E-01
+ 
+ ET27
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  6.01E-01
+ 
+ ET28
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1      EPS2      EPS3      EPS4      EPS5      EPS6   
+ 
+ EPS1
++        1.00E+00
+ 
+ EPS2
++        0.00E+00  1.00E+00
+ 
+ EPS3
++        0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS4
++        0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+ EPS6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.00E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                            STANDARD ERROR OF ESTIMATE                          ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16     
+ 
+        ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........  5.94E-04
+         .........  2.69E-03 .........  4.58E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++       .........
+ 
+ ETA2
++       ......... .........
+ 
+ ETA3
++       ......... ......... .........
+ 
+ ETA4
++       ......... ......... ......... .........
+ 
+ ETA5
++       ......... ......... ......... ......... .........
+ 
+ ETA6
++       ......... ......... ......... ......... ......... .........
+ 
+ ETA7
++       ......... ......... ......... ......... ......... ......... .........
+ 
+ ETA8
++       ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ETA9
++       ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET10
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET13
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         .........
+ 
+ ET14
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... .........
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET15
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... .........
+ 
+ ET16
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... .........
+ 
+ ET17
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... .........
+ 
+ ET18
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... .........
+ 
+ ET19
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... .........
+ 
+ ET20
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET21
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET22
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET23
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET24
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET25
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        .........
+ 
+ ET26
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... .........
+ 
+ ET27
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... ......... .........
+ 
+ ET28
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... ......... ......... .........
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+1
+
+            EPS1      EPS2      EPS3      EPS4      EPS5      EPS6   
+ 
+ EPS1
++       .........
+ 
+ EPS2
++       ......... .........
+ 
+ EPS3
++       ......... ......... .........
+ 
+ EPS4
++       ......... ......... ......... .........
+ 
+ EPS5
++       ......... ......... ......... ......... .........
+ 
+ EPS6
++       ......... ......... ......... ......... ......... .........
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++       .........
+ 
+ ETA2
++       ......... .........
+ 
+ ETA3
++       ......... ......... .........
+ 
+ ETA4
++       ......... ......... ......... .........
+ 
+ ETA5
++       ......... ......... ......... ......... .........
+ 
+ ETA6
++       ......... ......... ......... ......... ......... .........
+ 
+ ETA7
++       ......... ......... ......... ......... ......... ......... .........
+ 
+ ETA8
++       ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ETA9
++       ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET10
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET13
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         .........
+ 
+ ET14
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... .........
+ 
+ ET15
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... .........
+ 
+ ET16
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... .........
+ 
+ ET17
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... .........
+ 
+ ET18
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... .........
+ 
+ ET19
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... .........
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET20
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET21
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET22
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET23
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET24
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ ET25
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        .........
+ 
+ ET26
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... .........
+ 
+ ET27
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... ......... .........
+ 
+ ET28
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+        ......... ......... ......... .........
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1      EPS2      EPS3      EPS4      EPS5      EPS6   
+ 
+ EPS1
++       .........
+ 
+ EPS2
++       ......... .........
+ 
+ EPS3
++       ......... ......... .........
+ 
+ EPS4
++       ......... ......... ......... .........
+ 
+ EPS5
++       ......... ......... ......... ......... .........
+ 
+ EPS6
++       ......... ......... ......... ......... ......... .........
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                          COVARIANCE MATRIX OF ESTIMATE                         ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH12 | TH12      TH14 | TH12      TH14 | TH14      TH16 | TH12      TH16 | TH14      TH16 | TH16    
+       3.53E-07        -1.18E-11         7.22E-06        -1.00E-04         2.47E-08         2.10E-01
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                          CORRELATION MATRIX OF ESTIMATE                        ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH12 | TH12      TH14 | TH12      TH14 | TH14      TH16 | TH12      TH16 | TH14      TH16 | TH16    
+       5.94E-04        -7.38E-06         2.69E-03        -3.68E-01         2.00E-05         4.58E-01
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                      INVERSE COVARIANCE MATRIX OF ESTIMATE                     ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH12 | TH12      TH14 | TH12      TH14 | TH14      TH16 | TH12      TH16 | TH14      TH16 | TH16    
+       3.28E+06         6.39E-04         1.39E+05         1.56E+03        -1.63E-02         5.51E+00
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                         LAPLACIAN CONDITIONAL ESTIMATION                       ********************
+ ********************                      EIGENVALUES OF COR MATRIX OF ESTIMATE                     ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+             1         2         3
+ 
+         6.32E-01  1.00E+00  1.37E+00
+ 
+ #CPUT: Total CPU Time in Seconds,    20286.223
+Stop Time:
+Sun Nov  1 12:07:19 CET 2015

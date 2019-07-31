@@ -1,0 +1,11 @@
+{
+    "files": [
+        "Executable_Novakovic_2016_multiplesclerosis_cladribine_irt.mod",
+        "DDMODEL00000223.rdf",
+        "Output_real_Novakovic_2016_multiplesclerosis_cladribine_irt.lst",
+        "Output_simulated_Novakovic_2016_multiplesclerosis_cladribine_irt.lst",
+        "Command.txt",
+        "Simulated_Novakovic_2016_multiplesclerosis_cladribine_irt.csv"
+    ],
+    "version": 7
+}

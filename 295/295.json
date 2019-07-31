@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_CMS_colistin_PK_CRRT.mod",
+        "Simulated_Data_CMS_colistin_PK_CRRT.csv",
+        "Command.txt",
+        "Output_simulated_CMS_colistin_PK_CRRT - Copie.lst",
+        "DDMODEL00000295.rdf",
+        "Model_Accommodations.txt",
+        "Output_real_CMS_colistin_PK_CRRT.lst"
+    ],
+    "version": 12
+}

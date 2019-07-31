@@ -1,0 +1,1484 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PharmML xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition" xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset" xmlns:uncertml="http://www.uncertml.org/3.0" xmlns:probonto="http://www.pharmml.org/probonto/ProbOnto" xmlns:td="http://www.pharmml.org/pharmml/0.8/TrialDesign" xmlns:msteps="http://www.pharmml.org/pharmml/0.8/ModellingSteps" xmlns="http://www.pharmml.org/pharmml/0.8/PharmML" writtenVersion="0.8.1">
+    <ct:Name>Glucose kinetics in humans: a unique model for different tests</ct:Name>
+    <ct:Description>This is a model for glucose kinetics in humans, including a physiology-based mechanism for glucose uptake saturation. It is able to describe the relationship between glucose utilization and glucose and insulin concentrations during different tests, such as the clamp, the oral glucose tolerance test and the mixed-meal test. By Roberto Bizzotto, Institute of Neuroscience, CNR, Padua, Italy. Copyright 2016</ct:Description>
+    <IndependentVariable symbId="T"/>
+    <ct:FunctionDefinition symbolType="real" symbId="additiveError">
+        <ct:Description>Constant or additive error model</ct:Description>
+        <ct:FunctionArgument symbolType="real" symbId="additive"/>
+        <ct:Definition>
+            <ct:Assign>
+                <ct:SymbRef symbIdRef="additive"/>
+            </ct:Assign>
+        </ct:Definition>
+    </ct:FunctionDefinition>
+    <mdef:ModelDefinition>
+        <mdef:VariabilityModel type="residualError" blkId="vm_err">
+            <mdef:Level symbId="DV"/>
+        </mdef:VariabilityModel>
+        <mdef:VariabilityModel type="parameterVariability" blkId="vm_mdl">
+            <mdef:Level symbId="ID"/>
+        </mdef:VariabilityModel>
+        <mdef:ParameterModel blkId="pm">
+            <mdef:PopulationParameter symbId="typ_KmG"/>
+            <mdef:PopulationParameter symbId="typ_Vmax0"/>
+            <mdef:PopulationParameter symbId="typ_Emax"/>
+            <mdef:PopulationParameter symbId="typ_gamma"/>
+            <mdef:PopulationParameter symbId="typ_KmI"/>
+            <mdef:PopulationParameter symbId="typ_t12I"/>
+            <mdef:PopulationParameter symbId="typ_t12G"/>
+            <mdef:PopulationParameter symbId="typ_V"/>
+            <mdef:PopulationParameter symbId="typ_flambda3"/>
+            <mdef:PopulationParameter symbId="typ_flambda2"/>
+            <mdef:PopulationParameter symbId="typ_w1"/>
+            <mdef:PopulationParameter symbId="typ_fw2"/>
+            <mdef:PopulationParameter symbId="typ_F"/>
+            <mdef:PopulationParameter symbId="var_KmG"/>
+            <mdef:PopulationParameter symbId="var_Vmax0"/>
+            <mdef:PopulationParameter symbId="var_Emax"/>
+            <mdef:PopulationParameter symbId="var_gamma"/>
+            <mdef:PopulationParameter symbId="var_KmI"/>
+            <mdef:PopulationParameter symbId="var_t12I"/>
+            <mdef:PopulationParameter symbId="var_t12G"/>
+            <mdef:PopulationParameter symbId="var_V"/>
+            <mdef:PopulationParameter symbId="var_flambda3"/>
+            <mdef:PopulationParameter symbId="var_flambda2"/>
+            <mdef:PopulationParameter symbId="var_w1"/>
+            <mdef:PopulationParameter symbId="var_fw2"/>
+            <mdef:PopulationParameter symbId="var_F"/>
+            <mdef:PopulationParameter symbId="corr_gamma_KmI"/>
+            <mdef:PopulationParameter symbId="alpha"/>
+            <mdef:PopulationParameter symbId="sigma"/>
+            <mdef:RandomVariable symbId="eta_KmG">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_KmG"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_Vmax0">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_Vmax0"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_Emax">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_Emax"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_gamma">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_gamma"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_KmI">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_KmI"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_t12I">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_t12I"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_t12G">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_t12G"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_V">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_V"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_flambda3">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_flambda3"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_flambda2">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_flambda2"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_w1">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_w1"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_fw2">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_fw2"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:RandomVariable symbId="eta_F">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="var_F"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:IndividualParameter symbId="KmG">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_KmG"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_KmG"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="Vmax0">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_Vmax0"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_Vmax0"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="Emax">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_Emax"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_Emax"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="gamma">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_gamma"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_gamma"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="KmI">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_KmI"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_KmI"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="t12I">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_t12I"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_t12I"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="t12G">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_t12G"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_t12G"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="V">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_V"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_V"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="flambda3">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="logit"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_flambda3"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_flambda3"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="flambda2">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="logit"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_flambda2"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_flambda2"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="w1">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="logit"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_w1"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_w1"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="fw2">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="logit"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_fw2"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_fw2"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:IndividualParameter symbId="F">
+                <mdef:StructuredModel>
+                    <mdef:Transformation type="log"/>
+                    <mdef:LinearCovariate>
+                        <mdef:PopulationValue>
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="typ_F"/>
+                            </ct:Assign>
+                        </mdef:PopulationValue>
+                    </mdef:LinearCovariate>
+                    <mdef:RandomEffects>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="eta_F"/>
+                    </mdef:RandomEffects>
+                </mdef:StructuredModel>
+            </mdef:IndividualParameter>
+            <mdef:RandomVariable symbId="epsilon">
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_err" symbIdRef="DV"/>
+                </ct:VariabilityReference>
+                <mdef:Distribution>
+                    <probonto:ProbOnto name="Normal2">
+                        <probonto:Parameter name="mean">
+                            <ct:Assign>
+<ct:Int>0</ct:Int>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                        <probonto:Parameter name="var">
+                            <ct:Assign>
+<ct:SymbRef blkIdRef="pm" symbIdRef="sigma"/>
+                            </ct:Assign>
+                        </probonto:Parameter>
+                    </probonto:ProbOnto>
+                </mdef:Distribution>
+            </mdef:RandomVariable>
+            <mdef:Correlation>
+                <ct:VariabilityReference>
+                    <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+                </ct:VariabilityReference>
+                <mdef:Pairwise>
+                    <mdef:RandomVariable1>
+                        <ct:SymbRef symbIdRef="eta_gamma"/>
+                    </mdef:RandomVariable1>
+                    <mdef:RandomVariable2>
+                        <ct:SymbRef symbIdRef="eta_KmI"/>
+                    </mdef:RandomVariable2>
+                    <mdef:CorrelationCoefficient>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="corr_gamma_KmI"/>
+                        </ct:Assign>
+                    </mdef:CorrelationCoefficient>
+                </mdef:Pairwise>
+            </mdef:Correlation>
+        </mdef:ParameterModel>
+        <mdef:StructuralModel blkId="sm">
+            <ct:Variable symbolType="real" symbId="INS"/>
+            <ct:Variable symbolType="real" symbId="GLU"/>
+            <ct:Variable symbolType="real" symbId="TOBS"/>
+            <ct:Variable symbolType="real" symbId="T1"/>
+            <ct:Variable symbolType="real" symbId="GLU1"/>
+            <ct:Variable symbolType="real" symbId="INS1"/>
+            <ct:Variable symbolType="real" symbId="VHL">
+                <ct:Assign>
+                    <ct:Int>700</ct:Int>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="deltaHL">
+                <ct:Assign>
+                    <ct:Int>15</ct:Int>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="delta">
+                <ct:Assign>
+                    <ct:Int>10</ct:Int>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="w2">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <math:Binop op="minus">
+                            <ct:Int>1</ct:Int>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="w1"/>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="fw2"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="w3">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="minus">
+                            <ct:Int>1</ct:Int>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="w1"/>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="w2"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="lambda1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Binop op="times">
+<math:Binop op="divide">
+    <math:Binop op="plus">
+        <math:Binop op="plus">
+            <math:Binop op="times">
+                <math:Binop op="times">
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="w1"/>
+                    <ct:SymbRef blkIdRef="pm" symbIdRef="flambda2"/>
+                </math:Binop>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="flambda3"/>
+            </math:Binop>
+            <math:Binop op="times">
+                <ct:SymbRef blkIdRef="sm" symbIdRef="w2"/>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="flambda3"/>
+            </math:Binop>
+        </math:Binop>
+        <ct:SymbRef blkIdRef="sm" symbIdRef="w3"/>
+    </math:Binop>
+    <math:Binop op="times">
+        <ct:SymbRef blkIdRef="pm" symbIdRef="flambda2"/>
+        <ct:SymbRef blkIdRef="pm" symbIdRef="flambda3"/>
+    </math:Binop>
+</math:Binop>
+<ct:SymbRef blkIdRef="sm" symbIdRef="delta"/>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="delta"/>
+<math:Binop op="minus">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="V"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="VHL"/>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="lambda2">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="lambda1"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="flambda2"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="lambda3">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="lambda2"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="flambda3"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="c1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="deltaHL"/>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="deltaHL"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="VHL"/>
+                            </math:Binop>
+                            <math:Binop op="times">
+<ct:Int>2</ct:Int>
+<ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="c2">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="deltaHL"/>
+                            </math:Uniop>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                        </math:Binop>
+                        <math:Binop op="minus">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="deltaHL"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="VHL"/>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="I">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Binop op="divide">
+<math:Binop op="minus">
+    <ct:SymbRef symbIdRef="T"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="T1"/>
+</math:Binop>
+<math:Binop op="minus">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="TOBS"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="T1"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="INS"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="INS1"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="INS1"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="GL">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Binop op="divide">
+<math:Binop op="minus">
+    <ct:SymbRef symbIdRef="T"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="T1"/>
+</math:Binop>
+<math:Binop op="minus">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="TOBS"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="T1"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="GLU"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="GLU1"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="GLU1"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="t0">
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="X1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="GL"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+                            </math:Binop>
+                            <math:Uniop op="log">
+<ct:Int>2</ct:Int>
+                            </math:Uniop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="t12G"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="X">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="X"/>
+                            </math:Binop>
+                            <math:Uniop op="log">
+<ct:Int>2</ct:Int>
+                            </math:Uniop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="t12G"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Z1">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="I"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z1"/>
+                            </math:Binop>
+                            <math:Uniop op="log">
+<ct:Int>2</ct:Int>
+                            </math:Uniop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="t12I"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="Z">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <math:Binop op="times">
+                            <math:Binop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z1"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                            </math:Binop>
+                            <math:Uniop op="log">
+<ct:Int>2</ct:Int>
+                            </math:Uniop>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="t12I"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:Variable symbolType="real" symbId="Vmax">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="Vmax0"/>
+                        <math:Binop op="divide">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="pm" symbIdRef="Emax"/>
+<math:Binop op="power">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gamma"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="plus">
+<math:Binop op="power">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="KmI"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gamma"/>
+</math:Binop>
+<math:Binop op="power">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+    <ct:SymbRef blkIdRef="pm" symbIdRef="gamma"/>
+</math:Binop>
+                            </math:Binop>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="cl">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Vmax"/>
+                        <math:Binop op="plus">
+                            <ct:SymbRef blkIdRef="pm" symbIdRef="KmG"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="X"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:Variable symbolType="real" symbId="E">
+                <ct:Assign>
+                    <math:Binop op="divide">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="cl"/>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="xHL1">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="c2"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL1"/>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Gv"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="xHL2">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="deltaHL"/>
+                            </math:Uniop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL2"/>
+                        </math:Binop>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="Gv"/>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:Variable symbolType="real" symbId="G">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="c1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL1"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="c1"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL2"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <ct:DerivativeVariable symbolType="real" symbId="xPER1">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="lambda1"/>
+                            </math:Uniop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xPER1"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="pm" symbIdRef="w1"/>
+<math:Binop op="minus">
+    <ct:Int>1</ct:Int>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="E"/>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="G"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="xPER2">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="lambda2"/>
+                            </math:Uniop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xPER2"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="w2"/>
+<math:Binop op="minus">
+    <ct:Int>1</ct:Int>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="E"/>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="G"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="xPER3">
+                <ct:Assign>
+                    <math:Binop op="plus">
+                        <math:Binop op="times">
+                            <math:Uniop op="minus">
+<ct:SymbRef blkIdRef="sm" symbIdRef="lambda3"/>
+                            </math:Uniop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xPER3"/>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="w3"/>
+<math:Binop op="minus">
+    <ct:Int>1</ct:Int>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="E"/>
+</math:Binop>
+                            </math:Binop>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="G"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:DerivativeVariable symbolType="real" symbId="xPER4">
+                <ct:Assign>
+                    <math:Binop op="minus">
+                        <math:Binop op="plus">
+                            <math:Binop op="plus">
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="lambda1"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="xPER1"/>
+</math:Binop>
+<math:Binop op="times">
+    <ct:SymbRef blkIdRef="sm" symbIdRef="lambda2"/>
+    <ct:SymbRef blkIdRef="sm" symbIdRef="xPER2"/>
+</math:Binop>
+                            </math:Binop>
+                            <math:Binop op="times">
+<ct:SymbRef blkIdRef="sm" symbIdRef="lambda3"/>
+<ct:SymbRef blkIdRef="sm" symbIdRef="xPER3"/>
+                            </math:Binop>
+                        </math:Binop>
+                        <math:Binop op="times">
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="delta"/>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xPER4"/>
+                        </math:Binop>
+                    </math:Binop>
+                </ct:Assign>
+                <ct:IndependentVariable>
+                    <ct:SymbRef symbIdRef="T"/>
+                </ct:IndependentVariable>
+                <ct:InitialCondition>
+                    <ct:InitialValue>
+                        <ct:Assign>
+                            <ct:Int>0</ct:Int>
+                        </ct:Assign>
+                    </ct:InitialValue>
+                    <ct:InitialTime>
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="t0"/>
+                        </ct:Assign>
+                    </ct:InitialTime>
+                </ct:InitialCondition>
+            </ct:DerivativeVariable>
+            <ct:Variable symbolType="real" symbId="Gv">
+                <ct:Assign>
+                    <math:Binop op="times">
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="delta"/>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="xPER4"/>
+                    </math:Binop>
+                </ct:Assign>
+            </ct:Variable>
+            <mdef:PKmacros>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>1</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="X1"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>2</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="X"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>3</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Z1"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>4</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="Z"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>5</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL1"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                    <mdef:Value argument="p">
+                        <ct:Assign>
+                            <math:Binop op="divide">
+<ct:Int>1</ct:Int>
+<ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                            </math:Binop>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+                <mdef:Depot>
+                    <mdef:Value argument="adm">
+                        <ct:Int>6</ct:Int>
+                    </mdef:Value>
+                    <mdef:Value argument="target">
+                        <ct:Assign>
+                            <ct:SymbRef blkIdRef="sm" symbIdRef="xHL2"/>
+                        </ct:Assign>
+                    </mdef:Value>
+                    <mdef:Value argument="p">
+                        <ct:Assign>
+                            <math:Binop op="divide">
+<ct:Int>1</ct:Int>
+<ct:SymbRef blkIdRef="pm" symbIdRef="F"/>
+                            </math:Binop>
+                        </ct:Assign>
+                    </mdef:Value>
+                </mdef:Depot>
+            </mdef:PKmacros>
+        </mdef:StructuralModel>
+        <mdef:ObservationModel blkId="om1">
+            <mdef:ContinuousData>
+                <mdef:Standard symbId="Y">
+                    <mdef:Output>
+                        <ct:SymbRef blkIdRef="sm" symbIdRef="G"/>
+                    </mdef:Output>
+                    <mdef:ErrorModel>
+                        <ct:Assign>
+                            <math:FunctionCall>
+<ct:SymbRef symbIdRef="additiveError"/>
+<math:FunctionArgument symbId="additive">
+    <ct:SymbRef blkIdRef="pm" symbIdRef="alpha"/>
+</math:FunctionArgument>
+                            </math:FunctionCall>
+                        </ct:Assign>
+                    </mdef:ErrorModel>
+                    <mdef:ResidualError>
+                        <ct:SymbRef blkIdRef="pm" symbIdRef="epsilon"/>
+                    </mdef:ResidualError>
+                </mdef:Standard>
+            </mdef:ContinuousData>
+        </mdef:ObservationModel>
+    </mdef:ModelDefinition>
+    <td:TrialDesign>
+        <td:ExternalDataSet toolName="Monolix" oid="nm_ds">
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="TIME"/>
+                <ct:SymbRef symbIdRef="T"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="DV"/>
+                <ct:SymbRef blkIdRef="om1" symbIdRef="Y"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="AMT"/>
+                <ds:TargetMapping blkIdRef="sm">
+                    <ds:Map dataSymbol="1" admNumber="1"/>
+                    <ds:Map dataSymbol="2" admNumber="2"/>
+                    <ds:Map dataSymbol="3" admNumber="3"/>
+                    <ds:Map dataSymbol="4" admNumber="4"/>
+                    <ds:Map dataSymbol="5" admNumber="5"/>
+                    <ds:Map dataSymbol="6" admNumber="6"/>
+                </ds:TargetMapping>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="ID"/>
+                <ct:SymbRef blkIdRef="vm_mdl" symbIdRef="ID"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="INS"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="INS"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="GLU"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="GLU"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="TOBS"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="TOBS"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="T1"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="T1"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="GLU1"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="GLU1"/>
+            </td:ColumnMapping>
+            <td:ColumnMapping>
+                <ds:ColumnRef columnIdRef="INS1"/>
+                <ct:SymbRef blkIdRef="sm" symbIdRef="INS1"/>
+            </td:ColumnMapping>
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="TIME" columnType="idv" valueType="real" columnNum="1"/>
+                    <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="2"/>
+                    <ds:Column columnId="MDV" columnType="mdv" valueType="int" columnNum="3"/>
+                    <ds:Column columnId="AMT" columnType="dose" valueType="real" columnNum="4"/>
+                    <ds:Column columnId="RATE" columnType="rate" valueType="real" columnNum="5"/>
+                    <ds:Column columnId="ID" columnType="id" valueType="int" columnNum="6"/>
+                    <ds:Column columnId="INS" columnType="reg" valueType="real" columnNum="7"/>
+                    <ds:Column columnId="GLU" columnType="reg" valueType="real" columnNum="8"/>
+                    <ds:Column columnId="CMT" columnType="adm" valueType="int" columnNum="9"/>
+                    <ds:Column columnId="TOBS" columnType="reg" valueType="real" columnNum="10"/>
+                    <ds:Column columnId="T1" columnType="reg" valueType="real" columnNum="11"/>
+                    <ds:Column columnId="GLU1" columnType="reg" valueType="real" columnNum="12"/>
+                    <ds:Column columnId="INS1" columnType="reg" valueType="real" columnNum="13"/>
+                </ds:Definition>
+                <ds:ExternalFile oid="id">
+                    <ds:path>Simulated_glucoseKinetics.csv</ds:path>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ExternalFile>
+            </ds:DataSet>
+        </td:ExternalDataSet>
+    </td:TrialDesign>
+    <msteps:ModellingSteps>
+        <msteps:SimulationStep oid="simulStep_1">
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_KmG"/>
+                <ct:Assign>
+                    <ct:Real>3.88</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_Vmax0"/>
+                <ct:Assign>
+                    <ct:Int>338</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_Emax"/>
+                <ct:Assign>
+                    <ct:Int>4812</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_gamma"/>
+                <ct:Assign>
+                    <ct:Real>1.62</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_KmI"/>
+                <ct:Assign>
+                    <ct:Int>784</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_t12I"/>
+                <ct:Assign>
+                    <ct:Real>15.9</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_t12G"/>
+                <ct:Assign>
+                    <ct:Real>0.7</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_V"/>
+                <ct:Assign>
+                    <ct:Int>12648</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_flambda3"/>
+                <ct:Assign>
+                    <ct:Real>0.0582</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_flambda2"/>
+                <ct:Assign>
+                    <ct:Real>0.154</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_w1"/>
+                <ct:Assign>
+                    <ct:Real>0.609</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_fw2"/>
+                <ct:Assign>
+                    <ct:Real>0.901</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="typ_F"/>
+                <ct:Assign>
+                    <ct:Int>2688</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_KmG"/>
+                <ct:Assign>
+                    <ct:Real>0.219</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_Vmax0"/>
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_Emax"/>
+                <ct:Assign>
+                    <ct:Real>0.112</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_gamma"/>
+                <ct:Assign>
+                    <ct:Real>0.111</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_KmI"/>
+                <ct:Assign>
+                    <ct:Real>0.263</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_t12I"/>
+                <ct:Assign>
+                    <ct:Real>0.151</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_t12G"/>
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_V"/>
+                <ct:Assign>
+                    <ct:Real>0.0557</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_flambda3"/>
+                <ct:Assign>
+                    <ct:Real>0.179</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_flambda2"/>
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_w1"/>
+                <ct:Assign>
+                    <ct:Real>0.773</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_fw2"/>
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="var_F"/>
+                <ct:Assign>
+                    <ct:Int>0</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="corr_gamma_KmI"/>
+                <ct:Assign>
+                    <math:Uniop op="minus">
+                        <ct:Real>0.44</ct:Real>
+                    </math:Uniop>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="alpha"/>
+                <ct:Assign>
+                    <ct:Real>0.014</ct:Real>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <ct:VariableAssignment>
+                <ct:SymbRef blkIdRef="pm" symbIdRef="sigma"/>
+                <ct:Assign>
+                    <ct:Int>1</ct:Int>
+                </ct:Assign>
+            </ct:VariableAssignment>
+            <msteps:Operation order="1" opType="generic"/>
+        </msteps:SimulationStep>
+        <msteps:StepDependencies>
+            <msteps:Step>
+                <ct:OidRef oidRef="simulStep_1"/>
+            </msteps:Step>
+        </msteps:StepDependencies>
+    </msteps:ModellingSteps>
+</PharmML>

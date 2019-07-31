@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_MTP-GPDI.mod",
+        "DDMODEL00000259.rdf",
+        "Model_Accomodations.txt",
+        "Output_real_MTP-GPDI.lst",
+        "Output_simulated_MTP-GPDI.lst",
+        "Command.txt",
+        "Simulated_Mtb-B1585_In-vitro-NATG-RIF-INH-EMB.csv"
+    ],
+    "version": 11
+}

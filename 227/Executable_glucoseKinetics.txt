@@ -1,0 +1,54 @@
+INPUT:
+	parameter={flambda2, V, gamma, F, flambda3, Vmax0, KmG, KmI, t12G, t12I, Emax, w1, fw2}
+	regressor={INS,GLU,TOBS,T1,GLU1,INS1}
+
+PK:
+depot(adm=1, target=X1)
+depot(adm=2, target=X)
+depot(adm=3, target=Z1)
+depot(adm=4, target=Z)
+depot(adm=5, target=xHL1, p=1/F)
+depot(adm=6, target=xHL2, p=1/F)
+
+EQUATION:
+VHL = 700
+deltaHL = 15
+delta = 10
+w2 = ((1)-(w1))*(fw2)
+w3 = ((1)-(w1))-(w2)
+lambda1 = ((((((((w1)*(flambda2))*(flambda3))+((w2)*(flambda3)))+(w3))/((flambda2)*(flambda3)))*(delta))*(F))/(((delta)*((V)-(VHL)))-(F))
+lambda2 = (lambda1)*(flambda2)
+lambda3 = (lambda2)*(flambda3)
+c1 = ((deltaHL)*(F))/(((deltaHL)*(VHL))-((2)*(F)))
+c2 = ((-(deltaHL))*(F))/(((deltaHL)*(VHL))-(F))
+I = ((((t)-(T1))/((TOBS)-(T1)))*((INS)-(INS1)))+(INS1)
+GL = ((((t)-(T1))/((TOBS)-(T1)))*((GLU)-(GLU1)))+(GLU1)
+t0 = 0
+X1_0 = 0
+X_0 = 0
+Z1_0 = 0
+Z_0 = 0
+Vmax = (Vmax0)+(((Emax)*((Z)^(gamma)))/(((KmI)^(gamma))+((Z)^(gamma))))
+cl = (Vmax)/((KmG)+(X))
+E = (cl)/(F)
+xHL1_0 = 0
+xHL2_0 = 0
+G = ((c1)*(xHL1))-((c1)*(xHL2))
+xPER1_0 = 0
+xPER2_0 = 0
+xPER3_0 = 0
+xPER4_0 = 0
+Gv = (delta)*(xPER4)
+ddt_X1 = (((GL)-(X1))*(log(2)))/(t12G)
+ddt_X = (((X1)-(X))*(log(2)))/(t12G)
+ddt_Z1 = (((I)-(Z1))*(log(2)))/(t12I)
+ddt_Z = (((Z1)-(Z))*(log(2)))/(t12I)
+ddt_xHL1 = ((c2)*(xHL1))+(Gv)
+ddt_xHL2 = ((-(deltaHL))*(xHL2))+(Gv)
+ddt_xPER1 = ((-(lambda1))*(xPER1))+(((w1)*((1)-(E)))*(G))
+ddt_xPER2 = ((-(lambda2))*(xPER2))+(((w2)*((1)-(E)))*(G))
+ddt_xPER3 = ((-(lambda3))*(xPER3))+(((w3)*((1)-(E)))*(G))
+ddt_xPER4 = ((((lambda1)*(xPER1))+((lambda2)*(xPER2)))+((lambda3)*(xPER3)))-((delta)*(xPER4))
+
+OUTPUT:
+	output={G}

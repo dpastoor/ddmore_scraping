@@ -1,0 +1,1578 @@
+License Registered to: GlaxoSmithKline
+Expiration Date:    14 MAY 2014
+Current Date:        5 NOV 2013
+Days until program expires : 194
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.1.2
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ FINAL MODEL                                                             
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:     1647
+ NO. OF DATA ITEMS IN DATA SET:  32
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ DEP VARIABLE IS DATA ITEM NO.:   6
+ MDV DATA ITEM IS DATA ITEM NO.: 17
+0INDICES PASSED TO SUBROUTINE PRED:
+ 16 13  3 11  0  0 18  0  0
+  0  0
+0LABELS FOR DATA ITEMS:
+ ID AGE AMT BMI CHRT DV CRCL DURATION HT PERD RATE SCR TIME TRLD WT EVID MDV CMT STUD AMLOAD LABLN SEX AMLIVER AMKIDNEY
+ AMSPLEEN AMBONE AMADRENALS AMGUT AMHEART AA AL ORD
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ CL      V       Q       V2      V4      SAP1    KOUT    KINT    Q4  
+ K43     KIN     IPRE
+0FORMAT FOR DATA:
+ (7(4E17.0/),4E17.0)                                                             
+ 
+ TOT. NO. OF OBS RECS:     1428
+ TOT. NO. OF INDIVIDUALS:     38
+0LENGTH OF THETA: 21
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS BLOCK FORM:
+  1
+  0  2
+  0  0  3
+  0  0  0  4
+  0  0  0  0  5
+  0  0  0  0  0  6
+  0  0  0  0  0  0  7
+  0  0  0  0  0  0  0  8
+  0  0  0  0  0  0  0  0  9
+  0  0  0  0  0  0  0  0  0 10
+  0  0  0  0  0  0  0  0  0  0 11
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:  2
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+ -0.1000E+07    -0.3070E+01     0.1000E+07
+ -0.1000E+07     0.1920E+01     0.1000E+07
+ -0.1000E+07     0.2780E+01     0.1000E+07
+ -0.1000E+07     0.5240E+00     0.1000E+07
+ -0.1000E+07     0.2860E+01     0.1000E+07
+ -0.1000E+07     0.3440E+01     0.1000E+07
+ -0.1000E+07     0.1450E+02     0.1000E+07
+ -0.1000E+07     0.5810E+01     0.1000E+07
+  0.0000E+00     0.2860E+00     0.1000E+07
+  0.0000E+00     0.0000E+00     0.0000E+00
+  0.0000E+00     0.2710E+00     0.1000E+07
+  0.0000E+00     0.0000E+00     0.0000E+00
+  0.1000E+01     0.1000E+01     0.1000E+01
+  0.4055E+00     0.4055E+00     0.4055E+00
+ -0.1000E+01     0.1530E-01     0.6000E+00
+ -0.1000E+07     0.2500E+01     0.1000E+07
+ -0.2000E+02     0.1060E+01     0.2000E+02
+ -0.1000E+01     0.3940E+01     0.5000E+01
+ -0.1000E+01    -0.3000E+00     0.5000E+01
+  0.0000E+00     0.6430E+01     0.1000E+03
+  0.0000E+00     0.3180E+02     0.1000E+03
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.1680E+00
+        2                                                                                   NO 
+                  0.4880E-01
+        3                                                                                   NO 
+                  0.9660E-01
+        4                                                                                  YES 
+                  0.2250E-01
+        5                                                                                  YES 
+                  0.2250E-01
+        6                                                                                   NO 
+                  0.4190E-01
+        7                                                                                  YES 
+                  0.2250E-01
+        8                                                                                  YES 
+                  0.2250E-01
+        9                                                                                   NO 
+                  0.2590E+00
+       10                                                                                   NO 
+                  0.3680E+00
+       11                                                                                  YES 
+                  0.2250E-01
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+ 0.0000E+00   0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+0ESTIMATION STEP OMITTED:           NO 
+ CONDITIONAL ESTIMATES USED:       YES 
+ CENTERED ETA:                      NO 
+ EPS-ETA INTERACTION:              YES 
+ LAPLACIAN OBJ. FUNC.:              NO 
+ NO. OF FUNCT. EVALS. ALLOWED:       5328
+ NO. OF SIG. FIGURES REQUIRED:       3
+ INTERMEDIATE PRINTOUT:            YES 
+ ESTIMATE OUTPUT TO MSF:            NO 
+ IND. OBJ. FUNC. VALUES SORTED:     NO 
+0ESTIMATION STEP OMITTED:           NO 
+ CONDITIONAL ESTIMATES USED:       YES 
+ CENTERED ETA:                      NO 
+ EPS-ETA INTERACTION:              YES 
+ LAPLACIAN OBJ. FUNC.:              NO 
+ NO. OF FUNCT. EVALS. ALLOWED:       5328
+ NO. OF SIG. FIGURES REQUIRED:       3
+ INTERMEDIATE PRINTOUT:            YES 
+ ESTIMATE OUTPUT TO MSF:            NO 
+ IND. OBJ. FUNC. VALUES SORTED:     NO 
+0COVARIANCE STEP OMITTED:    NO 
+ EIGENVLS. PRINTED:         YES 
+ SPECIAL COMPUTATION:        NO 
+ COMPRESSED FORMAT:          NO 
+0TABLES STEP OMITTED:    NO 
+ NO. OF TABLES:           4
+0-- TABLE  1 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID TIME IPRED EVID MDV CWRES NPDE LABLN TRLD
+0-- TABLE  2 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID CL V Q V2 SAP10 KIN KOUT Q4 V4 K43 KINT
+0-- TABLE  3 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID WT AGE BMI CRCL
+0-- TABLE  4 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID SEX CHRT PERD STUD AMLOAD AL AMLIVER
+ 
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+1DOUBLE PRECISION PREDPP VERSION 7.1.2     
+ 
+ GENERAL NONLINEAR KINETICS MODEL USING LSODA (ADVAN13)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:  15
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         PERIH1       ON         YES        YES        YES        YES
+    2         EFFECT       ON         YES        YES        NO         NO 
+    3         PERIPH2      ON         YES        YES        NO         NO 
+    4         PERIPH3      ON         YES        YES        NO         NO 
+    5         SC           ON         YES        YES        NO         NO 
+    6         COMP         ON         YES        YES        NO         NO 
+    7         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE(S) FROM SUBROUTINE TOL:   9
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1          18          16           *           *           *
+    2           *           *           *           *           *
+    3          19           *           *           *           *
+    4           *           *           *           *           *
+    5           *          17           *           *           *
+    6           *           *           *           *           *
+    7           *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:     16
+   TIME DATA ITEM IS DATA ITEM NO.:         13
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   3
+   DOSE RATE DATA ITEM IS DATA ITEM NO.:    11
+   COMPT. NO. DATA ITEM IS DATA ITEM NO.:   18
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0DES SUBROUTINE USES FULL STORAGE MODE.
+1
+ 
+ 
+ #METH: Importance Sampling
+ EM/BAYES SETUP
+ THETAS THAT ARE MU MODELED:
+   1   2   3   4   5   6   7   8  15  16  17  18  19  20  21
+ THETAS THAT ARE SIGMA-LIKE:
+   9  10  11  12
+ 
+ MONITORING OF SEARCH:
+
+ iteration            0 OBJ=    20810.5749525697     
+ iteration            1 OBJ=    20802.4797066865     
+ iteration            2 OBJ=    20838.9874532451     
+ iteration            3 OBJ=    20808.5425760217     
+ iteration            4 OBJ=    20832.0001758039     
+ iteration            5 OBJ=    20840.0180692991     
+ iteration            6 OBJ=    20862.7048037540     
+ iteration            7 OBJ=    20850.0209523094     
+ iteration            8 OBJ=    20832.5076111454     
+ iteration            9 OBJ=    20826.0732964198     
+ iteration           10 OBJ=    20813.3082035039     
+ iteration           11 OBJ=    20831.2444981896     
+ iteration           12 OBJ=    20832.1754628531     
+ iteration           13 OBJ=    20823.7835780632     
+ iteration           14 OBJ=    20846.8044373636     
+ iteration           15 OBJ=    20830.8634985961     
+ iteration           16 OBJ=    20815.9668180476     
+ iteration           17 OBJ=    20827.4861022137     
+ iteration           18 OBJ=    20820.1059427786     
+ iteration           19 OBJ=    20825.4314876401     
+ iteration           20 OBJ=    20814.8908600132     
+ iteration           21 OBJ=    20818.9564780505     
+ iteration           22 OBJ=    20811.8257321709     
+ iteration           23 OBJ=    20811.3251035349     
+ iteration           24 OBJ=    20808.1150003864     
+ iteration           25 OBJ=    20805.5285415616     
+ iteration           26 OBJ=    20802.6512299708     
+ iteration           27 OBJ=    20802.9279344245     
+ iteration           28 OBJ=    20799.5427429082     
+ iteration           29 OBJ=    20799.4122376042     
+ iteration           30 OBJ=    20797.3159975149     
+ iteration           31 OBJ=    20796.8103281331     
+ iteration           32 OBJ=    20796.2441125387     
+ iteration           33 OBJ=    20797.1993733570     
+ iteration           34 OBJ=    20796.7785068528     
+ iteration           35 OBJ=    20796.1616111703     
+ iteration           36 OBJ=    20796.7050105917     
+ iteration           37 OBJ=    20795.8725563931     
+ iteration           38 OBJ=    20796.6754959482     
+ iteration           39 OBJ=    20797.4576216796     
+ iteration           40 OBJ=    20796.9204918161     
+ iteration           41 OBJ=    20797.1274931770     
+ iteration           42 OBJ=    20795.7819871876     
+ iteration           43 OBJ=    20796.7513285545     
+ iteration           44 OBJ=    20796.2945399121     
+ iteration           45 OBJ=    20796.2694751584     
+ iteration           46 OBJ=    20795.7106012855     
+ iteration           47 OBJ=    20795.8654703443     
+ iteration           48 OBJ=    20797.1851206364     
+ iteration           49 OBJ=    20796.9239602807     
+ iteration           50 OBJ=    20796.9514712534     
+ iteration           51 OBJ=    20796.6223753841     
+ iteration           52 OBJ=    20796.3172295612     
+ iteration           53 OBJ=    20796.7356706996     
+ iteration           54 OBJ=    20796.7984338251     
+ iteration           55 OBJ=    20796.6839398188     
+ iteration           56 OBJ=    20796.9177494490     
+ iteration           57 OBJ=    20796.1073093518     
+ iteration           58 OBJ=    20796.5451682185     
+ iteration           59 OBJ=    20795.6271648764     
+ iteration           60 OBJ=    20795.7471215685     
+ iteration           61 OBJ=    20796.7429641074     
+ iteration           62 OBJ=    20796.3797998373     
+ iteration           63 OBJ=    20795.7874024385     
+ iteration           64 OBJ=    20795.9049526746     
+ iteration           65 OBJ=    20796.8425305737     
+ iteration           66 OBJ=    20796.7908112180     
+ iteration           67 OBJ=    20795.7518560238     
+ iteration           68 OBJ=    20793.6081879525     
+ iteration           69 OBJ=    20796.7957672607     
+ iteration           70 OBJ=    20797.6318938161     
+ iteration           71 OBJ=    20796.8415606540     
+ iteration           72 OBJ=    20796.4878650741     
+ iteration           73 OBJ=    20796.1875423759     
+ iteration           74 OBJ=    20796.2885455752     
+ iteration           75 OBJ=    20796.0402840397     
+ iteration           76 OBJ=    20796.6288551942     
+ iteration           77 OBJ=    20796.6150458635     
+ iteration           78 OBJ=    20797.0377584710     
+ iteration           79 OBJ=    20797.0768553942     
+ iteration           80 OBJ=    20796.8839900362     
+ iteration           81 OBJ=    20796.0082142386     
+ iteration           82 OBJ=    20795.6859248293     
+ iteration           83 OBJ=    20796.2488139354     
+ iteration           84 OBJ=    20796.9426833084     
+ iteration           85 OBJ=    20796.4446458390     
+ iteration           86 OBJ=    20795.9982701373     
+ iteration           87 OBJ=    20796.4431024395     
+ iteration           88 OBJ=    20795.9973085659     
+ Convergence achieved
+ Elapsed estimation time in seconds: 15354.07
+ iteration           88 OBJ=    20796.4711572436     
+ 
+ #TERM:
+ OPTIMIZATION COMPLETED
+ 
+
+ ETABAR IS THE ARITHMETIC MEAN OF THE ETA-ESTIMATES,
+ AND THE P-VALUE IS GIVEN FOR THE NULL HYPOTHESIS THAT THE TRUE MEAN IS 0.
+
+ ETABAR:        -5.4875E-04 -4.7444E-04 -1.2040E-03  2.1397E-04  2.1434E-03 -2.7920E-04  1.1607E-04 -1.8076E-05 -2.2015E-03 -1.7834E-04
+                -4.3782E-03
+ SE:             5.4662E-02  3.3240E-02  4.3524E-02  2.1183E-02  1.2753E-02  3.0069E-02  1.6882E-02  1.8956E-02  6.5355E-02  8.2147E-02
+                 2.7798E-03
+
+ P VAL.:         9.9199E-01  9.8861E-01  9.7793E-01  9.9194E-01  8.6652E-01  9.9259E-01  9.9451E-01  9.9924E-01  9.7313E-01  9.9827E-01
+                 1.1525E-01
+ 
+ ETAshrink(%):   1.6898E+01  5.3032E+00  1.0071E+01  1.1778E+01  4.6888E+01  7.7582E+00  2.9689E+01  2.1053E+01  2.1841E+01  1.5152E+01
+                 8.8423E+01
+ EPSshrink(%):   6.4649E+00  1.0000E+02
+ 
+ #TERE:
+ 
+ Number of Negative Eigenvalues in Matrix=          20
+ Most negative value=  -56483.2542236469     
+ Most positive value=   1959611.61740527     
+ Forcing positive definiteness
+ Root mean square deviation of matrix from original=   0.137969852255482     
+ 
+ Elapsed covariance time in seconds:   303.83
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ #OBJT:**************                        FINAL VALUE OF OBJECTIVE FUNCTION                       ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************    20796.471       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18      TH19      TH20      TH21     
+ 
+        -3.07E+00  1.92E+00  2.78E+00  5.42E-01  2.87E+00  3.44E+00  1.45E+01  5.78E+00  2.86E-01  0.00E+00  2.71E-01  0.00E+00
+          1.00E+00  4.06E-01  1.53E-02  2.50E+00  1.05E+00  4.01E+00 -3.00E-01  6.39E+00  2.64E+01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11
+ 
+ ETA1
++        1.69E-01
+ 
+ ETA2
++        0.00E+00  4.81E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  9.14E-02
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.15E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.73E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.66E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2
+ 
+ EPS1
++        1.00E+00
+ 
+ EPS2
++        0.00E+00  1.00E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                         STANDARD ERROR OF ESTIMATE (RSR)                       ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18      TH19      TH20      TH21     
+ 
+         1.32E-01  4.16E-02  5.50E-02  4.39E-01  2.31E-01  3.91E-02  1.92E-01  8.08E-01  2.50E-02  0.00E+00  1.42E-02  0.00E+00
+          0.00E+00  0.00E+00  7.51E-04  1.75E-01  1.70E-01  1.04E+00  6.91E-02  2.49E+00  6.59E+00
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11
+ 
+ ETA1
++        4.45E-02
+ 
+ ETA2
++        0.00E+00  1.09E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  2.21E-02
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.05E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.40E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.23E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2
+ 
+ EPS1
++        0.00E+00
+ 
+ EPS2
++        0.00E+00  0.00E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                       COVARIANCE MATRIX OF ESTIMATE (RSR)                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.73E-02        -1.20E-03         1.73E-03        -3.01E-03        -6.27E-05         3.02E-03        -9.91E-03
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+       4.42E-03        -1.22E-02         1.93E-01        -6.20E-04         6.17E-04        -4.93E-03         8.39E-02
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       5.36E-02        -6.80E-04         6.65E-05        -1.12E-04         3.18E-03        -3.24E-04         1.53E-03
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+       1.12E-02        -4.15E-04         3.70E-04        -4.24E-02        -3.10E-02         5.59E-05         3.68E-02
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+       2.52E-02        -9.00E-04        -1.83E-02         1.65E-01         1.38E-01        -4.09E-03        -1.02E-01
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       6.53E-01        -1.92E-04        -5.42E-05        -7.88E-04         8.93E-03         3.54E-03         2.33E-04
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -1.76E-03         7.84E-03         6.23E-04        -7.54E-04         1.88E-04         5.00E-05         2.08E-03
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+       1.31E-03        -2.70E-05        -1.77E-03         4.87E-03         8.03E-05         2.03E-04        -5.69E-07
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+       9.65E-06        -6.97E-07        -6.96E-05        -1.81E-05         1.46E-06        -2.32E-05         8.78E-05
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+      -4.65E-06         1.74E-06         5.64E-07        -6.63E-03         9.08E-04         5.02E-03        -2.86E-02
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+      -1.86E-02         5.95E-04         1.36E-02        -7.93E-02        -1.97E-03        -7.70E-04         2.62E-06
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       3.05E-02         1.18E-02        -1.32E-03         1.56E-03        -4.33E-02        -1.36E-02        -8.93E-04
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+       1.72E-02        -1.87E-02        -2.24E-03        -1.10E-03         7.56E-06         9.37E-03         2.89E-02
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -1.44E-02        -6.98E-03        -7.80E-03         1.29E-01         4.99E-02        -2.91E-03        -4.82E-02
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+       2.50E-01         9.86E-03         5.18E-03        -2.09E-04        -6.61E-02        -9.77E-02         1.09E+00
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+      -1.93E-04        -3.47E-04         5.71E-04         1.13E-03         2.33E-03        -1.08E-03        -8.59E-04
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+       1.22E-02         4.82E-06         8.58E-05        -1.18E-05         6.66E-04        -1.91E-03         2.71E-02
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       4.77E-03         1.36E-01        -3.62E-03        -5.48E-02         2.33E-01         1.39E-01         2.29E-03
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -6.18E-02         1.02E+00         1.69E-02        -6.15E-04         2.17E-04        -2.29E-01        -3.78E-02
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+       1.01E-01         4.85E-02         6.19E+00         3.30E-01        -5.36E-02        -2.05E-01         7.40E-01
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       5.60E-01        -5.28E-02        -3.55E-01         3.14E+00         6.65E-02         2.87E-02        -4.11E-05
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+      -9.60E-01        -8.27E-02         2.91E+00        -7.10E-02         4.51E+00         4.34E+01        -4.09E-05
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       2.37E-04         9.93E-04        -9.87E-03        -6.01E-03        -1.27E-04         3.32E-03        -1.87E-02
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+      -5.02E-04        -1.07E-04         5.70E-06         1.38E-03         1.62E-04        -6.75E-03         3.19E-04
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+      -6.78E-03        -8.15E-02         1.98E-03        -2.43E-04        -1.90E-04         2.18E-04        -9.24E-04
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+      -4.70E-04        -5.89E-05        -3.70E-05        -6.76E-04         1.66E-06         2.02E-05        -2.31E-06
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+       3.09E-04        -1.30E-04         2.15E-03         2.67E-04        -1.37E-04        -6.73E-03         9.86E-05
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       1.19E-04        -9.91E-04         1.02E-04         5.32E-04        -3.04E-03        -2.07E-03         1.07E-04
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+       6.27E-04        -8.63E-03        -7.77E-05         2.63E-05         3.49E-07         6.54E-04        -3.49E-04
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+       5.07E-04        -2.17E-04        -1.12E-02        -4.24E-02         4.02E-04         3.29E-05         4.88E-04
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       2.34E-04        -6.11E-05        -3.83E-05        -7.07E-04         1.24E-04        -8.05E-05        -1.71E-04
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       1.93E-03        -5.06E-05        -1.62E-05         1.67E-06         9.70E-05         2.94E-04         1.19E-04
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+       4.85E-06        -2.15E-03         6.17E-03        -7.86E-05        -1.04E-05        -3.01E-05         1.11E-04
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+      -1.20E-03         6.30E-04        -6.75E-04         5.88E-03         3.50E-04         1.16E-04         2.05E-03
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+      -3.37E-02        -1.33E-04        -1.77E-04         4.54E-06         4.22E-03         4.42E-03        -7.43E-02
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+      -5.17E-03        -1.16E-01        -1.29E-01        -1.75E-03        -4.16E-04        -2.60E-04        -3.20E-05
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       1.96E-02        -5.57E-03         1.93E-03         2.46E-04         1.38E-02         6.16E-03         5.64E-04
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+      -1.33E-03        -1.23E-02         2.50E-04         9.43E-05         4.66E-06         1.19E-02        -8.46E-04
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -3.34E-02         2.08E-04        -1.15E-01        -3.88E-01        -1.35E-03        -1.97E-04         4.64E-05
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+      -2.53E-05         5.60E-03         1.50E-02
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                       CORRELATION MATRIX OF ESTIMATE (RSR)                     ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.00E+00        -2.20E-01         1.00E+00        -4.16E-01        -2.74E-02         1.00E+00        -1.72E-01
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+       2.42E-01        -5.06E-01         1.00E+00        -2.04E-02         6.41E-02        -3.88E-01         8.25E-01
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       1.00E+00        -1.32E-01         4.09E-02        -5.22E-02         1.85E-01        -3.58E-02         1.00E+00
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+       4.43E-01        -5.20E-02         3.51E-02        -5.03E-01        -6.99E-01         7.45E-03         1.00E+00
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+       2.37E-01        -2.68E-02        -4.13E-01         4.65E-01         7.40E-01        -1.29E-01        -6.61E-01
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       1.00E+00        -5.86E-02        -5.22E-02        -5.75E-01         8.14E-01         6.12E-01         2.38E-01
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -3.67E-01         3.88E-01         1.00E+00        -4.03E-01         3.18E-01         6.40E-02         3.32E-01
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+       3.99E-01        -4.85E-02        -6.50E-01         4.24E-01         2.26E-01         1.00E+00        -5.76E-03
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+       3.09E-01        -1.69E-02        -2.11E-01        -1.04E-01         4.97E-02        -1.61E-01         1.45E-01
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+      -2.48E-01         1.63E-01         1.00E+00        -2.89E-01         1.25E-01         5.23E-01        -3.72E-01
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+      -4.59E-01         8.70E-02         4.04E-01        -5.62E-01        -4.52E-01        -3.10E-01         2.00E-02
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       1.00E+00         5.27E-01        -1.87E-01         1.67E-01        -5.80E-01        -3.46E-01        -1.34E-01
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+       5.27E-01        -1.36E-01        -5.28E-01        -4.54E-01         5.92E-02         3.15E-01         1.00E+00
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -1.05E-01        -1.61E-01        -1.36E-01         2.81E-01         2.07E-01        -7.15E-02        -2.41E-01
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+       2.97E-01         3.79E-01         3.49E-01        -2.67E-01        -3.63E-01        -5.51E-01         1.00E+00
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+      -2.13E-02        -1.21E-01         1.50E-01         3.71E-02         1.46E-01        -4.00E-01        -6.48E-02
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+       2.19E-01         2.79E-03         8.72E-02        -2.27E-01         5.52E-02        -1.62E-01         3.76E-01
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       1.00E+00         4.17E-01        -3.49E-02        -4.01E-01         2.13E-01         2.42E-01         2.36E-02
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -1.29E-01         5.10E-01         2.72E-01        -1.74E-02         1.16E-01        -5.28E-01        -8.94E-02
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+       3.89E-02         2.82E-01         1.00E+00         3.81E-01        -1.95E-01        -5.67E-01         2.56E-01
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       3.67E-01        -2.05E-01        -2.81E-01         5.89E-01         4.04E-01         3.06E-01        -8.31E-03
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+      -8.33E-01        -7.38E-02         4.23E-01        -1.56E-01         2.75E-01         1.00E+00        -6.99E-03
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       1.28E-01         4.06E-01        -5.05E-01        -5.83E-01        -7.29E-02         3.89E-01        -5.20E-01
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+      -4.51E-01        -1.68E-01         1.70E-01         1.78E-01         2.14E-02        -1.45E-01         1.04E-01
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+      -6.12E-02        -2.78E-01         1.00E+00        -1.70E-01        -4.20E-01         3.64E-01        -1.93E-01
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+      -1.86E-01        -1.38E-01        -1.77E-02        -7.68E-02         6.11E-03         1.30E-01        -2.83E-01
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+       1.62E-01        -7.04E-02         1.89E-01         3.54E-01        -5.04E-03        -9.38E-02         2.03E-01
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       1.00E+00        -3.41E-01         1.11E-01         4.38E-01        -3.13E-01        -4.04E-01         1.24E-01
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+       1.48E-01        -4.84E-01        -1.41E-01         8.37E-02         2.10E-02         1.69E-01        -9.29E-02
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+       2.20E-02        -1.42E-01        -2.04E-01        -2.91E-01         4.09E-01         1.37E-01         1.00E+00
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       1.69E-01        -1.39E-01        -6.62E-02        -1.53E-01         5.09E-02        -1.96E-01        -8.47E-02
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       2.27E-01        -1.93E-01        -1.08E-01         2.11E-01         5.27E-02         1.64E-01         1.08E-02
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+       6.66E-03        -8.19E-02         8.89E-02        -1.68E-01        -9.07E-02        -1.30E-01         1.00E+00
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+      -6.53E-02         1.08E-01        -8.78E-02         9.57E-02         1.08E-02         2.12E-02         7.62E-02
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+      -2.98E-01        -3.81E-02        -8.87E-02         4.32E-02         1.73E-01         1.86E-01        -5.10E-01
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+      -5.35E-01        -3.34E-01        -1.39E-01        -2.81E-01        -2.73E-01        -8.42E-02        -2.17E-02
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       1.00E+00        -3.45E-01         3.78E-01         3.66E-02         2.56E-01         2.17E-01         1.18E-01
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+      -5.66E-02        -1.24E-01         8.19E-02         5.41E-02         5.07E-02         5.55E-01        -4.06E-02
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -2.61E-01         2.46E-02        -3.78E-01        -4.80E-01        -2.48E-01        -1.48E-01         1.71E-02
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+      -1.96E-02         3.27E-01         1.00E+00
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                   INVERSE COVARIANCE MATRIX OF ESTIMATE (RSR)                  ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.56E+02         1.56E+01         7.02E+02        -1.23E+00        -1.62E+01         3.32E+02         1.37E+01
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+      -3.79E+01         2.12E+01         1.16E+02        -3.14E+01         6.01E+00        -6.46E+00        -5.79E+01
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       2.26E+02         3.74E+01         8.35E+00         4.56E+00        -5.61E-01        -1.36E+01         7.70E+02
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+      -5.63E+01        -1.60E+01        -4.27E+00        -1.70E+01         5.08E+01        -5.59E+01         2.81E+02
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+      -8.77E+00         5.09E+00        -3.04E+00         2.59E-01        -1.26E+01        -8.52E+00         2.96E+01
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       1.25E+01         7.73E+00        -1.70E+02        -1.57E+02        -1.68E+02         3.25E+01         5.55E+00
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -1.62E+02        -7.47E+00         9.35E+03         1.89E+01        -7.76E+01         3.64E+01        -8.88E+00
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+      -9.89E+01         3.05E+02         2.67E+02        -4.09E+00         5.56E+02         1.69E+04        -6.44E+02
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+      -1.63E+04        -2.01E+02         1.35E+03        -1.61E+02        -2.77E+02         1.82E+03        -2.75E+02
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+       5.82E+03         7.44E+02         1.96E+06         1.15E+01        -1.28E+00        -1.29E+01         3.25E-03
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+       1.28E+01         1.03E+01        -2.45E+01        -7.84E+00        -2.81E+01         3.23E+00         7.91E+01
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       7.26E+01        -2.17E+01         4.79E-01        -4.24E+00         9.06E+00        -7.17E-01         1.78E+01
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+      -4.61E+01        -1.16E+01        -1.66E+01         1.94E+01         8.41E+01        -6.02E+00         8.22E+01
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -1.18E+00         6.90E-02        -3.23E-01         2.83E-01         3.31E-01         9.96E-01        -1.42E+00
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+      -4.46E-01        -1.41E+00        -1.21E+00        -1.25E+01        -3.75E-01         3.83E+00         7.57E-01
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+       1.53E+01         2.08E+00         2.45E+00        -1.85E+00        -4.89E+00         1.85E+02        -2.53E+01
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+      -4.15E+00         4.55E+00         3.99E+01        -1.29E+02         4.55E+00         7.65E+00         5.90E-01
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       2.63E+02         2.48E-01        -8.06E-02        -3.60E-01        -1.47E-01         7.03E-01         3.84E-01
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -6.86E-01        -3.14E-01        -8.60E-01        -5.44E-01         7.95E+00         2.00E+00        -2.69E-01
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+      -1.32E-02         2.67E-01         2.29E-01        -6.95E-03         3.90E-03        -6.22E-02         6.38E-03
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       2.99E-02         5.03E-02        -8.02E-02        -4.50E-02        -1.76E-01         1.26E-01        -5.94E-01
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+       3.59E-01        -5.25E-02        -1.05E-02         4.54E-02         1.05E-02         1.05E-02        -4.22E+00
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       1.41E+01         4.03E+00         9.35E-01         1.04E+01        -1.33E+01        -3.23E+01         1.83E+00
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+       1.61E+01         1.47E+02        -1.37E+03         1.81E+01         1.84E+00        -3.28E-01        -2.26E+01
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+       6.24E-01         3.09E-02         3.84E+02        -9.14E+00         4.23E+00        -1.02E+01         2.55E+01
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+       1.90E+01         1.36E+00        -6.41E+01        -9.75E+00         1.86E+02         1.15E+02         2.75E+02
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+      -7.72E+00        -4.14E+00         6.02E-01         7.53E+00        -5.03E-02        -3.33E-03         6.23E+01
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       6.99E+03        -7.16E+00        -5.50E-01         2.27E+01         1.86E+01         4.54E+01         1.32E+01
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+      -7.21E+01        -6.00E+00        -1.17E+02         4.15E+02         1.11E+03         1.05E+00        -1.17E+00
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+      -4.40E-02         2.18E+00        -1.53E-01        -1.14E-01         6.03E+01         1.11E+02         1.54E+03
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       1.80E+01        -2.98E+00        -1.48E+01         3.95E+01        -2.27E+01        -4.69E+01        -2.12E+01
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       4.98E+00         6.35E+01         3.00E+02        -1.51E+02        -3.21E+00         7.57E-01         1.38E+00
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+      -1.28E+01        -1.09E-01         8.42E-02        -1.08E+01         1.03E+02         3.12E+01         8.22E+03
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+       8.05E-01        -1.43E+00         1.98E+00        -6.21E+00         7.68E+00         6.82E+00        -4.77E+00
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+       1.70E+00         2.86E+01         3.79E+01         3.35E+01        -6.77E+00         9.15E+00         2.48E-01
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+       1.32E+01        -4.52E-01        -2.69E-02         3.42E+01         7.03E-01        -4.53E+00        -1.92E+01
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       8.74E+01         5.72E+00        -1.36E+00        -2.46E+00        -4.44E+00         6.14E+00         1.92E+00
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+       3.81E+00        -1.91E+00         1.66E+01        -5.46E+00        -4.86E+01        -2.99E+00         1.26E-01
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -5.31E-03         5.54E-01        -9.70E-02        -6.79E-03         1.43E+01        -6.85E+00        -2.08E+01
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+       3.17E+01        -9.24E-01         8.34E+01
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                               IMPORTANCE SAMPLING                              ********************
+ ********************                   EIGENVALUES OF COR MATRIX OF ESTIMATE (RSR)                  ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+             1         2         3         4         5         6         7         8         9        10        11        12
+             13        14        15        16        17        18        19        20        21        22        23
+ 
+         1.02E-02  1.51E-02  2.60E-02  6.32E-02  8.08E-02  8.94E-02  1.07E-01  1.69E-01  2.21E-01  2.77E-01  3.98E-01  4.28E-01
+          5.92E-01  6.01E-01  6.77E-01  9.93E-01  1.06E+00  1.44E+00  1.83E+00  1.88E+00  2.88E+00  3.24E+00  5.93E+00
+ 
+1
+ 
+ 
+ #METH: Objective Function Evaluation by Importance Sampling
+ EM/BAYES SETUP
+ THETAS THAT ARE MU MODELED:
+   1   2   3   4   5   6   7   8  15  16  17  18  19  20  21
+ THETAS THAT ARE SIGMA-LIKE:
+   9  10  11  12
+ 
+ MONITORING OF SEARCH:
+
+ iteration            0 OBJ=    20797.4495704429     
+ iteration            1 OBJ=    20796.2988732854     
+ iteration            2 OBJ=    20796.4395469079     
+ iteration            3 OBJ=    20796.1140044083     
+ iteration            4 OBJ=    20796.3603788842     
+ Elapsed estimation time in seconds: 13193.40
+ iteration            5 OBJ=    20796.4782664779     
+ 
+ #TERM:
+ OPTIMIZATION NOT TESTED
+ 
+
+ ETABAR IS THE ARITHMETIC MEAN OF THE ETA-ESTIMATES,
+ AND THE P-VALUE IS GIVEN FOR THE NULL HYPOTHESIS THAT THE TRUE MEAN IS 0.
+
+ ETABAR:        -1.9329E-04 -7.7480E-05  2.9965E-04 -2.4175E-04  4.0569E-04 -2.4176E-04  6.2435E-04  1.9857E-04  2.0229E-03  1.8569E-03
+                -4.9773E-03
+ SE:             5.4892E-02  3.2956E-02  4.3465E-02  2.1176E-02  1.2940E-02  3.0018E-02  1.6973E-02  1.8740E-02  6.4728E-02  8.1789E-02
+                 2.7713E-03
+
+ P VAL.:         9.9719E-01  9.9812E-01  9.9450E-01  9.9089E-01  9.7499E-01  9.9357E-01  9.7066E-01  9.9155E-01  9.7507E-01  9.8189E-01
+                 7.2496E-02
+ 
+ ETAshrink(%):   1.6549E+01  6.1117E+00  1.0193E+01  1.1808E+01  4.6109E+01  7.9140E+00  2.9313E+01  2.1951E+01  2.2592E+01  1.5522E+01
+                 8.8458E+01
+ EPSshrink(%):   6.5083E+00  1.0000E+02
+ 
+ #TERE:
+ 
+ Number of Negative Eigenvalues in Matrix=          19
+ Most negative value=  -55491.7737213887     
+ Most positive value=   2021714.35807500     
+ Forcing positive definiteness
+ Root mean square deviation of matrix from original=   0.133472945281394     
+ 
+ Elapsed covariance time in seconds:  4018.98
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ #OBJT:**************                        FINAL VALUE OF OBJECTIVE FUNCTION                       ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************    20796.478       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18      TH19      TH20      TH21     
+ 
+        -3.07E+00  1.92E+00  2.78E+00  5.42E-01  2.87E+00  3.44E+00  1.45E+01  5.78E+00  2.86E-01  0.00E+00  2.71E-01  0.00E+00
+          1.00E+00  4.06E-01  1.53E-02  2.50E+00  1.05E+00  4.01E+00 -3.00E-01  6.39E+00  2.64E+01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11
+ 
+ ETA1
++        1.69E-01
+ 
+ ETA2
++        0.00E+00  4.81E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  9.14E-02
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.15E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.73E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.66E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.25E-02
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2
+ 
+ EPS1
++        1.00E+00
+ 
+ EPS2
++        0.00E+00  1.00E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                         STANDARD ERROR OF ESTIMATE (RSR)                       ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18      TH19      TH20      TH21     
+ 
+         1.33E-01  4.24E-02  5.36E-02  3.83E-01  1.65E-01  3.91E-02  1.23E-01  6.14E-01  2.68E-02  0.00E+00  1.25E-02  0.00E+00
+          0.00E+00  0.00E+00  6.58E-04  1.70E-01  1.90E-01  1.08E+00  6.88E-02  2.48E+00  6.34E+00
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11
+ 
+ ETA1
++        3.83E-02
+ 
+ ETA2
++        0.00E+00  1.06E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  2.01E-02
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.05E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.39E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.09E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2
+ 
+ EPS1
++        0.00E+00
+ 
+ EPS2
++        0.00E+00  0.00E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                       COVARIANCE MATRIX OF ESTIMATE (RSR)                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.77E-02        -9.46E-04         1.79E-03        -3.08E-03        -2.80E-04         2.87E-03        -5.26E-03
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+       5.70E-03        -1.03E-02         1.47E-01         4.66E-03         2.16E-04        -2.48E-03         3.93E-02
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       2.73E-02        -7.71E-04         1.06E-04        -8.38E-05         2.68E-03        -1.04E-03         1.53E-03
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+       8.78E-03         1.71E-06        -1.36E-03        -9.63E-03        -6.74E-03         1.45E-04         1.50E-02
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+       4.08E-02        -3.30E-03        -9.91E-03         5.62E-03         4.63E-02        -5.27E-03        -1.96E-02
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       3.77E-01        -1.48E-04         8.58E-05        -7.90E-04         8.72E-03         2.13E-03         2.27E-04
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -6.60E-04         1.65E-03         7.19E-04        -5.54E-04         1.36E-04         1.46E-04         8.26E-05
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+       1.18E-04        -4.44E-05        -7.46E-04         1.33E-03         9.50E-06         1.57E-04         3.55E-06
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+       1.08E-05        -5.48E-06        -1.89E-05        -1.35E-05         3.04E-06        -1.34E-07         4.11E-05
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+      -2.18E-06         8.37E-07         4.34E-07        -6.93E-03         2.36E-04         4.73E-03        -2.81E-02
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+      -1.27E-02         6.62E-04         5.13E-03        -4.66E-02        -2.33E-03        -4.13E-04         6.97E-06
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       2.90E-02         1.34E-02        -2.15E-03         1.63E-03        -4.53E-02        -2.40E-03        -1.20E-03
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+       8.80E-03         3.46E-02        -2.89E-03        -5.13E-04         7.46E-06         9.24E-03         3.60E-02
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -2.57E-02        -2.85E-03        -7.31E-03         1.52E-01         1.43E-02        -1.19E-03        -2.13E-02
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+       4.51E-02         1.28E-02         3.49E-03        -2.34E-04        -6.57E-02        -1.26E-01         1.17E+00
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+       3.49E-04        -5.02E-04         7.29E-04        -1.96E-03         1.77E-03        -1.17E-03        -3.02E-04
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+       1.12E-02        -1.45E-04         5.61E-05        -1.16E-05         4.75E-04        -7.26E-04         2.18E-02
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       4.73E-03         1.13E-01         1.12E-03        -4.77E-02         1.97E-01         8.02E-02         3.36E-03
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -3.66E-02         8.22E-01         1.84E-02        -1.41E-03         2.60E-04        -2.23E-01        -5.50E-02
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+       6.66E-02         4.90E-02         6.16E+00         3.77E-01        -4.27E-02        -1.84E-01         4.78E-01
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       3.00E-01        -5.72E-02        -2.00E-02         2.08E+00         6.26E-02         1.64E-02        -2.29E-04
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+      -8.46E-01         6.21E-02         2.44E+00        -6.37E-02         3.52E+00         4.02E+01        -3.00E-05
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       3.51E-04         4.39E-04        -1.25E-03        -1.02E-03        -1.50E-04         6.27E-04        -6.13E-03
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+      -1.50E-04         2.35E-05         2.78E-06        -3.04E-04        -1.33E-03        -1.36E-04         5.02E-04
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+       4.46E-03        -2.06E-02         1.46E-03        -2.55E-04        -1.97E-04         1.92E-04        -6.06E-04
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+      -2.54E-04        -5.73E-05        -2.02E-04         1.51E-04         1.32E-05         2.77E-05        -2.42E-06
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+       1.88E-04        -2.03E-04         2.71E-03         2.84E-04         1.96E-03        -2.56E-03         5.75E-05
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       1.13E-04        -1.07E-03         9.62E-05         3.60E-04        -3.99E-04        -3.53E-04         1.10E-04
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+      -6.99E-04        -2.82E-03         4.16E-05         9.19E-05        -5.77E-08        -2.87E-04        -1.06E-03
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+       4.31E-03        -1.14E-04        -4.21E-04        -1.52E-02         1.96E-04         2.39E-05         4.03E-04
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       2.04E-04        -4.19E-05        -9.45E-05         5.39E-05         3.61E-04        -5.27E-05        -2.09E-04
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       2.35E-03        -6.63E-06        -9.69E-06         9.38E-07        -3.68E-05         2.03E-04         2.16E-04
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+      -4.87E-06        -4.81E-05         8.46E-03        -1.05E-04        -1.31E-05        -2.85E-05         1.09E-04
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+      -1.68E-03         1.02E-03        -8.84E-04         8.69E-03        -3.12E-04         3.68E-04         2.05E-03
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+      -3.59E-02         4.37E-05        -1.51E-04         1.25E-05         5.09E-03         2.16E-03        -6.28E-02
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+      -5.09E-03        -1.27E-01        -1.53E-01        -1.62E-03        -4.90E-04        -6.21E-04        -6.24E-05
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       1.93E-02        -3.52E-03         1.38E-03         4.88E-04         2.54E-03         1.84E-03         3.66E-04
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+       6.54E-04        -1.75E-02        -1.97E-04        -8.85E-05         1.01E-05         1.11E-02         1.85E-03
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -3.86E-02        -2.87E-04        -1.14E-01        -3.53E-01        -8.35E-04        -2.32E-04        -9.52E-05
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+       9.53E-06         5.86E-03         1.18E-02
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                       CORRELATION MATRIX OF ESTIMATE (RSR)                     ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.00E+00        -1.68E-01         1.00E+00        -4.32E-01        -1.23E-01         1.00E+00        -1.03E-01
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+       3.51E-01        -5.01E-01         1.00E+00         2.12E-01         3.09E-02        -2.80E-01         6.21E-01
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       1.00E+00        -1.49E-01         6.42E-02        -4.00E-02         1.79E-01        -1.60E-01         1.00E+00
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+       5.39E-01         3.28E-04        -2.07E-01        -2.05E-01        -3.33E-01         3.02E-02         1.00E+00
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+       5.00E-01        -1.27E-01        -3.01E-01         2.39E-02         4.56E-01        -2.20E-01        -2.60E-01
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       1.00E+00        -4.17E-02         7.55E-02        -5.50E-01         8.48E-01         4.82E-01         2.17E-01
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -2.01E-01         1.00E-01         1.00E+00        -3.33E-01         2.56E-01         2.18E-01         1.72E-02
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+       5.70E-02        -9.08E-02        -4.86E-01         1.73E-01         2.83E-02         1.00E+00         4.06E-02
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+       3.87E-01        -1.55E-01        -7.49E-02        -1.24E-01         1.18E-01        -1.66E-03         1.02E-01
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+      -1.23E-01         1.01E-01         1.00E+00        -3.06E-01         3.26E-02         5.18E-01        -4.30E-01
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+      -4.51E-01         9.95E-02         2.46E-01        -4.46E-01        -5.11E-01        -1.94E-01         6.21E-02
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       1.00E+00         5.29E-01        -2.67E-01         1.60E-01        -6.23E-01        -7.67E-02        -1.62E-01
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+       3.78E-01         2.97E-01        -5.67E-01        -2.16E-01         5.97E-02         2.86E-01         1.00E+00
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -1.79E-01        -6.20E-02        -1.26E-01         3.67E-01         8.01E-02        -2.80E-02        -1.60E-01
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+       6.77E-02         4.41E-01         2.57E-01        -3.28E-01        -3.56E-01        -6.12E-01         1.00E+00
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+       3.82E-02        -1.72E-01         1.98E-01        -7.44E-02         1.56E-01        -4.34E-01        -3.58E-02
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+       2.65E-01        -7.87E-02         6.51E-02        -2.56E-01         4.05E-02        -5.56E-02         2.93E-01
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       1.00E+00         3.44E-01         1.07E-02        -3.58E-01         2.07E-01         1.96E-01         3.46E-02
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -1.20E-01         5.39E-01         2.77E-01        -4.53E-02         1.59E-01        -5.28E-01        -1.17E-01
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+       2.48E-02         2.87E-01         1.00E+00         4.48E-01        -1.59E-01        -5.41E-01         1.97E-01
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       2.86E-01        -2.31E-01        -2.57E-02         5.33E-01         3.68E-01         2.07E-01        -5.48E-02
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+      -7.83E-01         5.16E-02         3.56E-01        -1.46E-01         2.24E-01         1.00E+00        -5.90E-03
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       2.17E-01         2.14E-01        -8.54E-02        -1.61E-01        -1.01E-01         1.34E-01        -2.61E-01
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+      -1.46E-01         4.90E-02         1.10E-01        -4.67E-02        -1.84E-01        -3.29E-03         1.91E-01
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+       4.70E-02        -8.48E-02         1.00E+00        -1.81E-01        -4.38E-01         3.37E-01        -1.49E-01
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+      -1.45E-01        -1.38E-01        -1.55E-01         2.32E-02         4.64E-02         2.08E-01        -3.46E-01
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+       1.04E-01        -1.01E-01         2.35E-01         3.88E-01         7.43E-02        -3.81E-02         1.42E-01
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       1.00E+00        -4.02E-01         1.13E-01         3.35E-01        -5.19E-02        -1.07E-01         1.41E-01
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+      -2.84E-01        -2.29E-01         7.72E-02         3.66E-01        -4.37E-03        -8.39E-02        -2.78E-01
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+       1.98E-01        -8.27E-02        -8.44E-03        -1.19E-01         2.55E-01         1.12E-01         1.00E+00
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       1.46E-01        -9.46E-02        -1.68E-01         1.34E-02         2.09E-01        -1.29E-01        -1.63E-01
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       3.65E-01        -2.36E-02        -7.39E-02         1.36E-01        -2.06E-02         1.02E-01         1.90E-02
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+      -6.77E-03        -1.85E-03         1.28E-01        -2.63E-01        -1.18E-01        -1.36E-01         1.00E+00
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+      -9.08E-02         1.73E-01        -1.19E-01         1.63E-01        -1.36E-02         6.78E-02         1.20E-01
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+      -4.21E-01         1.17E-02        -8.68E-02         1.37E-01         2.15E-01         8.19E-02        -4.17E-01
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+      -5.32E-01        -3.68E-01        -1.73E-01        -3.05E-01        -3.32E-01        -2.23E-01        -4.29E-02
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       1.00E+00        -2.44E-01         2.99E-01         8.38E-02         6.09E-02         1.03E-01         8.63E-02
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+       4.91E-02        -2.63E-01        -6.77E-02        -6.50E-02         1.41E-01         6.02E-01         8.98E-02
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -3.28E-01        -3.84E-02        -4.23E-01        -5.13E-01        -2.01E-01        -2.01E-01        -4.37E-02
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+       8.38E-03         3.88E-01         1.00E+00
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                   INVERSE COVARIANCE MATRIX OF ESTIMATE (RSR)                  ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+     TH 1 | TH 1      TH 2 | TH 1      TH 2 | TH 2      TH 3 | TH 1      TH 3 | TH 2      TH 3 | TH 3      TH 4 | TH 1  
+       1.58E+02         1.46E+01         7.01E+02        -1.04E+00        -1.63E+01         3.34E+02         7.86E+00
+
+     TH 4 | TH 2      TH 4 | TH 3      TH 4 | TH 4      TH 5 | TH 1      TH 5 | TH 2      TH 5 | TH 3      TH 5 | TH 4  
+      -3.97E+01         1.95E+01         1.20E+02        -3.06E+01         7.44E+00        -7.10E+00        -3.38E+01
+
+     TH 5 | TH 5      TH 6 | TH 1      TH 6 | TH 2      TH 6 | TH 3      TH 6 | TH 4      TH 6 | TH 5      TH 6 | TH 6  
+       1.97E+02         3.79E+01         7.92E+00         5.74E+00         5.25E+00        -1.04E+01         7.68E+02
+
+     TH 7 | TH 1      TH 7 | TH 2      TH 7 | TH 3      TH 7 | TH 4      TH 7 | TH 5      TH 7 | TH 6      TH 7 | TH 7  
+      -5.86E+01        -9.09E+00        -5.60E+00        -1.66E+01         2.95E+01        -6.14E+01         3.11E+02
+
+     TH 8 | TH 1      TH 8 | TH 2      TH 8 | TH 3      TH 8 | TH 4      TH 8 | TH 5      TH 8 | TH 6      TH 8 | TH 7  
+      -8.73E+00         3.95E+00        -2.78E+00         1.33E+00        -9.91E+00        -8.75E+00         2.62E+01
+
+     TH 8 | TH 8      TH 9 | TH 1      TH 9 | TH 2      TH 9 | TH 3      TH 9 | TH 4      TH 9 | TH 5      TH 9 | TH 6  
+       1.23E+01         1.36E+01        -1.76E+02        -1.60E+02        -2.02E+02         3.18E+01         8.85E+00
+
+     TH 9 | TH 7      TH 9 | TH 8      TH 9 | TH 9      TH11 | TH 1      TH11 | TH 2      TH11 | TH 3      TH11 | TH 4  
+      -1.60E+02        -8.69E+00         9.27E+03         4.59E+00        -6.70E+01         3.43E+01         7.50E+01
+
+     TH11 | TH 5      TH11 | TH 6      TH11 | TH 7      TH11 | TH 8      TH11 | TH 9      TH11 | TH11      TH15 | TH 1  
+      -1.17E+02         2.99E+02         2.19E+02        -4.04E+00         5.14E+02         1.68E+04        -6.49E+02
+
+     TH15 | TH 2      TH15 | TH 3      TH15 | TH 4      TH15 | TH 5      TH15 | TH 6      TH15 | TH 7      TH15 | TH 8  
+      -1.65E+04         2.14E+01         5.55E+02        -8.86E+01        -2.03E+02         4.69E+02        -1.90E+02
+
+     TH15 | TH 9      TH15 | TH11      TH15 | TH15      TH16 | TH 1      TH16 | TH 2      TH16 | TH 3      TH16 | TH 4  
+       6.17E+03         6.29E+02         2.02E+06         1.09E+01        -5.59E-01        -1.29E+01         1.61E+00
+
+     TH16 | TH 5      TH16 | TH 6      TH16 | TH 7      TH16 | TH 8      TH16 | TH 9      TH16 | TH11      TH16 | TH15  
+       1.53E+01         9.92E+00        -2.02E+01        -7.65E+00        -3.26E+01         8.24E+00         3.14E+01
+
+     TH16 | TH16      TH17 | TH 1      TH17 | TH 2      TH17 | TH 3      TH17 | TH 4      TH17 | TH 5      TH17 | TH 6  
+       7.35E+01        -2.17E+01         2.77E-01        -3.85E+00         1.13E+01        -2.23E+00         1.66E+01
+
+     TH17 | TH 7      TH17 | TH 8      TH17 | TH 9      TH17 | TH11      TH17 | TH15      TH17 | TH16      TH17 | TH17  
+      -4.45E+01        -1.24E+01        -1.82E+01         1.59E+01         1.33E+01        -5.42E+00         8.15E+01
+
+     TH18 | TH 1      TH18 | TH 2      TH18 | TH 3      TH18 | TH 4      TH18 | TH 5      TH18 | TH 6      TH18 | TH 7  
+      -1.09E+00        -8.53E-03        -2.97E-01         2.35E-01         4.25E-01         1.04E+00        -1.31E+00
+
+     TH18 | TH 8      TH18 | TH 9      TH18 | TH11      TH18 | TH15      TH18 | TH16      TH18 | TH17      TH18 | TH18  
+      -4.21E-01        -1.59E+00        -1.25E+00        -5.70E+00        -3.71E-01         3.89E+00         7.72E-01
+
+     TH19 | TH 1      TH19 | TH 2      TH19 | TH 3      TH19 | TH 4      TH19 | TH 5      TH19 | TH 6      TH19 | TH 7  
+       1.44E+01         2.27E+00         2.15E+00         2.82E+00        -6.31E+00         1.85E+02        -2.91E+01
+
+     TH19 | TH 8      TH19 | TH 9      TH19 | TH11      TH19 | TH15      TH19 | TH16      TH19 | TH17      TH19 | TH18  
+      -4.09E+00         1.17E+01         3.67E+01        -1.12E+02         4.40E+00         7.61E+00         6.21E-01
+
+     TH19 | TH19      TH20 | TH 1      TH20 | TH 2      TH20 | TH 3      TH20 | TH 4      TH20 | TH 5      TH20 | TH 6  
+       2.64E+02         2.45E-01        -5.57E-02        -4.10E-01        -9.32E-02         7.64E-01         3.42E-01
+
+     TH20 | TH 7      TH20 | TH 8      TH20 | TH 9      TH20 | TH11      TH20 | TH15      TH20 | TH16      TH20 | TH17  
+      -1.97E-01        -3.15E-01        -1.11E+00        -3.45E-01         6.71E-01         2.04E+00        -2.00E-01
+
+     TH20 | TH18      TH20 | TH19      TH20 | TH20      TH21 | TH 1      TH21 | TH 2      TH21 | TH 3      TH21 | TH 4  
+      -1.23E-02         2.34E-01         2.36E-01        -8.73E-03         4.74E-03        -5.64E-02         1.20E-02
+
+     TH21 | TH 5      TH21 | TH 6      TH21 | TH 7      TH21 | TH 8      TH21 | TH 9      TH21 | TH11      TH21 | TH15  
+       3.22E-02         5.98E-02        -8.29E-02        -4.35E-02        -1.93E-01         9.05E-02        -5.64E-01
+
+     TH21 | TH16      TH21 | TH17      TH21 | TH18      TH21 | TH19      TH21 | TH20      TH21 | TH21    OM0101 | TH 1  
+       3.59E-01        -5.31E-02        -1.06E-02         5.42E-02         1.06E-02         1.06E-02        -4.61E+00
+
+   OM0101 | TH 2    OM0101 | TH 3    OM0101 | TH 4    OM0101 | TH 5    OM0101 | TH 6    OM0101 | TH 7    OM0101 | TH 8  
+       1.22E+01         4.86E+00        -3.74E+00        -4.06E+00        -1.05E+01        -4.44E+01         1.79E+00
+
+   OM0101 | TH 9    OM0101 | TH11    OM0101 | TH15    OM0101 | TH16    OM0101 | TH17    OM0101 | TH18    OM0101 | TH19  
+       3.49E+00         1.42E+02        -1.27E+03         1.74E+01         4.28E-01        -2.86E-01        -2.24E+01
+
+   OM0101 | TH20    OM0101 | TH21    OM0101 | OM0101  OM0202 | TH 1    OM0202 | TH 2    OM0202 | TH 3    OM0202 | TH 4  
+       6.65E-01         2.70E-02         3.80E+02        -1.16E+01         9.25E+00        -1.11E+01         1.90E+01
+
+   OM0202 | TH 5    OM0202 | TH 6    OM0202 | TH 7    OM0202 | TH 8    OM0202 | TH 9    OM0202 | TH11    OM0202 | TH15  
+       1.12E+01        -2.31E+00        -6.29E+01        -7.92E+00         1.67E+02         2.01E+02        -1.08E+03
+
+   OM0202 | TH16    OM0202 | TH17    OM0202 | TH18    OM0202 | TH19    OM0202 | TH20    OM0202 | TH21    OM0202 | OM0101
+      -5.82E+00        -4.95E+00         6.46E-01         6.34E+00        -1.31E-01        -4.62E-03         6.47E+01
+
+   OM0202 | OM0202  OM0303 | TH 1    OM0303 | TH 2    OM0303 | TH 3    OM0303 | TH 4    OM0303 | TH 5    OM0303 | TH 6  
+       7.09E+03        -1.09E+01         2.43E+00         2.17E+01         2.15E+01         2.98E+01         1.52E+01
+
+   OM0303 | TH 7    OM0303 | TH 8    OM0303 | TH 9    OM0303 | TH11    OM0303 | TH15    OM0303 | TH16    OM0303 | TH17  
+      -6.26E+01        -8.34E+00        -1.13E+02         4.13E+02         5.20E+02         2.67E+00         4.15E+00
+
+   OM0303 | TH18    OM0303 | TH19    OM0303 | TH20    OM0303 | TH21    OM0303 | OM0101  OM0303 | OM0202  OM0303 | OM0303
+      -6.94E-02         5.92E+00        -1.81E-01        -1.21E-01         5.39E+01         1.40E+02         1.58E+03
+
+   OM0606 | TH 1    OM0606 | TH 2    OM0606 | TH 3    OM0606 | TH 4    OM0606 | TH 5    OM0606 | TH 6    OM0606 | TH 7  
+       2.21E+01        -6.27E+00        -2.74E+00         8.80E+00         6.42E-01        -5.81E+01        -1.80E+01
+
+   OM0606 | TH 8    OM0606 | TH 9    OM0606 | TH11    OM0606 | TH15    OM0606 | TH16    OM0606 | TH17    OM0606 | TH18  
+       2.65E+00         2.73E+01         3.14E+02         8.50E+01        -2.80E-01        -1.77E+00         1.45E+00
+
+   OM0606 | TH19    OM0606 | TH20    OM0606 | TH21    OM0606 | OM0101  OM0606 | OM0202  OM0606 | OM0303  OM0606 | OM0606
+       4.01E+00        -1.94E-01         8.70E-02         3.55E+00         1.76E+02         7.05E+01         8.19E+03
+
+   OM0909 | TH 1    OM0909 | TH 2    OM0909 | TH 3    OM0909 | TH 4    OM0909 | TH 5    OM0909 | TH 6    OM0909 | TH 7  
+       1.33E+00        -1.82E+00         2.92E+00        -6.74E+00         8.92E+00         6.26E+00        -1.14E+01
+
+   OM0909 | TH 8    OM0909 | TH 9    OM0909 | TH11    OM0909 | TH15    OM0909 | TH16    OM0909 | TH17    OM0909 | TH18  
+       1.49E+00         2.40E+01         2.86E+01         1.07E+02        -8.80E+00         6.90E+00         1.38E-01
+
+   OM0909 | TH19    OM0909 | TH20    OM0909 | TH21    OM0909 | OM0101  OM0909 | OM0202  OM0909 | OM0303  OM0909 | OM0606
+       1.25E+01        -3.91E-01        -2.85E-02         3.56E+01         2.67E+01         1.31E+01        -7.41E+00
+
+   OM0909 | OM0909  OM1010 | TH 1    OM1010 | TH 2    OM1010 | TH 3    OM1010 | TH 4    OM1010 | TH 5    OM1010 | TH 6  
+       8.76E+01         3.01E+00        -4.82E-01        -1.49E+00        -1.71E+00         6.49E+00         3.56E+00
+
+   OM1010 | TH 7    OM1010 | TH 8    OM1010 | TH 9    OM1010 | TH11    OM1010 | TH15    OM1010 | TH16    OM1010 | TH17  
+       6.46E+00        -2.07E+00         1.57E+01         1.13E+01         1.93E+01        -7.88E-01        -9.70E-01
+
+   OM1010 | TH18    OM1010 | TH19    OM1010 | TH20    OM1010 | TH21    OM1010 | OM0101  OM1010 | OM0202  OM1010 | OM0303
+      -6.21E-03         1.16E+00        -7.54E-02        -1.03E-03         1.43E+01         1.64E+01        -1.29E+01
+
+   OM1010 | OM0606  OM1010 | OM0909  OM1010 | OM1010
+       4.02E+01        -2.65E+00         8.83E+01
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************               OBJECTIVE FUNCTION EVALUATION BY IMPORTANCE SAMPLING             ********************
+ ********************                   EIGENVALUES OF COR MATRIX OF ESTIMATE (RSR)                  ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+             1         2         3         4         5         6         7         8         9        10        11        12
+             13        14        15        16        17        18        19        20        21        22        23
+ 
+         1.31E-02  2.07E-02  4.12E-02  6.40E-02  9.07E-02  1.04E-01  1.27E-01  1.60E-01  2.64E-01  3.30E-01  4.22E-01  5.27E-01
+          6.18E-01  7.71E-01  8.15E-01  9.90E-01  1.22E+00  1.51E+00  1.84E+00  1.88E+00  3.13E+00  3.39E+00  4.68E+00
+ 
+This file was created using the NONMEM version in directory /local/apps/nm7/nm712-reg
+Started  Tue Nov  5 14:59:27 GMT 2013
+Finished Wed Nov  6 00:34:33 GMT 2013

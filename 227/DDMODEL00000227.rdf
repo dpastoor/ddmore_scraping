@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000227">
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Long_technical_model_description_glucoseKinetics.txt</j.2:model-has-description-long>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This model was developed to be able to describe glucose kinetics during different tests, such as the clamp, the oral glucose tolerance test and the mixed-meal test, with a unique set of equations and a unique parameter distribution. The success of the development process allowed to state that the physiological mechanisms underlying glucose kinetics are similar after oral and intravenous glucose administration. Moreover, the developed model quantitatively explained, for the first time, an important phenomenon: in the presence of hyperglycaemia, hyperinsulinemia fails to increase glucose clearance as would expected if glucose clearance were unaffected by the glucose levels. This model may have future applications in areas such as the development of more accurate insulin sensitivity indices from tests other than the glucose clamp and for the study of insulin sensitivity in circumstances in which the glucose clamp would not be feasible or appropriate. Furthermore, the model may be an essential component of new accurate glucose homeostasis simulators.</j.2:model-has-description>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006020"/>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The model in MDL/PharmML language differs from the one used in the related publication in two aspects: 1) it does not consider that the subject undergoing a paired test is unique; 2) it is used as a simulation model, as performing parameter estimation on the provided dataset ("Simulated_glucoseKinetics.csv") would be meaningless, because of the used model inputs.</j.0:model-implementation-source-discrepancies-freetext>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+  </rdf:Description>
+</rdf:RDF>

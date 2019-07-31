@@ -1,0 +1,8 @@
+###### Scenario = 4
+###### PsN version = <PsN version>
+###### Original tool version = <NONMEM 7.4>
+###### Input data = <Simulated_data_PK_sultiame.csv>
+###### Executable model = <Executable_simulated_sultiame_nonlinear_PK.mod>
+###### Output = <Output_simulated_PK_sultiame>
+
+execute Executable_sultiame_nonlinear_PK.mod

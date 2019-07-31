@@ -1,0 +1,20 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000197">
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0000036"/>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PD model (predicting plasma concentrations) of biomarkers during sunitinib  treatment of imatinib-resistant GIST; </j.2:model-has-description>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Final PD model (predicting plasma concentrations) of biomarkers during sunitinib treatment of imatinib-resistant GIST. 4 biomarkers: VEGF, sVEGFR-2, sVEGFR-3 and sKIT and 4 compartments, 1 for each biomarker, initiated to estimated baselines at t=0. Log-transformed plasma concentrations (DV) and effect on dA/dt for each biomarker as indirect response models. Sigmoid Imax for VEGF/sVEGFR-2 (hill factor) and Imax for sVEGFR-3/sKIT.  Inhibition of Kout for VEGF and Kin for sVEGFR-2, sVEGFR-3 and sKIT.  Lin. disease progression model for VEGF and sKIT (otherwise baseline only).  No covariates. IIV on baseline, MRT (1/Kout), IC50 and disease progression slope. Residual error: Additive (on log scale) on VEGF, sVEGFR-3 and sKIT, and Additive + proportional (on log scale) on sVEGFR-2. Estimation method: FOCE with INTERACTION (+ COVARIANCE STEP).</j.2:model-has-description-long>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006029"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006036"/>
+  </rdf:Description>
+</rdf:RDF>

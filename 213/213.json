@@ -1,0 +1,13 @@
+{
+    "files": [
+        "Executable_Meropenem_MDL.xml",
+        "Executable_Meropenem_MDL.mdl",
+        "Model_Accommodations.txt",
+        "Simulated_DatasetMeropenem.csv",
+        "Output_simulated_Meropenem.lst",
+        "Command.txt",
+        "DDMODEL00000213.rdf",
+        "Output_simulated_Meropenem.SO.xml"
+    ],
+    "version": 12
+}

@@ -1,0 +1,7 @@
+Model_Accommodations
+This file has to be uploaded when the model is not implemented as in the original publication.
+###### Model differences = L2, MTIME, B2 and M3 not included
+
+
+###### Reasons = not supported in MDL
+

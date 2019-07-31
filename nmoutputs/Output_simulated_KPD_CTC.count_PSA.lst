@@ -1,0 +1,619 @@
+Sun Oct 22 12:34:24 UTC 2017
+$PROBLEM    KPD model of CTC count and PSA
+$INPUT      ID TIME AMT DV CMT MDV
+$DATA      Simulated_KPD_CTC.count_PSA.csv IGNORE=@
+$SUBROUTINE ADVAN13 TOL=9
+$MODEL      NCOMP=8 COMP=(A1) ;PK chemo
+            COMP=(A2) ;PK hormo
+            COMP=(A3) ;TS
+            COMP=(A4) ;CTC
+            COMP=(A5) ;Delayed PK chemo
+            COMP=(A6) ;Delayed PK hormo
+            COMP=(A7) ;Delayed TS
+            COMP=(A8) ;PSA
+$PK  CALLFL=-2   ; Call the PK subroutine with every event record, with additional and lagged doses
+MU_1=LOG(THETA(1))
+TS0=EXP(MU_1+ETA(1))      ; TS0
+
+MU_2=LOG(THETA(2))
+K1=EXP(MU_2+ETA(2))      ; Param PK Chemo
+
+MU_3=LOG(THETA(3))
+K2=EXP(MU_3+ETA(3))      ; Param PK Hormo
+
+MU_4=LOG(THETA(4))
+Q501=EXP(MU_4+ETA(4))      ; Param PK Chemo
+
+MU_5=LOG(THETA(5))
+Q502=EXP(MU_5+ETA(5))      ; Param PK Hormo
+
+MU_6=LOG(THETA(6))
+KOUTTS=EXP(MU_6+ETA(6))      ; Param TS
+
+MU_7=THETA(7)
+TH=EXP(MU_7+ETA(7))
+KINTS=(TS0*KOUTTS)/((TH)/(1+(TH)))    ; Param TS
+
+MU_8=LOG(THETA(8))
+KINPSA=EXP(MU_8+ETA(8))
+
+MU_9=LOG(THETA(9))
+KOUTPSA=EXP(MU_9+ETA(9))
+
+MU_10=LOG(THETA(10))
+PSA0=EXP(MU_10+ETA(10))
+
+MU_11=THETA(11)
+K0=MU_11+ETA(11)    ; Zero-order production rate
+
+MU_12=THETA(12)
+ALAG5=MU_12+ETA(12)      ; TR: Delay duration
+ALAG6=ALAG5
+ALAG7=ALAG5
+
+F4=K0*ALAG5              ; initial condition : R0=K0*TR . Bioaivalability for central compartment
+
+MU_13=LOG(THETA(13))
+OVDP=EXP(MU_13+ETA(13))
+
+MU_14=LOG(THETA(14))
+W1=EXP(MU_14+ETA(14))
+
+
+A_0(1)=0
+A_0(2)=0
+A_0(3)=TS0
+A_0(5)=0
+A_0(6)=0
+A_0(7)=TS0
+A_0(8)=PSA0
+
+$DES 
+DADT(1)=-K1*A(1)          ;time course of Chemo amount
+DADT(2)=-K2*A(2)          ;time course of Hormo amount
+
+DADT(3)=KINTS*(1-(A(1)/(Q501+A(1))))*(1-(A(2)/(Q502+A(2))))-KOUTTS*A(3)       ; Dynamic tumor size, latent variable
+
+DADT(5)=-K1*A(5)           ; delayed time course of Chemo amount
+DADT(6)=-K2*A(6)           ; delayed time course of Hormo amount
+
+DADT(7)=KINTS*(1-(A(5)/(Q501+A(5))))*(1-(A(6)/(Q502+A(6))))-KOUTTS*A(7)        ; Delayed Dynamic tumor size, latent variable
+A7=TS0
+IF(T.GT.ALAG5) A7=A(7)
+
+DADT(4)=K0*A(3)-K0*A7    ; time course of nber of cells
+DADT(8)=KINPSA*A(3)-KOUTPSA*A(8)
+
+$ERROR 
+
+NCTC=A(4)*0.0015       ; CTC in aliquots (alpha: scale factor)
+
+PSA=A(8)
+IF (PSA.LT.0.00001) PSA = 0.00001
+
+
+CT=DV
+IF(CT.LT.0) CT=0.00001
+
+
+LFAC=GAMLN(CT+1.)
+
+LGAM1=GAMLN(CT+1/OVDP)
+LGAM2=GAMLN(1/OVDP)
+
+LTRM1=(LOG(1/(1+OVDP*NCTC)))*(1/OVDP)
+LTRM2=(LOG(NCTC/(NCTC+1/OVDP)))*(CT)
+
+;Logarithm of the Negative Binomial distribution
+LNB = LGAM1-LFAC-LGAM2+LTRM1+LTRM2  ;Ln(negative binomial)
+
+
+IF (CMT.EQ.4) THEN
+F_FLAG=2
+;-2 Log Likelihood:
+Y=-2*LNB
+ENDIF
+
+
+IF (CMT.EQ.8) THEN
+F_FLAG=0
+IPRED=LOG(PSA)
+Y=IPRED+W1*ERR(1)
+IRES=DV-IPRED
+IWRES=IRES/W1
+ENDIF
+
+
+
+IF (ABS(ETA(1)).GT.50) EXIT 1 1
+IF (ABS(ETA(2)).GT.50) EXIT 1 2
+IF (ABS(ETA(3)).GT.50) EXIT 1 3
+IF (ABS(ETA(4)).GT.50) EXIT 1 4
+IF (ABS(ETA(5)).GT.50) EXIT 1 5
+IF (ABS(ETA(6)).GT.50) EXIT 1 6
+IF (ABS(ETA(7)).GT.50) EXIT 1 7
+IF (ABS(ETA(8)).GT.50) EXIT 1 8
+IF (ABS(ETA(9)).GT.50) EXIT 1 9
+IF (ABS(ETA(10)).GT.50) EXIT 1 10
+IF (ABS(ETA(11)).GT.100) EXIT 1 11
+IF (ABS(ETA(12)).GT.20) EXIT 1 12
+IF (ABS(ETA(13)).GT.50) EXIT 1 13
+
+
+$THETA  1 FIX
+ 2.48E-01
+ 4.49E-01
+ 2.61E-04
+ 3.97E-03
+ 5.13E-03
+ 6.33E+00
+ 1.40E+00
+ 8.13E-03
+ 1.53E+02
+ 3.08E+02
+ 5.77E+01
+ 4.89E+00
+ 3.00E-01
+ 0.3
+$OMEGA  0.0000001  FIX
+$OMEGA  BLOCK(9)
+ 7.23E-01
+ -6.98E-01 1.83E+00
+ -6.38E-01 -6.34E-01 4.76E+00
+ -7.99E-01 -2.28E-01 2.93E+00 2.84E+00
+ 3.51E-01 2.25E+00 -2.65E+00 -4.24E+00 2.06E+01
+ 2.37E-01 4.00E-02 -7.51E-01 -9.54E-01 3.43E+00 7.86E-01
+ 1.31E-01 9.74E-01 -1.81E+00 -1.45E+00 -6.04E-01 -9.75E-02 2.60E+00
+ 3.12E-01 4.51E-02 -2.29E+00 -1.16E+00 1.84E+00 5.78E-01 9.67E-02 1.53E+00
+ 1.15E-01 6.93E-01 -1.31E+00 -1.25E+00 -3.02E-01 1.53E-01 2.30E+00 3.48E-02 2.40E+00
+$OMEGA  BLOCK(2)
+ 1.43E+03
+ 2.94E+02 6.19E+01
+$OMEGA  2.25
+$OMEGA  0.0000001  FIX
+$SIGMA  1  FIX  ;       ERR1
+$ESTIMATION METHOD=SAEM LAPLACE INTER NUMERICAL SLOW NOHABORT NBURN=0
+            NITER=0 PRINT=1 NSIG=3 SIGL=9 GRD=DDDDDDDDDDDDDS
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  3) THERE MAY BE AN ERROR IN THE ABBREVIATED CODE. THE FOLLOWING
+ ONE OR MORE RANDOM VARIABLES ARE DEFINED WITH "IF" STATEMENTS THAT DO NOT
+ PROVIDE DEFINITIONS FOR BOTH THE "THEN" AND "ELSE" CASES. IF ALL
+ CONDITIONS FAIL, THE VALUES OF THESE VARIABLES WILL BE ZERO.
+  
+   IPRED IRES IWRES Y
+
+             
+ (WARNING  118) THE DERIVATIVE OF THE LOG GAMMA OF A RANDOM VARIABLE IS
+ BEING COMPUTED. IF THE FUNCTION VALUE AFFECTS THE VALUE OF THE OBJECTIVE
+ FUNCTION, THE USER SHOULD ENSURE THAT THE RANDOM VARIABLE IS ALWAYS
+ POSITIVE
+             
+ (WARNING  40) $THETA INCLUDES A NON-FIXED INITIAL ESTIMATE CORRESPONDING TO
+ A THETA THAT IS NOT USED IN ABBREVIATED CODE.
+
+License Registered to: Universitats-Kinderspital beider Basel (UKBB)
+Expiration Date:    14 JAN 2018
+Current Date:       22 OCT 2017
+Days until program expires :  87
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+
+ PROBLEM NO.:         1
+ KPD model of CTC count and PSA
+0DATA CHECKOUT RUN:              NO
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO
+ NO. OF DATA RECS IN DATA SET:     5966
+ NO. OF DATA ITEMS IN DATA SET:   7
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ DEP VARIABLE IS DATA ITEM NO.:   4
+ MDV DATA ITEM IS DATA ITEM NO.:  6
+0INDICES PASSED TO SUBROUTINE PRED:
+   7   2   3   0   0   0   5   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ ID TIME AMT DV CMT MDV EVID
+0FORMAT FOR DATA:
+ (6E9.0,1F2.0)
+
+ TOT. NO. OF OBS RECS:     1847
+ TOT. NO. OF INDIVIDUALS:    223
+0LENGTH OF THETA:  15
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO
+0OMEGA HAS BLOCK FORM:
+  1
+  0  2
+  0  2  2
+  0  2  2  2
+  0  2  2  2  2
+  0  2  2  2  2  2
+  0  2  2  2  2  2  2
+  0  2  2  2  2  2  2  2
+  0  2  2  2  2  2  2  2  2
+  0  2  2  2  2  2  2  2  2  2
+  0  0  0  0  0  0  0  0  0  0  3
+  0  0  0  0  0  0  0  0  0  0  3  3
+  0  0  0  0  0  0  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  0  0  0  0  0  0  5
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   1
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.1000E+01     0.1000E+01     0.1000E+01
+ -0.1000E+07     0.2480E+00     0.1000E+07
+ -0.1000E+07     0.4490E+00     0.1000E+07
+ -0.1000E+07     0.2610E-03     0.1000E+07
+ -0.1000E+07     0.3970E-02     0.1000E+07
+ -0.1000E+07     0.5130E-02     0.1000E+07
+ -0.1000E+07     0.6330E+01     0.1000E+07
+ -0.1000E+07     0.1400E+01     0.1000E+07
+ -0.1000E+07     0.8130E-02     0.1000E+07
+ -0.1000E+07     0.1530E+03     0.1000E+07
+ -0.1000E+07     0.3080E+03     0.1000E+07
+ -0.1000E+07     0.5770E+02     0.1000E+07
+ -0.1000E+07     0.4890E+01     0.1000E+07
+ -0.1000E+07     0.3000E+00     0.1000E+07
+ -0.1000E+07     0.3000E+00     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                  YES
+                  0.1000E-06
+        2                                                                                   NO
+ DIAGONAL SHIFT OF  2.5989E-03 WAS IMPOSED TO ENSURE POSITIVE DEFINITENESS
+ DIMENSION OF BLOCK EXCEEDS 8
+ INITL. EST. OF BLOCK NOT PRINTED
+        3                                                                                   NO
+                  0.1430E+04
+                  0.2940E+03   0.6190E+02
+        4                                                                                   NO
+                  0.2250E+01
+        5                                                                                  YES
+                  0.1000E-06
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+
+ GENERAL NONLINEAR KINETICS MODEL USING LSODA (ADVAN13)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:  11
+0COMPARTMENT ATTRIBUTES
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         A1           ON         YES        YES        YES        YES
+    2         A2           ON         YES        YES        NO         NO
+    3         A3           ON         YES        YES        NO         NO
+    4         A4           ON         YES        YES        NO         NO
+    5         A5           ON         YES        YES        NO         NO
+    6         A6           ON         YES        YES        NO         NO
+    7         A7           ON         YES        YES        NO         NO
+    8         A8           ON         YES        YES        NO         NO
+    9         OUTPUT       OFF        YES        NO         NO         NO
+0NRD VALUE(S) FROM SUBROUTINE TOL:   9
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG
+    1            *           *           *           *           *
+    2            *           *           *           *           *
+    3            *           *           *           *           *
+    4            *          15           *           *           *
+    5            *           *           *           *          12
+    6            *           *           *           *          13
+    7            *           *           *           *          14
+    8            *           *           *           *           *
+    9            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      7
+   TIME DATA ITEM IS DATA ITEM NO.:          2
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   3
+   COMPT. NO. DATA ITEM IS DATA ITEM NO.:    5
+
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE CALLED AT NONEVENT (ADDITIONAL AND LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES FULL STORAGE MODE.
+1
+
+
+ #TBLN:      1
+ #METH: Stochastic Approximation Expectation-Maximization
+
+ ESTIMATION STEP OMITTED:                 NO  
+ ANALYSIS TYPE:                           POPULATION
+ SLOW GRADIENT METHOD USED:               YES 
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     YES 
+ LAPLACIAN OBJ. FUNC.:                    YES 
+ NUMERICAL 2ND DERIVATIVES:               YES 
+ NO. OF FUNCT. EVALS. ALLOWED:            4224
+ NO. OF SIG. FIGURES REQUIRED:            3
+ INTERMEDIATE PRINTOUT:                   YES 
+ ESTIMATE OUTPUT TO MSF:                  NO  
+ ABORT WITH PRED EXIT CODE 1:             NO  
+ IND. OBJ. FUNC. VALUES SORTED:           NO  
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    9           
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   9           
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ EM OR BAYESIAN METHOD USED:              STOCHASTIC APPROXIMATION EXPECTATION MAXIMIZATION (SAEM)
+ MU MODELING PATTERN (MUM):               
+ GRADIENT/GIBBS PATTERN (GRD):            DDDDDDDDDDDDDS
+ AUTOMATIC SETTING FEATURE (AUTO):        OFF
+ CONVERGENCE TYPE (CTYPE):                0           
+ BURN-IN ITERATIONS (NBURN):              0           
+ ITERATIONS (NITER):                      0           
+ ANEAL SETTING (CONSTRAIN):               1           
+ STARTING SEED FOR MC METHODS (SEED):     11456       
+ MC SAMPLES PER SUBJECT (ISAMPLE):        2           
+ RANDOM SAMPLING METHOD (RANMETHOD):      
+ EXPECTATION ONLY (EONLY):                NO 
+ PROPOSAL DENSITY SCALING RANGE 
+              (ISCALE_MIN, ISCALE_MAX):   1.000000000000000E-06   ,1000000.00000000        
+ SAMPLE ACCEPTANCE RATE (IACCEPT):        0.400000000000000       
+ METROPOLIS HASTINGS SAMPLING FOR INDIVIDUAL ETAS:
+ SAMPLES FOR GLOBAL SEARCH KERNEL (ISAMPLE_M1):          2           
+ SAMPLES FOR NEIGHBOR SEARCH KERNEL (ISAMPLE_M1A):       0           
+ SAMPLES FOR LOCAL SEARCH KERNEL (ISAMPLE_M2):           2           
+ SAMPLES FOR LOCAL UNIVARIATE KERNEL (ISAMPLE_M3):       2           
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+ IWRS=IWRESI
+ IPRD=IPREDI
+ IRS=IRESI
+
+ EM/BAYES SETUP:
+ THETAS THAT ARE MU MODELED:
+   2   3   4   5   6   7   8   9  10  11  12  13  14
+ THETAS THAT ARE SIGMA-LIKE:
+  14
+
+ MONITORING OF SEARCH:
+
+ Reduced Stochastic/Accumulation Mode
+ iteration            0  SAEMOBJ=   10084.010684958608
+
+ #TERM:
+ STOCHASTIC PORTION WAS NOT TESTED FOR CONVERGENCE
+ REDUCED STOCHASTIC PORTION WAS COMPLETED
+
+ ETABAR IS THE ARITHMETIC MEAN OF THE ETA-ESTIMATES,
+ AND THE P-VALUE IS GIVEN FOR THE NULL HYPOTHESIS THAT THE TRUE MEAN IS 0.
+
+ ETABAR:         1.3511E-05 -3.7000E-02 -8.6794E-02  1.6810E-01  1.3370E-01 -4.2223E-01 -3.3400E-02 -2.5906E-02 -5.3603E-02  4.8946E-02
+                -1.0840E+00 -2.2377E-01  1.5290E-01  9.3678E-06
+ SE:             1.6879E-05  4.6331E-02  7.9942E-02  1.1287E-01  9.0498E-02  2.3540E-01  4.6068E-02  8.0953E-02  6.0399E-02  7.1744E-02
+                 1.7665E+00  3.7346E-01  6.6873E-02  1.6209E-05
+ N:                     223         223         223         223         223         223         223         223         223         223
+                        223         223         223         223
+
+ P VAL.:         4.2345E-01  4.2452E-01  2.7761E-01  1.3638E-01  1.3957E-01  7.2868E-02  4.6844E-01  7.4896E-01  3.7483E-01  4.9509E-01
+                 5.3945E-01  5.4905E-01  2.2229E-02  5.6331E-01
+
+ ETAshrink(%):   2.0112E+01  1.8595E+01  1.1617E+01  2.2595E+01  1.9664E+01  2.2379E+01  2.2357E+01  2.4897E+01  2.6979E+01  3.0726E+01
+                 3.0084E+01  2.8957E+01  3.3275E+01  2.3283E+01
+ EBVshrink(%):   3.2631E+01  4.0503E+01  3.5680E+01  3.0888E+01  2.9241E+01  3.5679E+01  3.0222E+01  1.5010E+01  2.7552E+01  1.1501E+01
+                 3.8588E+01  3.9421E+01  2.3327E+01  3.4813E+01
+ EPSshrink(%):   1.0000E-10
+
+ #TERE:
+ Elapsed estimation time in seconds:    15.02
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                STOCHASTIC APPROXIMATION EXPECTATION-MAXIMIZATION               ********************
+ #OBJT:**************                        FINAL VALUE OF LIKELIHOOD FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************    10084.011       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                STOCHASTIC APPROXIMATION EXPECTATION-MAXIMIZATION               ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15     
+ 
+         1.00E+00  2.48E-01  4.49E-01  2.61E-04  3.97E-03  5.13E-03  6.33E+00  1.40E+00  8.13E-03  1.53E+02  3.08E+02  5.77E+01
+          4.89E+00  3.00E-01  3.00E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14   
+ 
+ ETA1
++        1.00E-07
+ 
+ ETA2
++        0.00E+00  7.26E-01
+ 
+ ETA3
++        0.00E+00 -6.98E-01  1.83E+00
+ 
+ ETA4
++        0.00E+00 -6.38E-01 -6.34E-01  4.76E+00
+ 
+ ETA5
++        0.00E+00 -7.99E-01 -2.28E-01  2.93E+00  2.84E+00
+ 
+ ETA6
++        0.00E+00  3.51E-01  2.25E+00 -2.65E+00 -4.24E+00  2.06E+01
+ 
+ ETA7
++        0.00E+00  2.37E-01  4.00E-02 -7.51E-01 -9.54E-01  3.43E+00  7.89E-01
+ 
+ ETA8
++        0.00E+00  1.31E-01  9.74E-01 -1.81E+00 -1.45E+00 -6.04E-01 -9.75E-02  2.60E+00
+ 
+ ETA9
++        0.00E+00  3.12E-01  4.51E-02 -2.29E+00 -1.16E+00  1.84E+00  5.78E-01  9.67E-02  1.53E+00
+ 
+ ET10
++        0.00E+00  1.15E-01  6.93E-01 -1.31E+00 -1.25E+00 -3.02E-01  1.53E-01  2.30E+00  3.48E-02  2.40E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.43E+03
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.94E+02  6.19E+01
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          2.25E+00
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  1.00E-07
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+1
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14   
+ 
+ ETA1
++        3.16E-04
+ 
+ ETA2
++        0.00E+00  8.52E-01
+ 
+ ETA3
++        0.00E+00 -6.05E-01  1.35E+00
+ 
+ ETA4
++        0.00E+00 -3.43E-01 -2.15E-01  2.18E+00
+ 
+ ETA5
++        0.00E+00 -5.56E-01 -9.99E-02  7.96E-01  1.69E+00
+ 
+ ETA6
++        0.00E+00  9.08E-02  3.66E-01 -2.68E-01 -5.54E-01  4.54E+00
+ 
+ ETA7
++        0.00E+00  3.13E-01  3.33E-02 -3.88E-01 -6.37E-01  8.51E-01  8.88E-01
+ 
+ ETA8
++        0.00E+00  9.53E-02  4.46E-01 -5.14E-01 -5.33E-01 -8.25E-02 -6.81E-02  1.61E+00
+ 
+ ETA9
++        0.00E+00  2.96E-01  2.69E-02 -8.48E-01 -5.56E-01  3.27E-01  5.26E-01  4.84E-02  1.24E+00
+ 
+ ET10
++        0.00E+00  8.71E-02  3.30E-01 -3.87E-01 -4.78E-01 -4.29E-02  1.11E-01  9.20E-01  1.81E-02  1.55E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.78E+01
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  9.88E-01  7.87E+00
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          1.50E+00
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  3.16E-04
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+ #CPUT: Total CPU Time in Seconds,       15.103
+Stop Time:
+Sun Oct 22 12:34:41 UTC 2017

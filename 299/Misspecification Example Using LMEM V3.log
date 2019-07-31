@@ -1,0 +1,598 @@
+156  dm 'clear log';
+157  dm 'clear list';
+158  libname cdrive "M:\Astellas\PKMS\Guidances\Conc QT Modeling\Misspecification Example\Outputs";
+NOTE: Libref CDRIVE refers to the same physical library as OUTPUT.
+NOTE: Libref CDRIVE was successfully assigned as follows:
+      Engine:        V9
+      Physical Name: M:\Astellas\PKMS\Guidances\Conc QT Modeling\Misspecification Example\Outputs
+159  proc datasets kill;
+                                                            Directory
+
+                 Libref         WORK
+                 Engine         V9
+                 Physical Name  C:\Users\AM0040~1\AppData\Local\Temp\SAS Temporary Files\_TD8220_AM00402567A002_
+                 Filename       C:\Users\AM0040~1\AppData\Local\Temp\SAS Temporary Files\_TD8220_AM00402567A002_
+
+
+                                                Member     File
+                                     #  Name    Type       Size  Last Modified
+
+                                     1  CMAX    DATA     131072  03/26/2019 09:19:17
+                                     2  SET1    DATA     196608  03/26/2019 09:19:18
+                                     3  UNIQUE  DATA     131072  03/26/2019 09:19:18
+NOTE: Deleting WORK.CMAX (memtype=DATA).
+NOTE: Deleting WORK.SET1 (memtype=DATA).
+NOTE: Deleting WORK.UNIQUE (memtype=DATA).
+159!                     run;
+
+160  options ls=130;
+161  title;
+162  ods listing;
+163  ods html close;
+164
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+
+
+165  proc format;
+166      value doselabel 1='Placebo' 2='100 mg' 3='500 mg' 4='750 mg' 5='1000 mg';
+NOTE: Format DOSELABEL has been output.
+167  run;
+
+NOTE: PROCEDURE FORMAT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+167!      quit;
+
+168
+169  data concqt;
+170      set cdrive.concqt;
+171      dv = conc;
+172      index = 1;
+
+NOTE: There were 324 observations read from the data set CDRIVE.CONCQT.
+NOTE: The data set WORK.CONCQT has 324 observations and 35 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+
+
+173  proc sort; by sid dose nomtime; run;
+
+NOTE: There were 324 observations read from the data set WORK.CONCQT.
+NOTE: The data set WORK.CONCQT has 324 observations and 35 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+173!                                      quit;
+174
+175  proc mixed data=concqt method=ml convf=1E-6;
+176      class sid nomtime trt(ref="0");
+177      model dqtcf = trt nomtime chgbase dv / ddfm=kr solution;
+178      random intercept dv / subject=sid type=simple;
+179  run;
+
+NOTE: Convergence criteria met but final hessian is not positive definite.
+NOTE: PROCEDURE MIXED used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.04 seconds
+
+
+179!      quit;
+180
+181
+182  * Linear model analyzed using Proc NLMIXED    NOTE:  CONC/10000;
+183  proc nlmixed data=concqt;
+184      parms theta1=-3.7, theta2=8.1, theta3=-0.6, theta4=0.8, theta5=0.3, theta6=0.8, theta7=-0.9, theta8=-0.7, theta9=0.9,
+184! theta10=-0.3, theta11=0.1, theta12=0, std1=2.2, std2=0.001, sigma=5;
+185      bounds std1>0, std2>0, sigma > 0;
+186      intercept = theta1 + eta1;
+187      slope = theta12 + eta2;
+188      drugeffect = slope*dv;
+189      pred = intercept + theta2*trt + theta3*time1 + theta4*time2 + theta5*time3 + theta6*time4
+190          + theta7*time5 + theta8*time6 + theta9*time7 + theta10*time8 + theta11*chgbase + drugeffect;
+191      residuals = pred - dqtcf;
+192      model dqtcf ~ normal(pred, sigma*sigma);
+193      random eta1 eta2  ~ normal([0,0], [std1*std1, 0, std2*std2]) subject=sid;
+194      estimate 'Variance(ETA1)' std1*std1;
+195      estimate 'Variance(ETA2)' std2*std2;
+196      estimate 'Residual Variance' sigma*sigma;
+197      estimate '87.4' theta2 + theta12*87.4 alpha=0.10;
+198      estimate '172.46' theta2 + theta12*172.46 alpha=0.10;
+199      estimate '462.45' theta2 + theta12*462.45 alpha=0.10;
+200      estimate '886.16' theta2 + theta12*886.16 alpha=0.10;
+201      estimate '1240.74' theta2 + theta12*1240.74 alpha=0.10;
+202      estimate '1727.56' theta2 + theta12*1727.56 alpha=0.10;
+203      estimate '2196.63' theta2 + theta12*2196.63 alpha=0.10;
+204      estimate '2595.18' theta2 + theta12*2595.18 alpha=0.10;
+205      estimate '3194.85' theta2 + theta12*3194.85 alpha=0.10;
+206      predict pred out=pred;
+207      predict residuals out=residuals;
+208      ods output parameterestimates=parms;
+209  run;
+
+
+NOTE: Convergence criterion (GCONV=1E-8) satisfied.
+NOTE: At least one element of the gradient is greater than 1e-3.
+NOTE: The data set WORK.PARMS has 15 observations and 10 variables.
+NOTE: The data set WORK.PRED has 324 observations and 43 variables.
+NOTE: The data set WORK.RESIDUALS has 324 observations and 43 variables.
+NOTE: PROCEDURE NLMIXED used (Total process time):
+      real time           0.57 seconds
+      cpu time            0.50 seconds
+
+
+209!      quit;
+210
+211  data residuals; set residuals; index = 1;
+
+NOTE: There were 324 observations read from the data set WORK.RESIDUALS.
+NOTE: The data set WORK.RESIDUALS has 324 observations and 43 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+211!                                           proc sort; by index; run;
+
+NOTE: There were 324 observations read from the data set WORK.RESIDUALS.
+NOTE: The data set WORK.RESIDUALS has 324 observations and 43 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+211!                                                                     quit;
+212  proc means data=residuals std; var pred; output out=stdev std=sigma; run;
+
+NOTE: There were 324 observations read from the data set WORK.RESIDUALS.
+NOTE: The data set WORK.STDEV has 1 observations and 3 variables.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+212!                                                                           quit;
+213  data stdev; set stdev; index=1;
+
+NOTE: There were 1 observations read from the data set WORK.STDEV.
+NOTE: The data set WORK.STDEV has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+213!                                 proc sort; by index; run;
+
+NOTE: There were 1 observations read from the data set WORK.STDEV.
+NOTE: The data set WORK.STDEV has 1 observations and 4 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+213!                                                           quit;
+214  data stdres(keep=residuals Standardized_Residuals);
+215      merge residuals stdev;
+216      by index;
+217      residuals = pred;
+218      Standardized_Residuals = pred/sigma;
+219      label Standardized_Residuals = "Standardized Residual";
+220      label residuals = "Residual";
+221  run;
+
+NOTE: There were 324 observations read from the data set WORK.RESIDUALS.
+NOTE: There were 1 observations read from the data set WORK.STDEV.
+NOTE: The data set WORK.STDRES has 324 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+221!      quit;
+222  proc univariate normal data=stdres; var residuals; run;
+
+NOTE: PROCEDURE UNIVARIATE used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+
+
+223
+224  data merged;
+225      merge pred stdres;
+226  run;
+
+NOTE: There were 324 observations read from the data set WORK.PRED.
+NOTE: There were 324 observations read from the data set WORK.STDRES.
+NOTE: The data set WORK.MERGED has 324 observations and 45 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+226!      quit;
+227
+228
+229  *** Compute Deciles;
+230  proc univariate data=concqt;
+231      var conc;
+232      output out=deciles pctlpre=deciles pctlpts=0 to 100 by 10;
+233  run;
+
+NOTE: The data set WORK.DECILES has 1 observations and 11 variables.
+NOTE: PROCEDURE UNIVARIATE used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+233!      quit;
+234  data deciles; set deciles; index = 1;
+
+NOTE: There were 1 observations read from the data set WORK.DECILES.
+NOTE: The data set WORK.DECILES has 1 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+234!                                       proc sort; by index; run;
+
+NOTE: There were 1 observations read from the data set WORK.DECILES.
+NOTE: The data set WORK.DECILES has 1 observations and 12 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+234!                                                                 quit;
+235
+236  data set1;
+237      merge concqt deciles;
+238      by index;
+239      decile = 1;
+240      if conc > deciles10 and conc <= deciles20 then decile = 2;
+241      if conc > deciles20 and conc <= deciles30 then decile = 3;
+242      if conc > deciles30 and conc <= deciles40 then decile = 4;
+243      if conc > deciles40 and conc <= deciles50 then decile = 5;
+244      if conc > deciles50 and conc <= deciles60 then decile = 6;
+245      if conc > deciles60 and conc <= deciles70 then decile = 7;
+246      if conc > deciles70 and conc <= deciles80 then decile = 8;
+247      if conc > deciles80 and conc <= deciles90 then decile = 9;
+248      if conc > deciles90 and conc <= deciles100 then decile = 10;
+
+NOTE: There were 324 observations read from the data set WORK.CONCQT.
+NOTE: There were 1 observations read from the data set WORK.DECILES.
+NOTE: The data set WORK.SET1 has 324 observations and 47 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+249  proc sort; by decile; run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set WORK.SET1 has 324 observations and 47 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+249!                            quit;
+250
+251
+252
+253  *** Code to make Decile Plot;
+254
+255  proc transpose data=parms out=parmst; var estimate; id parameter; run;
+
+NOTE: There were 15 observations read from the data set WORK.PARMS.
+NOTE: The data set WORK.PARMST has 1 observations and 16 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+255!                                                                        quit;
+256  data parmst; set parmst; index = 1;
+
+NOTE: There were 1 observations read from the data set WORK.PARMST.
+NOTE: The data set WORK.PARMST has 1 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+256!                                     proc sort; by index; run;
+
+NOTE: There were 1 observations read from the data set WORK.PARMST.
+NOTE: The data set WORK.PARMST has 1 observations and 17 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+256!                                                               quit;
+257
+258  proc transpose data=parms out=parmset prefix=se_; var standarderror; id parameter; run;
+
+NOTE: There were 15 observations read from the data set WORK.PARMS.
+NOTE: The data set WORK.PARMSET has 1 observations and 17 variables.
+NOTE: PROCEDURE TRANSPOSE used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+258!                                                                                         quit;
+259  data parmset; set parmset; index = 1;
+
+NOTE: There were 1 observations read from the data set WORK.PARMSET.
+NOTE: The data set WORK.PARMSET has 1 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+259!                                       proc sort; by index; run;
+
+NOTE: There were 1 observations read from the data set WORK.PARMSET.
+NOTE: The data set WORK.PARMSET has 1 observations and 18 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+259!                                                                 quit;
+260
+261  proc means data=set1 alpha=0.10 mean std stderr clm n noprint;
+262      var dqtcf conc;
+263      by decile;
+264      output out=mean mean=obsmean meanconc p5=obsp5 p95=obsp95 lclm=obslowerclm uclm=obsupperclm;
+265  run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set WORK.MEAN has 10 observations and 9 variables.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+265!      quit;
+266  proc print; run;
+
+NOTE: There were 10 observations read from the data set WORK.MEAN.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+
+
+267
+268  data sim;
+269      merge parmst parmset deciles;
+270      do simconc = 0 to 4000 by 100;
+271          do sim = 1 to 1000;
+272              theta2a = theta2 + rannor(2345232)*se_theta2;
+273              theta12a = theta12 + rannor(2345213)*se_theta12;
+274              preddqtcf = theta2a + theta12a*simconc;
+275              decile = 1;
+276              if simconc > deciles10 and simconc <= deciles20 then decile = 2;
+277              if simconc > deciles20 and simconc <= deciles30 then decile = 3;
+278              if simconc > deciles30 and simconc <= deciles40 then decile = 4;
+279              if simconc > deciles40 and simconc <= deciles50 then decile = 5;
+280              if simconc > deciles50 and simconc <= deciles60 then decile = 6;
+281              if simconc > deciles60 and simconc <= deciles70 then decile = 7;
+282              if simconc > deciles70 and simconc <= deciles80 then decile = 8;
+283              if simconc > deciles80 and simconc <= deciles90 then decile = 9;
+284              if simconc > deciles90 then decile = 10;
+285              output;
+286          end;
+287      end;
+288      label preddqtcf = "Predicted Value for Mean";
+
+WARNING: Multiple lengths were specified for the variable _NAME_ by input data set(s). This can cause truncation of data.
+NOTE: There were 1 observations read from the data set WORK.PARMST.
+NOTE: There were 1 observations read from the data set WORK.PARMSET.
+NOTE: There were 1 observations read from the data set WORK.DECILES.
+NOTE: The data set WORK.SIM has 41000 observations and 50 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+289  proc sort; by decile; run;
+
+NOTE: There were 41000 observations read from the data set WORK.SIM.
+NOTE: The data set WORK.SIM has 41000 observations and 50 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.04 seconds
+
+
+289!                            quit;
+290
+291  proc means data=sim noprint alpha=0.10;
+292      var preddqtcf simconc;
+293      by decile;
+294      output out=simpercentiles mean=predmean simconc p5=predp5 pred2p5 p95=predp95 pred2p95;
+295  run;
+
+WARNING: An ALPHA value has been provided without requesting confidence limits.
+NOTE: There were 41000 observations read from the data set WORK.SIM.
+NOTE: The data set WORK.SIMPERCENTILES has 10 observations and 9 variables.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+295!      quit;
+296  data simpercentiles;
+297      set simpercentiles;
+298      label predmean = "Predicted Mean";
+299      label simconc = "Simulated Mean Concentration";
+300      label predp5 = "5th Percentile of Mean Prediction";
+301      label predp95 = "95th Percentile of Mean Prediction";
+
+NOTE: There were 10 observations read from the data set WORK.SIMPERCENTILES.
+NOTE: The data set WORK.SIMPERCENTILES has 10 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+302  proc print label; run;
+
+NOTE: There were 10 observations read from the data set WORK.SIMPERCENTILES.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+303
+304  data decileplot;
+305      merge mean simpercentiles;
+306      by decile;
+307  run;
+
+NOTE: There were 10 observations read from the data set WORK.MEAN.
+NOTE: There were 10 observations read from the data set WORK.SIMPERCENTILES.
+NOTE: The data set WORK.DECILEPLOT has 10 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+307!      quit;
+308  data decileplot;
+309      set decileplot;
+310      label predmean = "Predicted Mean";
+311      label simconc = "Simulated Mean Concentration";
+312      label predp5 = "5th Percentile of Mean Prediction";
+313      label predp95 = "95th Percentile of Mean Prediction";
+314      label obsp5 = "Observed 5th Percentile";
+315      label obsp95 = "Observed 95th Percentile";
+316      label lclm = "Observed Lower 90% CI";
+317      label uclm = "Observed Upper 90% CI"; run;
+
+NOTE: Variable lclm is uninitialized.
+NOTE: Variable uclm is uninitialized.
+NOTE: There were 10 observations read from the data set WORK.DECILEPLOT.
+NOTE: The data set WORK.DECILEPLOT has 10 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+
+
+317!                                                quit;
+318  proc print label; run;
+
+NOTE: There were 10 observations read from the data set WORK.DECILEPLOT.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+319
+320  /***
+321
+322  ods graphics on/ reset width=6 in border=off reset=index;
+323  ods html style=statistical image_dpi=300;
+324      proc sort data=merged; by doselabel dqtcf; run; quit;
+325      proc sgplot data=merged;
+326          series x=dqtcf y=dqtcf / lineattrs=(color=black);
+327          loess x=dqtcf y=pred / nomarkers alpha=0.1 clm;
+328          scatter x=dqtcf y=pred / group=doselabel name="doses";
+329          format doselabel doselabel.;
+330          keylegend "doses" / across=1 location=inside position=nw  title="Dose";
+331          yaxis label="Predicted Change from Baseline QTcF Interval (msec)";
+332      run; quit;
+333      proc univariate data=merged normal;
+334          title "";
+335          var Standardized_Residuals;
+336          histogram Standardized_Residuals / normal kernel;
+337          qqplot Standardized_Residuals / normal(mu=est sigma=est color=red l=2);
+338      run; quit;
+339      proc sgplot data=merged;
+340          loess x=conc y=Standardized_Residuals / nomarkers alpha=0.1 clm smooth=0.6;;
+341          scatter x=conc y=Standardized_Residuals / group=doselabel name="doses";
+342          refline -2/ lineattrs=(pattern=2);
+343          refline 2/ lineattrs=(pattern=2);
+344          refline 0 / lineattrs=(pattern=1);
+345          format doselabel doselabel.;
+346          keylegend "doses" / across=5 location=inside position=ne  title="Dose";
+347          yaxis label="Standardized Residuals";
+348      run; quit;
+349      proc sgplot data=merged;
+350          loess x=chgbase y=Standardized_Residuals / nomarkers alpha=0.1 clm;
+351          scatter x=chgbase y=Standardized_Residuals / group=doselabel name="doses";
+352          refline -2/ lineattrs=(pattern=2);
+353          refline 2/ lineattrs=(pattern=2);
+354          refline 0 / lineattrs=(pattern=1);
+355          format doselabel doselabel.;
+356          keylegend "doses" / across=5 location=inside position=ne  title="Dose";
+357          yaxis label="Standardized Residuals";
+358      run; quit;
+359      proc sgplot data=merged;
+360          vbox Standardized_Residuals / category=timestr;
+361          refline -2/ lineattrs=(pattern=2);
+362          refline 2/ lineattrs=(pattern=2);
+363          refline 0 / lineattrs=(pattern=1);
+364          format doselabel doselabel.;
+365          keylegend "doses" / across=5 location=inside position=ne  title="Dose";
+366          yaxis label="Standardized Residuals";
+367      run; quit;
+368      proc sgplot data=merged;
+369          series x=nomtime y=Standardized_Residuals / group=sid lineattrs=(color=lightgray);
+370          loess x=nomtime y=Standardized_Residuals / nomarkers alpha=0.1 clm;
+371          scatter x=nomtime y=Standardized_Residuals / group=dose;
+372          refline -2/ lineattrs=(pattern=2);
+373          refline 2/ lineattrs=(pattern=2);
+374          refline 0 / lineattrs=(pattern=1);
+375          format doselabel doselabel.;
+376          keylegend "doses" / across=5 location=inside position=ne  title="Dose";
+377          yaxis label="Standardized Residuals";
+378      run; quit;
+379      proc sgplot data=merged;
+380          vbox Standardized_Residuals / category=trtstr  name="doses";
+381          refline -2/ lineattrs=(pattern=2);
+382          refline 2/ lineattrs=(pattern=2);
+383          refline 0 / lineattrs=(pattern=1);
+384          yaxis label="Standardized Residuals";
+385      run; quit;
+386  */
+387  ods graphics on/ reset width=6 in border=off reset=index;
+388  ods html style=statistical image_dpi =200;
+NOTE: Writing HTML Body file: sashtml1.htm
+389      proc sort data=decileplot; by meanconc; run;
+
+NOTE: There were 10 observations read from the data set WORK.DECILEPLOT.
+NOTE: The data set WORK.DECILEPLOT has 10 observations and 15 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+389!                                                  quit;
+390      proc sgplot data=decileplot noautolegend;
+391          band x=simconc lower=predp5 upper=predp95  / fillattrs=(color="verylightblue");
+392          scatter x=meanconc y=obsmean / yerrorlower=obslowerclm yerrorupper=obsupperclm markerattrs=(color=blue
+392! symbol=circlefilled size=10) errorbarattrs=(color=blue thickness=2);
+393          scatter x=meanconc y=obsmean / yerrorlower=obsp5 yerrorupper=obsp95 markerattrs=(color=blue symbol=circlefilled
+393! size=10) errorbarattrs=(color=blue thickness=2 pattern=2);
+394          series x=simconc y=predmean / lineattrs=(color=black thickness=3);
+395          yaxis label="Change from Baseline QTcF Interval (msec)" grid;
+396          xaxis label="Drug Concentration";
+397      run;
+
+397!          quit;
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           1.12 seconds
+      cpu time            0.48 seconds
+
+NOTE: Listing image output written to SGPlot.png.
+NOTE: There were 10 observations read from the data set WORK.DECILEPLOT.
+
+398  ods html close;

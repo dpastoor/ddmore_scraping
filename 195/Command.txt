@@ -1,0 +1,28 @@
+#' =========================================================================================
+#' Command for execution of Sibrotuzumab model
+#' -----------------------------------------------------------------------------------
+
+#' Initialisation
+#' =========================
+#' Clear workspace
+rm(list=ls(all=F))
+
+#' Set working directory
+setwd(file.path(Sys.getenv("MDLIDE_WORKSPACE_HOME"), "Repository", "Sibrotuzumab"))
+
+#' List files available in working directory
+list.files()
+
+#' Set name of placebo .mdl file and dataset for future tasks
+mdl <- "Executable_sibrotuzumab.mdl"
+datafile <- "Simulated_subrotuzumab.csv"
+
+
+newdat <- sim.PsN(mdl, samples = 20, seed = 123456) #simulate data from the model
+
+
+#' ESTIMATE model parameters using either Monolix or NONMEM
+#' -------------------------
+nm <- estimate(mdl, target="NONMEM", subfolder="NONMEM")
+
+

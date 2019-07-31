@@ -1,0 +1,11 @@
+###### Prepared and run by Robin Svensson
+##### Scenario= 4
+##### PsN version=4.6.8
+##### Original tool version=nm_7.3.0_g
+##### Input data= Original data not shared
+##### Executable model=Executable_Rif_PK.mod
+##### Output=Output_real_Rif_PK.lst
+######## end block
+
+###### Script used as execution command for NONMEM via PsN: ##########
+execute Executable_Rif_PK.mod

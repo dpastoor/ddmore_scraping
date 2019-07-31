@@ -1,0 +1,4 @@
+###### Model differences = The PK model was simplified.
+
+
+###### Reasons = The original work estimated the parameters by a step-wise fitting to minimize square error. Here we estimated all the parameters simultaneously, using mixed-effects methodology and compared several different models. In cosequence, we found that the present model has best on performance and robustness (i.e. low Akaike information criterion, low condition number, and minimal residual errors). 

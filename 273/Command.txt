@@ -1,0 +1,9 @@
+###### Scenario = 4
+###### Wings for Nonmem = 4.4.0
+###### Original tool version = NM73
+###### Input data = Simulated_Duplimab.csv
+###### Executable model = nmgo/Executable_Simulated_Dupulimab
+###### Output = Output_simulated_Dupulimab.lst
+
+
+

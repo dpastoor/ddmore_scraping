@@ -1,0 +1,116 @@
+; this script is generated automatically
+
+DESCRIPTION:
+
+DATA: 
+    path = "%MLXPROJECT%/",
+    file  ="Real_glucoseKinetics.csv",
+    headers = {TIME,Y,MDV,AMT,RATE,ID,X,X,ADM,OCC,X,X,X,X,YTYPE,X},
+    columnDelimiter = ","
+
+VARIABLES:
+    OCC [use=cov,  type=cat],
+    S-OCC [use=cov,  type=cat],
+    testL [use=cov,  type=cat]
+
+INDIVIDUAL:
+    ALP = {distribution=logNormal, iiv=yes},
+    F = {distribution=logNormal, iiv=yes},
+    K1 = {distribution=logNormal, iiv=yes},
+    KM = {distribution=logNormal, iiv=yes},
+    KM1 = {distribution=logNormal, iiv=yes},
+    PWG11 = {distribution=Normal, iiv=no},
+    PWG12 = {distribution=Normal, iiv=yes},
+    TAUGn = {distribution=logNormal, iiv=no},
+    TAUI = {distribution=logNormal, iiv=yes},
+    VMAX0 = {distribution=logNormal, iiv=no},
+    Vt1 = {distribution=Normal, iiv=no},
+    Vt2 = {distribution=Normal, iiv=yes},
+    fPEX21 = {distribution=Normal, iiv=no},
+    fPEX22 = {distribution=Normal, iiv=no},
+    fPEX31 = {distribution=Normal, iiv=no},
+    fPEX32 = {distribution=Normal, iiv=yes},
+    fPWG21 = {distribution=Normal, iiv=no},
+    fPWG22 = {distribution=Normal, iiv=no}
+
+CORRELATION:
+    correlationIIV = {K1,KM1}
+
+STRUCTURAL_MODEL:
+    file = "mlxt:original_model",
+    path = "%MLXPROJECT%",
+    output = {TRA1,TRA2,TRA3,TRA4,TRA5,TRA6,TRA7,TRA9,TRA10,TRA11,TRA12,TRA13,TRA14,TRA15,TRA16}
+
+
+OBSERVATIONS:
+    y1 = {type=continuous, prediction=TRA1, error=constant},
+    y11 = {type=continuous, prediction=TRA12, error=constant},
+    y12 = {type=continuous, prediction=TRA13, error=constant},
+    y13 = {type=continuous, prediction=TRA14, error=constant},
+    y14 = {type=continuous, prediction=TRA15, error=constant},
+    y15 = {type=continuous, prediction=TRA16, error=constant},
+    y2 = {type=continuous, prediction=TRA2, error=constant},
+    y3 = {type=continuous, prediction=TRA3, error=constant},
+    y4 = {type=continuous, prediction=TRA4, error=constant},
+    y5 = {type=continuous, prediction=TRA5, error=constant},
+    y6 = {type=continuous, prediction=TRA6, error=constant},
+    y7 = {type=continuous, prediction=TRA7, error=constant},
+    y8 = {type=continuous, prediction=TRA9, error=constant},
+    y9 = {type=continuous, prediction=TRA10, error=constant},
+    y10 = {type=continuous, prediction=TRA11, error=constant}
+
+TASKS:
+    ; settings
+    globalSettings={
+        withVariance=yes,
+        settingsAlgorithms="%MLXPROJECT%/original_project.xmlx",
+        resultFolder="%MLXPROJECT%/original_project"},
+    ; workflow
+    estimatePopulationParameters(
+        initialValues={
+            pop_ALP = 4400,
+            pop_F = 1,
+            pop_K1 = 1.91,
+            pop_KM = 3,
+            pop_KM1 = 627,
+            pop_PWG11 = 0.802,
+            pop_PWG12 = 0 [method=FIXED],
+            pop_TAUGn = 0.59 [method=FIXED],
+            pop_TAUI = 12.9,
+            pop_VMAX0 = 407,
+            pop_Vt1 = 9.36,
+            pop_Vt2 = 0 [method=FIXED],
+            pop_fPEX21 = -2.15,
+            pop_fPEX22 = 0 [method=FIXED],
+            pop_fPEX31 = -2.56,
+            pop_fPEX32 = 0 [method=FIXED],
+            pop_fPWG21 = 2.16,
+            pop_fPWG22 = 0 [method=FIXED],
+            a_y1 = 0.0250213,
+            a_y11 = 0.0120911,
+            a_y12 = 0.0113992,
+            a_y13 = 0.012,
+            a_y14 = 0.029,
+            a_y15 = 0.003,
+            a_y2 = 0.00718608,
+            a_y3 = 0.005 [method=FIXED],
+            a_y4 = 0.0060284,
+            a_y5 = 0.0117864,
+            a_y6 = 0.004 [method=FIXED],
+            a_y7 = 0.00459626,
+            a_y8 = 0.0103724,
+            a_y9 = 0.00414373,
+            a_y10 = 0.00947314,
+            omega2_ALP = 1,
+            omega2_F = 1,
+            omega2_K1 = 1,
+            omega2_KM = 1,
+            omega2_KM1 = 1,
+            omega2_PWG12 = 0.1,
+            omega2_TAUI = 1,
+            omega2_Vt2 = 0.1,
+            omega2_fPEX32 = 0.1
+            } ),
+    estimateFisherInformationMatrix( method={stochasticApproximation} ),
+    estimateIndividualParameters( method={conditionalMode} ),
+

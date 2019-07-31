@@ -1,0 +1,147 @@
+# Model for Sibrotuzumab Pharmacokinetics
+# 
+  
+sibrotuzumab_dat = dataObj {
+	DECLARED_VARIABLES{AC Y}
+
+	DATA_INPUT_VARIABLES {
+      ID : { use is id }  
+      TIME : { use is idv }
+      WT : { use is covariate }
+      AMT : { use is amt, variable = AC}
+      RATE : {use is rate}
+#      OCC : { use is varLevel }
+      DV : { use is dv, variable = Y }
+      MDV : { use is mdv }
+	} # end DATA_INPUT_VARIABLES
+	
+	SOURCE {
+	    srcfile : {file = "Simulated_sibrotuzumab.csv", 
+            inputFormat is nonmemFormat } 
+	} # end SOURCE
+} # end data object
+
+sibrotuzumab_par = parObj {
+DECLARED_VARIABLES{eta_BOV_CL eta_BOV_V }
+
+	# By default a parameter is to be estimated if fix is omitted
+ 	STRUCTURAL {
+		POP_CLL : { value = 0.0221, lo = 0.001 }    #[L/h]
+		POP_V1 : { value = 4.13, lo = 0.001 }     #[L]
+		POP_V2 : { value = 3.19, lo = 0.001 }     #[L]
+		POP_Q : { value = 0.0376, lo = 0.001 }      #[L/h]
+		POP_Vmax : { value = 0.0338, lo = 0.001 } #[mg/h]
+		POP_Km : { value = 8, lo = 0.001 }        #[mg/L]
+		BETA_CLL_WT : { value = 0.0182, fix = true}           # unitless
+		BETA_V1_WT : { value = 0.0125, fix = true}            # unitless
+		BETA_V2_WT : { value = 0.0105, fix = true}            # unitless
+		BETA_Vmax_WT : { value = 0.00934, fix = true} 		  # unitless
+		RUV_PROP : { value = 0.0491, lo = 0.001 } #[mg/L]
+		RUV_ADD : { value = 0.093, lo = 0.001 }   # unitless
+		#F1 also as a structural parameter?
+		} # end STRUCTURAL
+	VARIABILITY {
+		PPV_CLL : { value = 0.57, type is sd }
+		PPV_V1 : { value = 0.20, type is sd }
+		PPV_V2 : { value = 0.20, type is sd }
+		PPV_Vmax : { value = 0.29, type is sd, fix=true }
+#		IOV_F1 : { value = 0.1, type is sd }
+	} # end VARIABILITY
+} # end of parameter object 
+
+sibrotuzumab_mdl = mdlObj {
+	IDV{ T }
+
+	COVARIATES{
+		WT
+	}
+
+   VARIABILITY_LEVELS{
+	ID : { level=2, type  is parameter }
+#	OCC : { level=2, type  is parameter }
+   	DV : { level=1, type  is observation }
+   }
+
+	STRUCTURAL_PARAMETERS { 
+		POP_CLL
+		POP_V1
+		POP_V2
+		POP_Q
+		POP_Vmax
+		POP_Km
+		BETA_CLL_WT
+		BETA_V1_WT
+		BETA_V2_WT
+		BETA_Vmax_WT
+		RUV_PROP
+		RUV_ADD
+	} # end STRUCTURAL_PARAMETERS
+	
+	VARIABILITY_PARAMETERS {
+		PPV_CLL
+		PPV_V1
+		PPV_V2
+		PPV_Vmax
+#		IOV_F1
+	} # end VARIABILITY_PARAMETERS 
+	
+	RANDOM_VARIABLE_DEFINITION(level=ID) {
+		ETA_CLL ~ Normal(mean = 0, sd = PPV_CLL)
+		ETA_V1 ~ Normal(mean = 0, sd = PPV_V1)
+		ETA_V2 ~ Normal(mean = 0, sd = PPV_V2)
+		ETA_Vmax ~ Normal(mean = 0, sd = PPV_Vmax)
+	} # end RANDOM_VARIABLE_DEFINITION 
+
+	GROUP_VARIABLES {
+		CLL_WT = POP_CLL*(1+BETA_CLL_WT*(WT-75))
+		V1_WT = POP_V1*(1+BETA_V1_WT*(WT-75))
+		V2_WT = POP_V2*(1+BETA_V2_WT*(WT-75))
+		Vmax_WT = POP_Vmax*(1+BETA_Vmax_WT*(WT-75))
+	}# end GROUP_VARIABLES
+	
+#    RANDOM_VARIABLE_DEFINITION(level=OCC){
+#        ETA_BOV_F1~ Normal(mean=0, var=IOV_F1)
+#    }# end RANDOM_VARIABLE_DEFINITION
+	
+	INDIVIDUAL_VARIABLES { # This maps to the "Type 3" individual parameter definition in PharmML
+		CLL = CLL_WT*exp(ETA_CLL)
+		V1 = V1_WT*exp(ETA_V1)
+		V2 = V2_WT*exp(ETA_V2)
+		Vmax = Vmax_WT*exp(ETA_Vmax)
+		Km = POP_Km
+		Q = POP_Q
+	} # end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		DEQ{ #as amounts
+		    CC = AC / V1
+    	    CP = AP / V2
+			AC : { deriv = Q *(CP-CC) - CLL*CC - Vmax*CC/(Km+CC) , init = 0, x0 = 0 } 
+			AP : { deriv = Q * (CC-CP), init = 0, x0 = 0 } 
+		}
+	} # end MODEL_PREDICTION
+	
+	RANDOM_VARIABLE_DEFINITION(level=DV){
+	    EPS_Y ~ Normal(mean = 0, var = 1) # This maps the standard error model in PharmML. The error model is predefined.
+	}
+
+	OBSERVATION {
+	    Y = combinedError1(additive = RUV_ADD, proportional = RUV_PROP, eps = EPS_Y, prediction = CC ) 
+	} # end OBSERVATION
+} # end of model object
+
+sibrotuzumab_task = taskObj {
+	ESTIMATE{ 
+		set algo is focei
+	}
+} # end of task object
+
+
+warfarin_PK_ODE_mog = mogObj {
+	OBJECTS{
+		sibrotuzumab_dat : { type is dataObj }
+		sibrotuzumab_mdl : { type is mdlObj }
+		sibrotuzumab_par : { type is parObj }
+		sibrotuzumab_task : { type is taskObj }
+	}
+}

@@ -1,0 +1,22 @@
+Parameter name                Parameter estimate (unit)      Relative standard error (%)
+[as in the model]		                                     [or Standard error; as given in publication]
+
+CL/F                          19.2 (L/h)                     1.29%
+V/F                           53.2 (L)                       1.16%
+ka                            1.15 (/h)                      3.91%
+MTT                           0.424 (h)                      3.82%
+n                             7.13                           8.42%
+SDC on MTT                    1.04                           8.78%
+SDC on CL                     0.236                          9.63%
+
+IIV on CL/F                   0.279 (variance)               5.97%
+covariance CL-V               0.217 (covariance)             7.45%
+IIV on V/F                    0.188 (variance)               10.9%
+IIV on ka                     0.439 (variance)               11.0%
+IIV on MTT                    0.361 (variance)               7.87%
+IIV on n                      2.44 (variance)                13.7%
+IOV on CL                     0.0508 (variance)              10.9%
+IOV on MTT                    0.461 (variance)               11.3%
+
+Additive residual error       0.0508 (mg/L)                  5.41%
+Proportional residual error   0.222 (proportion)             2.89%

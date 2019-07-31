@@ -1,0 +1,9 @@
+##### Prepared and run by Giulia Lestini
+##### Scenario= 4
+##### MONOLIX version=4.3.0
+##### Input data= simRich1.txt
+##### Executable model=pkpd_model.txt
+##### Output=pop_parameters1.txt
+
+###### Project to be executed in MONOLIX: ##########
+###### project_Step1.mat

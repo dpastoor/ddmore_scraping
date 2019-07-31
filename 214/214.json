@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_HFSmodel.mod",
+        "Output_real_HFSmodel.lst",
+        "Model_Accommodations.txt",
+        "DDMODEL00000214.rdf",
+        "Command.txt",
+        "Output_simulated_HFSmodel.lst",
+        "Simulated_GHFS_HFSmodel.csv"
+    ],
+    "version": 4
+}

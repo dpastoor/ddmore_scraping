@@ -1,0 +1,10 @@
+
+ #example of text file for the CPHPC TMDD model published by T Sahota, CPT Pharmacometrics Syst Pharmacol. 2015 Feb; 4(2): e15.
+########################################################################
+########################################################################
+#### Original tool version NM 7.3
+#### Input data: Simulated_CPHPC_dataset.csv
+#### Executable model: Executable_simulated_CPHPC_dataset.ctl
+#### Output: Output_simulated_CPHPC_dataset.lst
+#### Script used as execution command for NONMEM via PsN 
+execute 5_run1.mod

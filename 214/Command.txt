@@ -1,0 +1,11 @@
+###### Prepared and run by Maria Luisa Sardu
+##### Scenario= 4
+##### PsN version=4.4.8
+##### Original tool version=nm_7.3.0
+##### Input data= Original data not shared
+##### Executable model= Executable_HFSmodel.mod
+##### Output=Output_simulated_HFSmodel.lst
+
+###### Script used as execution command for NONMEM via PsN: ##########
+execute Executable_HFSmodel.mod
+

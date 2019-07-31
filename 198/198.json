@@ -1,0 +1,11 @@
+{
+    "files": [
+        "Executable_TGI_GIST.mod",
+        "DDMODEL00000198.rdf",
+        "Simulated_TGI_GIST.csv",
+        "Output_real_TGI_GIST.lst",
+        "Command.txt",
+        "Output_simulated_TGI_GIST.lst"
+    ],
+    "version": 6
+}

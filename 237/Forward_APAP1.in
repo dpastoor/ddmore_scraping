@@ -1,0 +1,44 @@
+OutputFile("./Output_simulated_APAP.out");
+
+
+# Mean parameters
+lnUGT_VmaxC = 8.2277;
+lnCYP_Km = 4.8122;
+lnkPAPS_syn = 7.9251;
+lnCLC_AS = -2.0404;
+lnUGT_Km = 8.2749;
+lnTp = -2.0559;
+lnSULT_VmaxC = 5.9494;
+lnSULT_Ki = 5.9984;
+lnKm_AS = 9.7220;
+lnCYP_VmaxC = 0.0918;
+lnSULT_Km_paps = -1.1493;
+lnUGT_Km_GA = -1.4898;
+lnCLC_APAP = -4.6564;
+lnVmax_AG = 10.9996;
+lnCLC_AG = -1.9876;
+lnTg = -1.1567;
+lnVmax_AS = 13.6788;
+lnUGT_Ki = 10.7505;
+lnSULT_Km_apap = 6.7507;
+lnKm_AG = 9.6067;
+lnkGA_syn = 9.0430;
+
+Simulation { # 1:
+# Example with mg dose
+#=====================
+mgkg_flag = 0;
+
+OralExp_APAP = NDoses(2, 1 0, 0 0.75);
+OralDur_APAP = 0.75;
+OralDose_APAP_mg = 1000.0;
+lnOralDose_APAP_mg = 6.907755;
+
+IVExp_APAP = 0.;
+IVDose_APAP_mg = 0.;
+lnIVDose_APAP_mg = 0.;
+
+PrintStep(CPL_APAP_mcgL, 0, 14., 0.1);
+PrintStep(CPL_AG_mcgL, 0, 14., 0.1);
+PrintStep(CPL_AS_mcgL, 0, 14., 0.1);
+}

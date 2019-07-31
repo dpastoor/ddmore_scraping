@@ -1,0 +1,200 @@
+
+#
+# Ciprofloxacin model
+
+khan_2015_dat = dataObj{
+	DECLARED_VARIABLES{ Y }
+
+	DATA_INPUT_VARIABLES{
+		STR  : {use is covariate}
+		ID   : {use is id}
+		MIC  : {use is covariate}
+		xMIC : {use is ignore}
+		CAB  : {use is covariate}
+		TIME : {use is idv}
+		TUBE : {use is covariate}
+		CMT  : {use is cmt} 
+		EVID : {use is covariate} 
+		DV   : {use is dv, variable=Y}
+		AMT  : {use is ignore} 
+		REPL : {use is ignore} 
+		BLOQ : {use is ignore} 
+		BASE : {use is covariate}
+		L2   : {use is ignore} 
+		BOBS : {use is ignore}
+	}# end DATA_INPUT_VARIABLES
+
+	SOURCE {
+    srcfile: {file = "cipro378.csv",
+							inputFormat is nonmemFormat}
+	}# end SOURCE
+}# end data object
+
+khan_2015_par = parObj{
+	DECLARED_VARIABLES{ }
+	STRUCTURAL{
+		# THETA:
+		POP_KGS1      : {value=1.70,   lo=1} # kgrowth1
+		POP_KK        : {value=0.179,  fix=true} # Death rate (fixed from Nielsen et al., AAC 2007)
+		POP_EMAX      : {value=5.24,   lo=0} # EMAX
+		POP_EC50_202  : {value=0.057,  lo=0} # EC50 202
+		POP_GAM       : {value=1.98,   lo=0} # GAM
+		POP_PROPC     : {value=0.0186, lo=0} # PC
+		POP_KGS2      : {value=0.344,  fix=true} # kgrowth2
+		POP_EC50_2    : {value=1.25,   fix=true} # EC502
+		POP_MUT       : {value=0.81,   lo=0} # start conc pre-existing resistant
+		POP_KSNC_MAX  : {value=5.83,   fix=true} # kSnc,max
+		POP_SFNCS     : {value=0.17,   lo=0} # sfNcS
+		POP_HILL      : {value=20,     lo=0, fix=true} # Hill factor Nc
+		POP_TR50      : {value=0.24,   lo=0} # tr50
+		# POP_KSNC_TIME : {value=5.3158, lo=2} # MTIME
+		POP_KSNC_TIME : {value=5.47869,lo=2, fix=true} # MTIME
+
+		# SIGMA
+		RUV_ADD  : {value=2.544, lo=0}
+	}# end STRUCTURAL
+
+	VARIABILITY{
+		# OMEGA:
+		#BASE_B2M : {type is var, value=1, fix=true}
+	}# end VARIABILITY
+
+}# end of parameter object
+
+khan_2015_mdl = mdlObj{
+	IDV { T }
+
+	COVARIATES{
+		STR
+		MIC
+		#xMIC
+		CAB
+		#TUBE
+		#REPL
+		BASE
+		#BOBS
+		#BLOQ
+	}
+
+	VARIABILITY_LEVELS{
+		ID : {level=2, type is parameter}
+		DV : {level=1, type is observation}
+	}
+
+	STRUCTURAL_PARAMETERS{
+		# THETA:
+		POP_KGS1
+		POP_KK
+		POP_EMAX
+		POP_EC50_202
+		POP_GAM
+		POP_PROPC
+		POP_KGS2
+		POP_EC50_2
+		POP_MUT
+		POP_KSNC_MAX
+		POP_SFNCS
+		POP_HILL
+		POP_TR50
+		POP_KSNC_TIME
+
+		# SIGMA:
+		RUV_ADD
+	}# end STRUCTURAL_PARAMETERS
+
+	VARIABILITY_PARAMETERS{
+		# OMEGA:
+		#BASE_B2M
+	}# end VARIABILITY_PARAMETERS
+
+	RANDOM_VARIABLE_DEFINITION(level=ID){
+		#eta_BASE_B2M ~ Normal(mean=0, var=BASE_B2M)
+	}# end RANDOM_VARIABLE_DEFINITION
+	
+	GROUP_VARIABLES{log_k = 10}
+
+	INDIVIDUAL_VARIABLES{
+		# Individual parameters:
+		KGS1 = POP_KGS1 # Growth rate 1
+		KK   = POP_KK    # Death rate
+		EMAX = POP_EMAX  # Drug EMAX
+		# Drug EC50 1
+		EC50_1 = 1.22*MIC^0.978
+		GAM       = POP_GAM # Hill factor drug effect
+		PROPC     = POP_PROPC*0.0000001 # Proportionality constant, scaled to ease computer calculation
+		SBASE     = exp(BASE)  
+		KGS2      = POP_KGS2 # Growth rate 2
+		EC50_2    = POP_EC50_2 # Drug EC50 2
+		MUT       = POP_MUT # Pre-existing resistant at start
+		KSNC_MAX  = POP_KSNC_MAX
+		SFNCS     = POP_SFNCS
+		HILL      = POP_HILL
+		TR50      = POP_TR50
+		KSNC_TIME = POP_KSNC_TIME
+		
+		# Initializations for compartments:
+		SUS1_INIT = SBASE*(1-MUT*0.000001)
+		SUS2_INIT = MUT*0.000001*SBASE
+		
+		# K non-colony forming compartments:
+		KSNC1 = KSNC_MAX*(CAB/EC50_1)^HILL / ((CAB/EC50_1)^HILL + TR50^HILL)
+		KSNC2 = KSNC_MAX*(CAB/EC50_2)^HILL / ((CAB/EC50_2)^HILL + TR50^HILL)
+		KNCS1 = SFNCS*EC50_1 / (CAB + 0.0000000001) # Avoids division by 0
+		KNCS2 = SFNCS*EC50_2 / (CAB + 0.0000000001)
+	}# end INDIVIDUAL_VARIABLES
+
+	MODEL_PREDICTION {
+		# Conversion rate between active/resting cell dependent on cell number:
+		SUS_RES1 = PROPC * (SUS1 + RES1 + SUS2 + NON1 + RES2 + NON2)
+		SUS_RES2 = SUS_RES1
+		RES_SUS1 = 0
+		RES_SUS2 = 0
+		
+		# EMAX equation for drug effect:
+		DRUGS1 = if(CAB > (0.00000000001)) then EMAX*CAB^GAM / (EC50_1^GAM + CAB^GAM)
+			else 0
+		DRUGS2 = if(CAB > (0.00000000001)) then EMAX*CAB^GAM / (EC50_2^GAM + CAB^GAM)
+			else 0
+		
+		FLAG = if (T < KSNC_TIME) then 1
+			else 0
+
+		DEQ{
+			SUS1 : {deriv=(KGS1*SUS1-(KK+DRUGS1)*SUS1 - SUS_RES1*SUS1 + RES_SUS1*RES1 + KNCS1*NON1 - KSNC1*SUS1*FLAG), init=SUS1_INIT, x0=0} # Compartment S1
+			RES1 : {deriv=(-KK*RES1 + SUS_RES1*SUS1 - RES_SUS1*RES1), init=0, x0=0} # Compartment R1
+			SUS2 : {deriv=(KGS2*SUS2-(KK+DRUGS2)*SUS2 - SUS_RES2*SUS2 + RES_SUS2*RES2 + KNCS2*NON2 - KSNC2*SUS2*FLAG), init=SUS2_INIT, x0=0} # Compartment S2
+			NON1 : {deriv=(KSNC1*SUS1*FLAG - KNCS1*NON1 - (KK+DRUGS1)*NON1), init=0, x0=0} # Compartment NC1
+			RES2 : {deriv=(-KK*RES2 + SUS_RES2*SUS2), init=0, x0=0} # Compartment R2
+			NON2 : {deriv=(KSNC2*SUS2*FLAG - KNCS2*NON2 - (KK+DRUGS2)*NON2), init=0, x0=0} # Compartment NC2
+		}
+		
+		ATOT = SUS1 + RES1 + SUS2 + RES2 # NC not counted
+		
+		LN_ATOT = ln(ATOT + 1E-8) 
+		
+	}# end MODEL_PREDICTION
+
+	RANDOM_VARIABLE_DEFINITION(level = DV) {
+		EPS_Y ~ Normal(mean = 0, var = 1)
+	}# end RANDOM_VARIABLE_DEFINITION
+
+	OBSERVATION {
+		Y = additiveError(additive = RUV_ADD, eps = EPS_Y, prediction = LN_ATOT)
+	}# end OBSERVATION
+
+}# end of model object
+
+khan_2015_task = taskObj{
+	ESTIMATE{
+		set algo is focei
+	}
+}# end of task object
+
+khan_2015_mog=mogObj{
+	OBJECTS{
+		khan_2015_mdl  : { type is mdlObj }
+		khan_2015_par  : { type is parObj }
+		khan_2015_dat  : { type is dataObj }
+		khan_2015_task : { type is taskObj }
+	}
+}

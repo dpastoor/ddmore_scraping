@@ -1,0 +1,12 @@
+#Differences: Uploaded model vs. related publication referred to.
+
+###### Model differences and reasons 
+a) EVID and L2 item (as in dataset and used in original model) 
+not us for estimations utilising DDMoRe framework;
+b) Residual error for parent (tamoxifen) and metabolite (endoxifen) 
+estimated without considering correlations and as standard deviations 
+(structural parameters in NONMEM as THETAs);
+c) lag time handled differently by ddmore convertors than by NONMEM.
+These differences led to minor differences in estimates (esp. tlag).
+
+

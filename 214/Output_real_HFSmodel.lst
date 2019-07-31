@@ -1,0 +1,573 @@
+Fri Sep 23 10:31:44 CEST 2016
+$PROBLEM    Logit model with KPD approach EMAX model covariate CRCL
+$INPUT      C ID WEEK=TIME MDV EVID GHFS=DV AMT ADDL II AGE SEX WT HT
+            SERUM SERCORR WTCOR SEXCOEFF BSA CLCR
+$DATA      xxx.csv IGNORE=C
+$SUBROUTINE ADVAN1 TRANS1
+$PK 
+TCLCR=THETA(12)
+TVK=THETA(1)
+
+K=TVK*EXP(ETA(1))
+
+
+IF (TIME.EQ.0) BCLCR=CLCR
+IIV=ETA(2)+(BCLCR-75.5)*TCLCR
+
+B00=THETA(2)                    
+B10=THETA(3)                     
+B20=THETA(4)                    
+EMAX0=THETA(5)
+ED50=THETA(6)  
+
+B01=THETA(7)
+B11=THETA(8)
+B21=THETA(9)
+
+EMAX1=THETA(10)
+EMAX2=THETA(11)
+
+IF (TIME.EQ.0) SWM1=0
+
+
+$ERROR 
+CALLFL=0
+IPRED=F
+EMAX=EMAX0 
+IF(SWM1.EQ.1) EMAX=EMAX1
+IF(SWM1.EQ.2) EMAX=EMAX2
+EFF=EMAX*(F*K)/((F*K)+(ED50))
+A0=0
+A1=0
+SPREC=SWM1
+IF (SWM1.EQ.0) THEN
+        A0=B00
+        A1=A0+B01
+ENDIF
+IF (SWM1.EQ.1) THEN
+        A0=B10
+        A1=A0+B11
+ENDIF
+IF (SWM1.EQ.2) THEN
+        A0=B20
+        A1=A0+B21
+ENDIF
+A0=A0-EFF+IIV
+A1=A1-EFF+IIV
+
+SWM1=GHFS
+
+PC0=EXP(A0)/(1+EXP(A0))
+PC1=EXP(A1)/(1+EXP(A1))
+PC2=1
+
+
+P0=PC0
+P1=PC1-PC0
+P2=PC2-PC1
+
+
+Y=-1
+   IF (DV.LT.0.5)  Y=P0
+   IF (DV.GE.0.5.AND.DV.LT.1.5)  Y=P1
+   IF (DV.GE.1.5.AND.DV.LT.2.5)  Y=P2
+
+$THETA  0.102 FIX ; 1 TVK
+ 4.14 FIX ; 2 B00
+ 0.855 FIX ; 3 B10
+ 1.47 FIX ; 4 B20
+ 3.17 FIX ; 5 EMAX0
+ 12900 FIX ; 6 ED50
+ 0.626 FIX ; 7* B01
+ 7.24 FIX ; 8* B11
+ 0.330 FIX ; 9 B21
+ 6.65 FIX ; 10 EMAX1
+ 8.92 FIX ; 11 EMAX2
+ 0.00650 FIX ; 12 TCLCR
+$OMEGA  BLOCK(2) FIX
+ 0.802
+ 0.735 1.5
+$ESTIMATION METHOD=1 MAXEVALS=0 PRINT=5 LIKE LAPLACE SIGDIGITS=3 SLOW
+            NOABORT 
+$TABLE      ID TIME AMT MDV SPREC IPRED K TVK TCLCR P0 P1 P2 A0 A1 PC0
+            PC1 PC2 ETA1 ETA2 EMAX ED50 EFF ONEHEADER NOPRINT
+            FILE=xxx.tab
+$COVARIANCE SLOW UNCONDITIONAL MATRIX=S
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+
+License Registered to: Merck / Global Clinical Pharmacokinetics
+Expiration Date:    14 JAN 2017
+Current Date:       23 SEP 2016
+Days until program expires : 116
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+
+ PROBLEM NO.:         1
+ Logit model with KPD approach EMAX model covariate CRCL
+0DATA CHECKOUT RUN:              NO
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO
+ NO. OF DATA RECS IN DATA SET:    29196
+ NO. OF DATA ITEMS IN DATA SET:  19
+ ID DATA ITEM IS DATA ITEM NO.:   2
+ DEP VARIABLE IS DATA ITEM NO.:   6
+ MDV DATA ITEM IS DATA ITEM NO.:  4
+0INDICES PASSED TO SUBROUTINE PRED:
+   5   3   7   0   0   9   0   0   0   0   8
+0LABELS FOR DATA ITEMS:
+ C ID WEEK MDV EVID GHFS AMT ADDL II AGE SEX WT HT SERUM SERCORR WTCOR SEXCOEFF BSA CLCR
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ TCLCR TVK K ED50 IPRED EMAX EFF A0 A1 SPREC PC0 PC1 PC2 P0 P1 P2
+0FORMAT FOR DATA:
+ (E1.0,E3.0,E2.0,3E1.0,E4.0,E1.0,E5.0,E2.0,E1.0,E6.0,E5.0,6E6.0)
+
+ TOT. NO. OF OBS RECS:    18445
+ TOT. NO. OF INDIVIDUALS:    595
+0LENGTH OF THETA:  12
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO
+0OMEGA HAS BLOCK FORM:
+  1
+  1  1
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.1020E+00     0.1020E+00     0.1020E+00
+  0.4140E+01     0.4140E+01     0.4140E+01
+  0.8550E+00     0.8550E+00     0.8550E+00
+  0.1470E+01     0.1470E+01     0.1470E+01
+  0.3170E+01     0.3170E+01     0.3170E+01
+  0.1290E+05     0.1290E+05     0.1290E+05
+  0.6260E+00     0.6260E+00     0.6260E+00
+  0.7240E+01     0.7240E+01     0.7240E+01
+  0.3300E+00     0.3300E+00     0.3300E+00
+  0.6650E+01     0.6650E+01     0.6650E+01
+  0.8920E+01     0.8920E+01     0.8920E+01
+  0.6500E-02     0.6500E-02     0.6500E-02
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                  YES
+                  0.8020E+00
+                  0.7350E+00   0.1500E+01
+0COVARIANCE STEP OMITTED:        NO
+ R MATRIX SUBSTITUTED:           NO
+ S MATRIX SUBSTITUTED:          YES
+ EIGENVLS. PRINTED:              NO
+ SPECIAL COMPUTATION:            NO
+ COMPRESSED FORMAT:              NO
+ SLOW GRADIENT METHOD USED:     YES
+ SIGDIGITS ETAHAT (SIGLO):                  -1
+ SIGDIGITS GRADIENTS (SIGL):                -1
+ RELATIVE TOLERANCE (TOL):                  -1
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY (ATOL): -1
+ EXCLUDE COV FOR FOCE (NOFCOV):              NO
+ RESUME COV ANALYSIS (RESUME):               NO
+0TABLES STEP OMITTED:    NO
+ NO. OF TABLES:           1
+ SEED NUMBER (SEED):    11456
+ RANMETHOD:
+ MC SAMPLES (ESEED):    300
+ WRES SQUARE ROOT TYPE:            EIGENVALUE
+0-- TABLE   1 --
+ PRINTED:                NO
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO
+ FORMAT:                S1PE11.4
+ LFORMAT:
+ RFORMAT:
+0USER-CHOSEN ITEMS:
+ ID WEEK AMT MDV SPREC IPRED K TVK TCLCR P0 P1 P2 A0 A1 PC0 PC1 PC2 ETA1 ETA2 EMAX ED50 EFF
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+
+ ONE COMPARTMENT MODEL (ADVAN1)
+0MAXIMUM NO. OF BASIC PK PARAMETERS:   2
+0BASIC PK PARAMETERS (AFTER TRANSLATION):
+   ELIMINATION RATE (K) IS BASIC PK PARAMETER NO.:  1
+
+0COMPARTMENT ATTRIBUTES
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         CENTRAL      ON         NO         YES        YES        YES
+    2         OUTPUT       OFF        YES        NO         NO         NO
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG
+    1            *           *           *           *           *
+    2            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      5
+   TIME DATA ITEM IS DATA ITEM NO.:          3
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   7
+   INTERVAL DATA ITEM IS DATA ITEM NO.:      9
+   ADDL. DOSES DATA ITEM IS DATA ITEM NO.:   8
+
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0DURING SIMULATION, ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ OTHERWISE, ERROR SUBROUTINE CALLED ONLY WITH OBSERVATION EVENTS.
+1
+
+
+ #TBLN:      1
+ #METH: Laplacian Conditional Estimation (Evaluation)
+
+ ESTIMATION STEP OMITTED:                 YES 
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     NO  
+ LAPLACIAN OBJ. FUNC.:                    YES 
+ NUMERICAL 2ND DERIVATIVES:               NO  
+ PRED F SET TO A LIKELIHOOD:              YES 
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    100         
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   100         
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=NPRED
+ RES=NRES
+ WRES=NWRES
+ IWRS=NIWRES
+ IPRD=NIPRED
+ IRS=NIRES
+
+ Elapsed covariance time in seconds:     0.00
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************    11151.253       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+
+ 
+         1.02E-01  4.14E+00  8.55E-01  1.47E+00  3.17E+00  1.29E+04  6.26E-01  7.24E+00  3.30E-01  6.65E+00  8.92E+00  6.50E-03
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2   
+ 
+ ETA1
++        8.02E-01
+ 
+ ETA2
++        7.35E-01  1.50E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2   
+ 
+ ETA1
++        8.96E-01
+ 
+ ETA2
++        6.70E-01  1.22E+00
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                            STANDARD ERROR OF ESTIMATE                          ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+
+ 
+        ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2   
+ 
+ ETA1
++       .........
+ 
+ ETA2
++       ......... .........
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2   
+ 
+ ETA1
++       .........
+ 
+ ETA2
++       ......... .........
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                          COVARIANCE MATRIX OF ESTIMATE                         ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+            TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12  
+             OM11      OM12      OM22  
+ 
+ TH 1
++       .........
+ 
+ TH 2
++       ......... .........
+ 
+ TH 3
++       ......... ......... .........
+ 
+ TH 4
++       ......... ......... ......... .........
+ 
+ TH 5
++       ......... ......... ......... ......... .........
+ 
+ TH 6
++       ......... ......... ......... ......... ......... .........
+ 
+ TH 7
++       ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 8
++       ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 9
++       ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH10
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ OM11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         .........
+ 
+ OM12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... .........
+ 
+ OM22
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... .........
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                          CORRELATION MATRIX OF ESTIMATE                        ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+            TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12  
+             OM11      OM12      OM22  
+ 
+ TH 1
++       .........
+ 
+ TH 2
++       ......... .........
+ 
+ TH 3
++       ......... ......... .........
+ 
+ TH 4
++       ......... ......... ......... .........
+ 
+ TH 5
++       ......... ......... ......... ......... .........
+ 
+ TH 6
++       ......... ......... ......... ......... ......... .........
+ 
+ TH 7
++       ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 8
++       ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 9
++       ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH10
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ OM11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         .........
+ 
+ OM12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... .........
+ 
+ OM22
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... .........
+ 
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************                  LAPLACIAN CONDITIONAL ESTIMATION (EVALUATION)                 ********************
+ ********************                      INVERSE COVARIANCE MATRIX OF ESTIMATE                     ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+            TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12  
+             OM11      OM12      OM22  
+ 
+ TH 1
++       .........
+ 
+ TH 2
++       ......... .........
+ 
+ TH 3
++       ......... ......... .........
+ 
+ TH 4
++       ......... ......... ......... .........
+ 
+ TH 5
++       ......... ......... ......... ......... .........
+ 
+ TH 6
++       ......... ......... ......... ......... ......... .........
+ 
+ TH 7
++       ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 8
++       ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH 9
++       ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH10
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ TH12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+ 
+ OM11
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         .........
+ 
+ OM12
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... .........
+ 
+ OM22
++       ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... ......... .........
+         ......... ......... .........
+ 
+ #CPUT: Total CPU Time in Seconds,        3.008
+Fri Sep 23 10:35:13 CEST 2016

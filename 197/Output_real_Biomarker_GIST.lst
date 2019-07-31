@@ -1,0 +1,562 @@
+Thu Aug 23 13:07:14 CEST 2012
+$SIZES      NO=800 LIM6=800
+$PROBLEM    PD AUC
+;; 1. Run  524
+
+;;    Based on run:
+
+;; 2. Structural model
+
+;;    PK: 2-compartment
+
+;;    $DES
+
+;;    PD: IDR 1
+
+;; 3. Covariate model
+
+;;    -
+
+;; 4. Interindividual variability
+
+;;    Exp eta on BASE,MRT, EC50, DP SLOPE
+
+;; 5. Residual Variability
+
+;;    Add on log scale
+
+;; 6. Estimation
+
+;;    FOCE, POSTHOC, MAXEVAL=9999
+$ABBREVIATED DERIV2=NOCOMMON
+$INPUT      STUD IDX ID CYCL TIME DAYS FLAG AMT=DROP DVX DV DOS1 DOS
+            PLA CL V2 Q V3 KA TTP=DROP TTPC=DROP TTD=DROP TTDC=DROP
+            EVID MDV=DROP ROW=DROP
+$DATA       GIST_BIOMARKER_081218.csv IGN=#
+            ACCEPT(FLAG.EQ.1,FLAG.EQ.5,FLAG.EQ.6,FLAG.EQ.7,FLAG.EQ.8)
+$SUBROUTINE ADVAN6 TOL=5
+$MODEL      NCOMPS=4 COMP=COMP1 ;VEGF
+            COMP=COMP2 ;VEGFR2
+            COMP=COMP3 ;VEGFR3
+            COMP=COMP4 ;SKIT
+$PK
+
+"FIRST
+" COMMON /PRCOMG/ IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+" INTEGER IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+" IMAX=70000000
+
+;------VEGF---------------------------
+
+  BASE    =         THETA(1)*EXP(ETA(1))
+  MRT     =         THETA(2)*EXP(ETA(5))
+  EMAX    =         THETA(3)
+  EC50    =         THETA(4)*EXP(ETA(7))
+  HILL    =         THETA(5)
+  TVSLOP  =         THETA(6)/1000
+  SLOPE   =         TVSLOP*EXP(ETA(11))
+;------VEGFR2----------------------------------
+  BASE2   =         THETA(7)*EXP(ETA(2))
+  MRT2    =         THETA(8)*EXP(ETA(5))
+  EMAX2   =         THETA(3)
+  EC502   =         THETA(4)*EXP(ETA(8))
+  HILL2   =         THETA(9)
+
+;------VEGFR3----------------------------------
+  BASE3   =         THETA(10)*EXP(ETA(3))
+  MRT3    =         THETA(11)*EXP(ETA(5))
+  EMAX3   =         THETA(3)
+  EC503   =         THETA(4)*EXP(ETA(9))
+
+;-------SKIT-----------------------
+
+  BASES    =         THETA(12)*EXP(ETA(4))
+  MRTS     =         THETA(13)*EXP(ETA(6))
+  EMAXS    =         THETA(3)
+  EC50S    =         THETA(4)*EXP(ETA(10))
+  TVSLO    =         THETA(6)/1000
+  SLOPES   =         TVSLO *EXP(ETA(12))
+
+
+  A_0(1)  =         BASE
+  A_0(2)  =         BASE2
+  A_0(3)  =         BASE3
+  A_0(4)  =         BASES
+
+  KOUT    =         1/MRT
+  KOUT2   =         1/MRT2
+  KOUT3   =         1/MRT3
+  KOUTS    =        1/MRTS
+
+  KIN2    =        BASE2*KOUT2
+  KIN3    =        BASE3*KOUT3
+
+   CP       =       DOS/CL
+ PLAC     =       BASE*(1+SLOPE*TIME)
+ PLACS    =       BASES*(1+SLOPES*TIME)
+
+
+$DES
+
+
+ ;-------------------PD-----------------------
+
+ KIN      =       PLAC*KOUT
+ KINS     =       PLACS*KOUTS
+
+ EFF      =       EMAX*CP**HILL/(EC50**HILL+CP**HILL)
+ EFF2     =       EMAX2*CP**HILL2/(EC502**HILL2+CP**HILL2)
+ EFF3     =       EMAX3*CP/(EC503+CP)
+ EFFS     =       EMAXS*CP/(EC50S+CP)
+
+
+ DADT(1)  =      KIN-KOUT*(1-EFF)*A(1)        ;VEGF
+ DADT(2)  =      KIN2*(1-EFF2)-KOUT2*A(2)     ;VEGFR3
+ DADT(3)  =      KIN3*(1-EFF3)-KOUT3*A(3)     ;VEGFR3
+ DADT(4)  =      KINS*(1-EFFS)-KOUTS*A(4)     ;SKIT
+
+
+$ERROR
+
+
+  DEL=0
+  IF(A(1).EQ.0)DEL=1
+  IF(A(2).EQ.0)DEL=1
+  IF(A(3).EQ.0)DEL=1
+  IF(A(4).EQ.0)DEL=1
+
+  IF(FLAG.EQ.5) THEN                                 ; VEGF
+  IPRED  =  LOG(A(1)+DEL)
+  W      =  THETA(14)
+  Y      =  IPRED+W*EPS(1)
+  ENDIF
+
+  IF(FLAG.EQ.6) THEN                                ; VEGFR2
+  IPRED  =  LOG(A(2)+DEL)
+  W      =  SQRT(THETA(15)**2+(THETA(16)/A(2))**2)
+  Y      =  IPRED+W*EPS(1)
+  END IF
+
+
+  IF(FLAG.EQ.7) THEN                                 ; VEGFR3
+  IPRED  =  LOG(A(3)+DEL)
+  W      =  THETA(17)
+  Y      =  IPRED+W*EPS(1)
+  ENDIF
+
+  IF(FLAG.EQ.8) THEN
+  IPRED  =  LOG(A(4)+DEL)
+  W      =  THETA(18)
+  Y      =  IPRED+W*EPS(1)
+  ENDIF
+
+
+  IF(W.EQ.0)W=1
+  IRES   =  DV -  IPRED
+  IWRES  =  IRES/W
+
+
+
+;-----VEGF--------------------------
+$THETA  (0,59.7) ; 1  BASE
+$THETA  (0,91) ; 2  MRT
+$THETA  1 FIX ; 3  IMAX
+$THETA  (0,1) ; 4  IC50
+$THETA  (0,3.31) ; 5  HILL
+$THETA  (-0.06,0.035) ; 6  DP SLOPE
+;----VEGFR2--------------------------------
+$THETA  (0,8670) ; 7  BASE 2
+$THETA  (0,554) ; 8  MRT  2
+$THETA  (0,1.54) ; 9 HILL 2
+;-----VEGR3----------------------------
+$THETA  (0,63900) ; 10  BASE 3
+$THETA  (0,401) ; 11  MRT  3
+;-------SKIT----------------------------------
+$THETA  (0,39200) ; 12  BASE S
+$THETA  (0,2430) ; 13  MRT  S
+;-------RES----------------------------------
+$THETA  (0,0.445) ; 14  RES ERROR PROP
+$THETA  (0,0.12) ; 15  RES VEGFR2
+$THETA  (0,583) ; 16  RES VEGFR2
+$THETA  (0,0.22) ; 17  RES VEGFR3
+$THETA  (0,0.224) ; 18  RES sKIT
+;------------BASE------------
+$OMEGA  0.252  ; 1 ETA BASE
+$OMEGA  0.0369  ; 2 ETA BASE2
+$OMEGA  0.186  ; 3 ETA BASE3
+$OMEGA  0.254  ; 4 ETA BASES
+;------------MRT------------
+$OMEGA  0.0600  ;  5 ETA MRT
+$OMEGA  0.0753  ;  5 ETA MRT
+;------------IC50------------
+$OMEGA  BLOCK(4)
+ 0.253  ; 9 ETA IC50
+ 0.198 0.189  ; 10 ETA IC502
+ 0.238 0.252 0.398  ; 11 ETA IC503
+ 0.218 0.297 0.936 5.77  ; 12 ETA IC50S
+$OMEGA  2.95  ; 13 ETA DP SLOPE VEGF
+$OMEGA  3.01  ; 14 ETA DP SLOPE SKIT
+$SIGMA  1  FIX
+$ESTIMATION SIGDIGITS=4 MAXEVALS=0 POSTHOC PRINT=1 MSFO=MSF533_3
+            METH=1 INTER
+$TABLE      ID CYCL EVID TIME PLA FLAG IPRED IWRES NOPRINT ONEHEADER
+            FILE=sdtab533_3
+$TABLE      ID FLAG BASE MRT EC50 SLOPE BASE2 MRT2 EC502 BASE3 MRT3
+            EC503 BASES MRTS EC50S SLOPES NOPRINT ONEHEADER
+            FILE=patab533_3
+$TABLE      ID TIME PLA FLAG NOPRINT ONEHEADER FILE=extab533_3
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  3) THERE MAY BE AN ERROR IN THE ABBREVIATED CODE. THE FOLLOWING
+ ONE OR MORE RANDOM VARIABLES ARE DEFINED WITH "IF" STATEMENTS THAT DO NOT
+ PROVIDE DEFINITIONS FOR BOTH THE "THEN" AND "ELSE" CASES. IF ALL
+ CONDITIONS FAIL, THE VALUES OF THESE VARIABLES WILL BE ZERO.
+  
+   IPRED Y
+
+             
+ (WARNING  113) VERBATIM CODE CONTAINS "COMMON". IF THIS IS NOT A
+ USER-DEFINED COMMON, IT SHOULD BE REPLACED BY THE APPROPRIATE MODULE.
+ CREATING MUMODEL ROUTINE...
+
+License Registered to: Uppsala University
+Expiration Date:    14 MAR 2013
+Current Date:       23 AUG 2012
+Days until program expires : 206
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.2.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ PD AUC                                                                  
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:    64259
+ NO. OF DATA ITEMS IN DATA SET:  19
+ ID DATA ITEM IS DATA ITEM NO.:   3
+ DEP VARIABLE IS DATA ITEM NO.:   9
+ MDV DATA ITEM IS DATA ITEM NO.: 19
+0INDICES PASSED TO SUBROUTINE PRED:
+  18   5   0   0   0   0   0   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ STUD IDX ID CYCL TIME DAYS FLAG DVX DV DOS1 DOS PLA CL V2 Q V3 KA EVID MDV
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ BASE MRT EC50 SLOPE BASE2 MRT2 EC502 BASE3 MRT3 EC503 BASES MRTS EC50S SLOPES IPRED IWRES
+0FORMAT FOR DATA:
+ (2(6E12.0/),6E12.0,1F2.0)                                                       
+ 
+ TOT. NO. OF OBS RECS:     5394
+ TOT. NO. OF INDIVIDUALS:    303
+0LENGTH OF THETA:  18
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS BLOCK FORM:
+  1
+  0  2
+  0  0  3
+  0  0  0  4
+  0  0  0  0  5
+  0  0  0  0  0  6
+  0  0  0  0  0  0  7
+  0  0  0  0  0  0  7  7
+  0  0  0  0  0  0  7  7  7
+  0  0  0  0  0  0  7  7  7  7
+  0  0  0  0  0  0  0  0  0  0  8
+  0  0  0  0  0  0  0  0  0  0  0  9
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   1
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.5970E+02     0.1000E+07
+  0.0000E+00     0.9100E+02     0.1000E+07
+  0.1000E+01     0.1000E+01     0.1000E+01
+  0.0000E+00     0.1000E+01     0.1000E+07
+  0.0000E+00     0.3310E+01     0.1000E+07
+ -0.6000E-01     0.3500E-01     0.1000E+07
+  0.0000E+00     0.8670E+04     0.1000E+07
+  0.0000E+00     0.5540E+03     0.1000E+07
+  0.0000E+00     0.1540E+01     0.1000E+07
+  0.0000E+00     0.6390E+05     0.1000E+07
+  0.0000E+00     0.4010E+03     0.1000E+07
+  0.0000E+00     0.3920E+05     0.1000E+07
+  0.0000E+00     0.2430E+04     0.1000E+07
+  0.0000E+00     0.4450E+00     0.1000E+07
+  0.0000E+00     0.1200E+00     0.1000E+07
+  0.0000E+00     0.5830E+03     0.1000E+07
+  0.0000E+00     0.2200E+00     0.1000E+07
+  0.0000E+00     0.2240E+00     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.2520E+00
+        2                                                                                   NO 
+                  0.3690E-01
+        3                                                                                   NO 
+                  0.1860E+00
+        4                                                                                   NO 
+                  0.2540E+00
+        5                                                                                   NO 
+                  0.6000E-01
+        6                                                                                   NO 
+                  0.7530E-01
+        7                                                                                   NO 
+                  0.2530E+00
+                  0.1980E+00   0.1890E+00
+                  0.2380E+00   0.2520E+00   0.3980E+00
+                  0.2180E+00   0.2970E+00   0.9360E+00   0.5770E+01
+        8                                                                                   NO 
+                  0.2950E+01
+        9                                                                                   NO 
+                  0.3010E+01
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+0ESTIMATION STEP OMITTED:          YES 
+ CONDITIONAL ESTIMATES USED:       YES 
+ CENTERED ETA:                      NO 
+ EPS-ETA INTERACTION:              YES 
+ LAPLACIAN OBJ. FUNC.:              NO 
+0TABLES STEP OMITTED:    NO 
+ NO. OF TABLES:           3
+0-- TABLE   1 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID CYCL EVID TIME PLA FLAG IPRED IWRES
+0-- TABLE   2 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID FLAG BASE MRT EC50 SLOPE BASE2 MRT2 EC502 BASE3 MRT3 EC503 BASES MRTS EC50S SLOPES
+0-- TABLE   3 --
+ PRINTED:                NO 
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO 
+0USER-CHOSEN ITEMS:
+ ID TIME PLA FLAG
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+1DOUBLE PRECISION PREDPP VERSION 7.2.0     
+ 
+ GENERAL NONLINEAR KINETICS MODEL (ADVAN6)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:  19
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         COMP1        ON         YES        YES        YES        YES
+    2         COMP2        ON         YES        YES        NO         NO 
+    3         COMP3        ON         YES        YES        NO         NO 
+    4         COMP4        ON         YES        YES        NO         NO 
+    5         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE FROM SUBROUTINE TOL:   5
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1           *           *           *           *           *
+    2           *           *           *           *           *
+    3           *           *           *           *           *
+    4           *           *           *           *           *
+    5           *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:     18
+   TIME DATA ITEM IS DATA ITEM NO.:          5
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES COMPACT STORAGE MODE.
+1
+
+
+ #TBLN:      1
+ #METH: First Order Conditional Estimation with Interaction (Evaluation)
+
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************    -6671.918       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18     
+ 
+         5.97E+01  9.10E+01  1.00E+00  1.00E+00  3.31E+00  3.50E-02  8.67E+03  5.54E+02  1.54E+00  6.39E+04  4.01E+02  3.92E+04
+          2.43E+03  4.45E-01  1.20E-01  5.83E+02  2.20E-01  2.24E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+
+ 
+ ETA1
++        2.52E-01
+ 
+ ETA2
++        0.00E+00  3.69E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  1.86E-01
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  2.54E-01
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  6.00E-02
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  7.53E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.53E-01
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.98E-01  1.89E-01
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.38E-01  2.52E-01  3.98E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.18E-01  2.97E-01  9.36E-01  5.77E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.95E+00
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.01E+00
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+
+ 
+ ETA1
++        5.02E-01
+ 
+ ETA2
++        0.00E+00  1.92E-01
+ 
+ ETA3
++        0.00E+00  0.00E+00  4.31E-01
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  5.04E-01
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.45E-01
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.74E-01
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  5.03E-01
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  9.05E-01  4.35E-01
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  7.50E-01  9.19E-01  6.31E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.80E-01  2.84E-01  6.18E-01  2.40E+00
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.72E+00
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.73E+00
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+Stop Time:
+Thu Aug 23 13:10:17 CEST 2012
+This file was created using /opt/NONMEM/nm_7.2.0_g/run/nmfe72
+Started  Thu Aug 23 13:07:14 2012
+Finished Thu Aug 23 13:10:17 2012

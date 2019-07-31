@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000223">
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The EDSS is a summarized measure which ranges from 0 (normal neurological exam) to 10 (death due to MS) in incremental steps of 0.5. Despite its wide use and acceptance, there are several perceived problems with the use of the scale, such as limited inter-rater reproducibility, bimodal distribution of the scale, and potentially unequal steps, mostly due to its ordinal nature. In the past, EDSS has been modeled either as a continuous variable or as an ordered categorical variable with considerable simplification of the scale (20 categories combined into 5 – 6 categories). Instead of modeling changes in the composite score over time, application of IRT allows derivation of underlying/ unobserved latent variable from observed subscores and model the changes in that latent variable over time. </j.2:model-has-description>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">none</j.0:model-implementation-source-discrepancies-freetext>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Observed scores for each EDSS item were modeled describing the probability of a given score as a function of patients’ disability variable using a logistic model. Model development was conducted in five sequential steps: development of the baseline model; development of disease progression model based on placebo data; development of the exposure-response model based on data from patients on cladribine treatment; development of the covariate model; and model evaluation. For the disease progression model, linear and non-linear (e.g., power and asymptotic) relationships were explored to describe the change in IRT disability over time. For more detailed techincal description, please refer to the original publication.</j.2:model-has-description-long>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006036"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006037"/>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001023"/>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006010"/>
+  </rdf:Description>
+</rdf:RDF>

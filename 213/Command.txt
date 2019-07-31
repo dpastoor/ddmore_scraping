@@ -1,0 +1,22 @@
+###### Scenario = 1
+###### MDL version = <MDL version, constrained to be 7.0 at the moment >
+###### IO product = <interoperability product number, constrained to be 4.1 at the moment >
+###### Input data = Simulated_DatasetMeropenem.csv
+###### Executable model = Executable_Meropenem_MDL.mdl
+###### Output = Output_simulated_Meropenem.SO.xml
+
+#Initialisation
+rm(list=ls(all=F)) #clean your workspace first
+
+#Set working directory
+myfolder <- "Lisa_Submission" # name of your project folder
+setwd(file.path(Sys.getenv("MDLIDE_WORKSPACE_HOME"),myfolder))
+
+#Set name of .mdl file and dataset for future tasks
+mymodel <- "Executable_Meropenem_MDL"
+datafile <- "Simulated_DatasetMeropenem.csv"
+mdlfile <- paste0(mymodel,".mdl")
+
+#ESTIMATE model parameters using Monolix
+nm <- estimate(mdlfile, target="MONOLIX", subfolder="Monolix")
+

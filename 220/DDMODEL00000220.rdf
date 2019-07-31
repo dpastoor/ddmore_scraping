@@ -1,0 +1,17 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.eu/model/DDMODEL00000220">
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ethambutol, one of four drugs in the first-line antitubercular regimen, is used to protect against rifampin resistance in the event of preexisting resistance to isoniazid. The population pharmacokinetics of ethambutol in South African patients with pulmonary tuberculosis were characterized using nonlinear mixed-effects modeling. Patients from 2 centers were treated with ethambutol (800 to 1,500 mg daily) combined with standard antitubercular medication. Plasma concentrations of ethambutol were measured following multiple doses at steady state and were determined using a validated high-pressure liquid chromatography-tandem mass spectrometric method. The data comprised 189 patients (54% male, 12% HIV positive) weighing 47 kg, on average (range, 29 to 86 kg), and having a mean age of 36 years (range, 16 to 72 years). The estimated creatinine clearance was 79 ml/min (range, 23 to 150 ml/min). A two-compartment model with one transit compartment prior to first-order absorption and allometric scaling by body weight on clearance and volume terms was selected. HIV infection was associated with a 15% reduction in bioavailability. Renal function was not related to ethambutol clearance in this cohort. Interoccasion variability exceeded interindividual variability for oral clearance (coefficient of variation, 36 versus 20%). Typical oral clearance in this analysis (39.9 liters/h for a 50-kg individual) was lower than that previously reported, a finding partly explained by the differences in body weight between the studied populations. In summary, a population model describing the pharmacokinetics of ethambutol in South African tuberculosis patients was developed, but additional studies are needed to characterize the effects of renal function.</j.2:model-has-description-long>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Population pharmacokinetics of ethambutol in South African tuberculosis patients</j.2:model-has-description>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001024"/>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006012"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006029"/>
+  </rdf:Description>
+</rdf:RDF>

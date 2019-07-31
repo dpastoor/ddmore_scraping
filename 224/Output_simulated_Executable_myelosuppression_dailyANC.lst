@@ -1,0 +1,580 @@
+Wed Oct 12 16:56:11 CEST 2016
+$PROBLEM    Prediction of daily ANC
+$INPUT      NREF ; Record identification number
+            ID ; ID number
+            DV ; Simulated DV (log scale)
+            TIME ; hours
+            CP ; Predicted docetaxel cocnetration
+            EV21=EVID ; EVID to use for making prediction based on monitoring up to 21 days
+            EV20=DROP ; EVID to use for making prediction based on monitoring up to 20 days
+            EV19=DROP ; EVID to use for making prediction based on monitoring up to 19 days
+            EV18=DROP ; EVID to use for making prediction based on monitoring up to 18 days
+            EV17=DROP ; EVID to use for making prediction based on monitoring up to 17 days
+            EV16=DROP ; EVID to use for making prediction based on monitoring up to 16 days
+            EV15=DROP ; EVID to use for making prediction based on monitoring up to 15 days
+            EV14=DROP ; EVID to use for making prediction based on monitoring up to 14 days
+            EV13=DROP ; EVID to use for making prediction based on monitoring up to 13 days
+            EV12=DROP ; EVID to use for making prediction based on monitoring up to 12 days
+            EV11=DROP ; EVID to use for making prediction based on monitoring up to 11 days
+            EV10=DROP ; EVID to use for making prediction based on monitoring up to 10 days
+            EV9=DROP ; EVID to use for making prediction based on monitoring up to 9 days
+            EV8=DROP ; EVID to use for making prediction based on monitoring up to 8 days
+            EV7=DROP ; EVID to use for making prediction based on monitoring up to 7 days
+            EV6=DROP ; EVID to use for making prediction based on monitoring up to 6 days
+            EV5=DROP ; EVID to use for making prediction based on monitoring up to 5 days
+            EV4=DROP ; EVID to use for making prediction based on monitoring up to 4 days
+            EV3=DROP ; EVID to use for making prediction based on monitoring up to 3 days
+            DAY ; Dummy variable (1 if time for prediction,0 if other)
+            AMT ; Dummy amount
+            CMT SEX ;
+            PERF ; Performance status (categorical)
+            PC ; Previous anticancer therapy (categorical)
+            AAG ; alpha1-acid glycoprotein (continuous)
+$DATA      Simulated_myelosuppression_dailyANC.csv IGNORE=@
+$SUBROUTINE ADVAN6 TOL=5
+$MODEL      NCOMP=12 COMP=(CIRC,DEFOBS) ; Circulating neutrophils
+            COMP=(STEM) ; Proliferating stem cells
+            COMP=(TRANSIT1) ; Cells in transit compartment 1
+            COMP=(TRANSIT2) ; Cells in transit compartment 2
+            COMP=(TRANSIT3) ; Cells in transit compartment 3
+            COMP=(RTBA) ; Return to baseline
+            COMP=(OOG0) ; Occurence of Grade 0
+            COMP=(OOG4) ; Occurence of Grade 4
+            COMP=(EOG4) ; End of Grade 4
+            COMP=(OO01) ; Occurence of ANC 0.1
+            COMP=(ONADIR) ; Occurence of NADIR
+            COMP=(NADIR) ; NADIR value
+$PK 
+"FIRST
+" COMMON /PRCOMG/ IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+" INTEGER IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+" IMAX=70000000
+
+; =====================================================
+; Covariate effects as according to Kloft et al., 2006
+; =====================================================
+
+IF(SEX.EQ.1) BASEX = 0
+IF(SEX.EQ.2) BASEX = THETA(11)
+
+IF(PERF.EQ.0.OR.PERF.EQ.-99) BAPERF = 0
+IF(PERF.GE.1) BAPERF = THETA(8)
+
+IF(PC.EQ.0) BAPC = 0
+IF(PC.EQ.1) BAPC = THETA(7)
+
+IF(AAG.LE.1.34) BAAAG = THETA(9)*(AAG-1.34)
+IF(AAG.GT.1.34) BAAAG = THETA(10)*(AAG-1.34)
+
+SLAAG = THETA(6)*(AAG-1.34)
+
+BACOV=(1+BASEX)*(1+BAPERF)*(1+BAPC)
+BACOV=BACOV*(1+BAAAG)
+
+MTCOV=1
+
+SLCOV=(1+SLAAG)
+
+; =====================================================
+; Parameters in the myelosuppression model
+; =====================================================
+
+BA = THETA(1)*EXP(ETA(1))*BACOV
+MT = THETA(2)*EXP(ETA(2))*MTCOV
+SL = THETA(3)/808*1000*EXP(ETA(3))*SLCOV
+PO = THETA(4)
+
+K  =  (4/MT)
+F1 =  BA
+F2 =  BA
+F3 =  BA
+F4 =  BA
+F5 =  BA
+
+$DES 
+
+; =====================================================
+; Myelosuppression model
+; =====================================================
+
+; Linear drug effect
+DRUG = SL*CP
+
+D1       =  K*A(5) - K*A(1)
+DADT(1)  =  D1                                     ; circulating neutrophils
+DADT(2)  =  K*A(2)*(1-DRUG)*(BA/A(1))**PO - K*A(2) ; proliferating cells
+DADT(3)  =  K*A(2) - K*A(3)                        ; transit 1
+DADT(4)  =  K*A(3) - K*A(4)                        ; transit 2
+DADT(5)  =  K*A(4) - K*A(5)                        ; transit 3
+
+; =================================================================
+; Compute markers of summary variables and other neutropenic events
+; =================================================================
+
+NEUL = A(1)
+B    = K*A(5)-K*A(1)
+                                                   ; "slope" used to extract model-predicted nadir
+; Marks return to baseline
+IF(NEUL.GT.BA)THEN
+  DADT(6)  =  1
+ELSE
+  DADT(6)  =  0
+ENDIF
+
+; Marks occurence of Grade 0 (ANC=2)
+IF(NEUL.GE.2.AND.B.GT.0)THEN
+  DADT(7) = 1
+ELSE
+  DADT(7) = 0
+ENDIF
+
+; Marks occurence of Grade 4 (ANC=0.5)
+IF(NEUL.LT.0.5)THEN
+  DADT(8) = 1
+ELSE
+  DADT(8) = 0
+ENDIF
+
+; Marks end of Grade 4
+IF(NEUL.GT.0.5.AND.B.GT.0)THEN
+  DADT(9) = 1
+ELSE
+  DADT(9) = 0
+ENDIF
+
+; Marks occurence of ANC<=0.1
+IF(NEUL.LE.0.1)THEN
+  DADT(10) = 1
+ELSE
+  DADT(10) = 0
+ENDIF
+
+; Marks nadir
+IF(B.GE.0.AND.TIME.GT.72)THEN
+  DADT(11) = 1                                    ; "Time to nadir"
+  DADT(12) = D1                                   ; "nadir value"
+ELSE
+  DADT(11) = 0
+  DADT(12) = 0
+ENDIF
+
+
+$ERROR 
+  DEL    = 0
+  IF(F.EQ.0)DEL = 1
+  IPRED  =  LOG(F+DEL)
+  W      =  THETA(5)
+  IRES   =  DV -  IPRED
+  IWRES  =  IRES/W
+  Y      = LOG(F)+W*EPS(1)
+
+AA1    = A(1)  ; circulating neutrophils
+AA2    = A(2)  ; proliferating cells
+AA3    = A(3)  ; transit 1
+AA4    = A(4)  ; transit 2
+AA5    = A(5)  ; transit 3
+RTBA   = A(6)  ; Marker for return to baseline
+OOG0   = A(7)  ; Marker for occurence of grade 0 neutropenia
+OOG4   = A(8)  ; Marker for occurence of grade 4 neutropenia
+EOG4   = A(9)  ; Marker for end of grade 4 neutropenia
+OO01   = A(10) ; Marker for occurence of ANC<=0.1
+ONADIR = A(11) ; Marker for nadir (time)
+NADIR  = A(12) ; Marker for nadir (ANC)
+
+; =====================================================
+; Computing values of summary variables
+; =====================================================
+
+; NB: in the code below LE to 24.001 is used because how the data is set up
+FLG6=0
+IF(A(6).GT.0.AND.A(6).LE.24.001) FLG6=1
+TTBA=0                                     ; Time to baseline
+IF(FLG6.EQ.1) TTBA = TIME - A(6)
+
+FLG7=0
+IF(A(7).GT.0.AND.A(7).LE.24.001) FLG7=1
+TTG0=0                                     ; Time to grade 0
+IF(FLG7.EQ.1) TTG0 = TIME - A(7)
+
+FLG8=0
+IF(A(1).LT.0.5.AND.A(8).LE.24.001.AND.EVID.EQ.0) FLG8=1
+TTG4=0                                     ; Time to grade 4
+IF(FLG8.EQ.1) TTG4 = TIME - A(8)
+
+FLG9=0
+IF(A(9).GT.0.AND.A(9).LE.24.001) FLG9=1
+DOG4=0                                     ; Duration of grade 4
+IF(FLG9.EQ.1) DOG4 = OOG4
+
+FLG10=0
+IF(A(1).LT.0.1.AND.A(10).GT.0.AND.A(10).LE.24.001) FLG10=1
+TT01=0                                      ; Time to ANC 0.1
+IF(FLG10.EQ.1) TT01 = TIME - A(10)
+
+FLG11=0
+IF(A(11).GT.0.AND.A(11).LE.24.001) FLG11=1
+TNADIR=0                                    ; Time to nadir
+VNADIR=0                                    ; nadir value
+IF(FLG11.EQ.1) TNADIR = TIME - A(11)
+IF(FLG11.EQ.1) VNADIR = A(1) - A(12)
+
+; =====================================================
+; Parameter estimates as according to Kloft et al., 2006
+; =====================================================
+$THETA  (3,5.21965) ; 1 BA
+$THETA  (60,84.1791) ; 2 MT
+$THETA  (0,15.5711) ; 3 SL
+$THETA  (0,0.144543) ; 4 PO
+$THETA  (0,0.424093) ; 5 res err - prop on norm sc
+$THETA  (-0.436,-0.350693,0.952) ; 6 SLAAG
+$THETA  (-0.999,-0.146837,99) ; 7 BAPC
+$THETA  (-0.999,0.130406,99) ; 8 BAPERF
+$THETA  (-0.436,0.174677,0.952) ; 9  BAAAG LE medAAG
+$THETA  (-0.436,0.494618,0.952) ; 10 BAAAG GT medAAG
+$THETA  (-0.999,-0.121451,99) ; 11 BASEX
+$OMEGA  0.0639703  ; 1 IIV BASE
+$OMEGA  0.0191785  ;  2 IIV MTT
+$OMEGA  0.128412  ; 3 IIV SLOPE
+$SIGMA  1  FIX
+$ESTIMATION NOABORT METH=1 INTER SIGDIGITS=2 MAXEVALS=0 PRINT=5
+            POSTHOC
+$TABLE      ID TIME DV EVID B AA1 RTBA FLG6 TTBA OOG0 FLG7 TTG0 OOG4
+            FLG8 TTG4 EOG4 FLG9 DOG4 OO01 FLG10 TT01 ONADIR NADIR
+            FLG11 TNADIR VNADIR NOPRINT ONEHEADER
+            FILE=Predicted_myelosuppression_dailyANC
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  113) VERBATIM CODE CONTAINS "COMMON". IF THIS IS NOT A
+ USER-DEFINED COMMON, IT SHOULD BE REPLACED BY THE APPROPRIATE MODULE.
+
+ (DATA WARNING   5) RECORD        41, DATA ITEM   3, CONTENTS: 2.4053
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        42, DATA ITEM   3, CONTENTS: 2.0496
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        43, DATA ITEM   3, CONTENTS: 1.8425
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        44, DATA ITEM   3, CONTENTS: 2.9217
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        45, DATA ITEM   3, CONTENTS: 2.3956
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        46, DATA ITEM   3, CONTENTS: 2.5061
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        47, DATA ITEM   3, CONTENTS: 2.4927
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        48, DATA ITEM   3, CONTENTS: 1.6329
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        49, DATA ITEM   3, CONTENTS: 2.763
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        50, DATA ITEM   3, CONTENTS: 1.9112
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        51, DATA ITEM   3, CONTENTS: 2.6156
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        52, DATA ITEM   3, CONTENTS: 2.5138
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        53, DATA ITEM   3, CONTENTS: 2.0541
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+
+ (DATA WARNING   5) RECORD        54, DATA ITEM   3, CONTENTS: 1.5795
+ THE DV DATA ITEM IS POSITIVE, BUT THE MDV DATA ITEM IS 1
+             
+ (WARNING  48) DES-DEFINED ITEMS ARE COMPUTED ONLY WHEN EVENT TIME
+ INCREASES. E.G., DISPLAYED VALUES ASSOCIATED WITH THE FIRST EVENT RECORD
+ OF AN INDIVIDUAL RECORD ARE COMPUTED WITH (THE LAST ADVANCE TO) AN EVENT
+ TIME OF THE PRIOR INDIVIDUAL RECORD.
+
+License Registered to: Uppsala University
+Expiration Date:    14 MAR 2017
+Current Date:       12 OCT 2016
+Days until program expires : 157
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ Prediction of daily ANC                                                 
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:       54
+ NO. OF DATA ITEMS IN DATA SET:  14
+ ID DATA ITEM IS DATA ITEM NO.:   2
+ DEP VARIABLE IS DATA ITEM NO.:   3
+ MDV DATA ITEM IS DATA ITEM NO.: 14
+0INDICES PASSED TO SUBROUTINE PRED:
+   6   4   8   0   0   0   9   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ NREF ID DV TIME CP EV21 DAY AMT CMT SEX PERF PC AAG MDV
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ B AA1 RTBA OOG0 OOG4 EOG4 OO01 ONADIR NADIR FLG6 TTBA FLG7 TTG0 FLG8 TTG4 FLG9 DOG4 FLG10 TT01 FLG11 TNADIR VNADIR
+0FORMAT FOR DATA:
+ (E3.0,E2.0,E9.0,E5.0,E6.0,7E2.0,E5.0,1F2.0)                                     
+ 
+ TOT. NO. OF OBS RECS:       20
+ TOT. NO. OF INDIVIDUALS:      1
+0LENGTH OF THETA:  11
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   3
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   1
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.3000E+01     0.5220E+01     0.1000E+07
+  0.6000E+02     0.8418E+02     0.1000E+07
+  0.0000E+00     0.1557E+02     0.1000E+07
+  0.0000E+00     0.1445E+00     0.1000E+07
+  0.0000E+00     0.4241E+00     0.1000E+07
+ -0.4360E+00    -0.3507E+00     0.9520E+00
+ -0.9990E+00    -0.1468E+00     0.9900E+02
+ -0.9990E+00     0.1304E+00     0.9900E+02
+ -0.4360E+00     0.1747E+00     0.9520E+00
+ -0.4360E+00     0.4946E+00     0.9520E+00
+ -0.9990E+00    -0.1215E+00     0.9900E+02
+0INITIAL ESTIMATE OF OMEGA:
+ 0.6397E-01
+ 0.0000E+00   0.1918E-01
+ 0.0000E+00   0.0000E+00   0.1284E+00
+0INITIAL ESTIMATE OF SIGMA:
+ 0.1000E+01
+0SIGMA CONSTRAINED TO BE THIS INITIAL ESTIMATE
+0TABLES STEP OMITTED:    NO 
+ NO. OF TABLES:           1
+ SEED NUMBER (SEED):    11456       
+ RANMETHOD:                                 
+ MC SAMPLES (ESEED):    300         
+ WRES SQUARE ROOT TYPE:            EIGENVALUE
+0-- TABLE   1 --
+ PRINTED:                NO 
+ HEADER:                YES
+ FILE TO BE FORWARDED:   NO 
+ FORMAT:                S1PE11.4
+ LFORMAT:               
+ RFORMAT:               
+0USER-CHOSEN ITEMS:
+ ID TIME DV EV21 B AA1 RTBA FLG6 TTBA OOG0 FLG7 TTG0 OOG4 FLG8 TTG4 EOG4 FLG9 DOG4 OO01 FLG10 TT01 ONADIR NADIR FLG11
+ TNADIR VNADIR
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+ 
+ GENERAL NONLINEAR KINETICS MODEL (ADVAN6)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:   4
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         CIRC         ON         YES        YES        YES        YES
+    2         STEM         ON         YES        YES        NO         NO 
+    3         TRANSIT1     ON         YES        YES        NO         NO 
+    4         TRANSIT2     ON         YES        YES        NO         NO 
+    5         TRANSIT3     ON         YES        YES        NO         NO 
+    6         RTBA         ON         YES        YES        NO         NO 
+    7         OOG0         ON         YES        YES        NO         NO 
+    8         OOG4         ON         YES        YES        NO         NO 
+    9         EOG4         ON         YES        YES        NO         NO 
+   10         OO01         ON         YES        YES        NO         NO 
+   11         ONADIR       ON         YES        YES        NO         NO 
+   12         NADIR        ON         YES        YES        NO         NO 
+   13         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE FROM SUBROUTINE TOL:   5
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1            *           5           *           *           *
+    2            *           6           *           *           *
+    3            *           7           *           *           *
+    4            *           8           *           *           *
+    5            *           9           *           *           *
+    6            *           *           *           *           *
+    7            *           *           *           *           *
+    8            *           *           *           *           *
+    9            *           *           *           *           *
+   10            *           *           *           *           *
+   11            *           *           *           *           *
+   12            *           *           *           *           *
+   13            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      6
+   TIME DATA ITEM IS DATA ITEM NO.:          4
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   8
+   COMPT. NO. DATA ITEM IS DATA ITEM NO.:    9
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES COMPACT STORAGE MODE.
+1
+
+
+ #TBLN:      1
+ #METH: First Order Conditional Estimation with Interaction (Evaluation)
+
+ ESTIMATION STEP OMITTED:                 YES 
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     YES 
+ LAPLACIAN OBJ. FUNC.:                    NO  
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    100         
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   100         
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+ IWRS=IWRESI
+ IPRD=IPREDI
+ IRS=IRESI
+
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************       -3.998       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11     
+ 
+         5.22E+00  8.42E+01  1.56E+01  1.45E-01  4.24E-01 -3.51E-01 -1.47E-01  1.30E-01  1.75E-01  4.95E-01 -1.21E-01
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3   
+ 
+ ETA1
++        6.40E-02
+ 
+ ETA2
++        0.00E+00  1.92E-02
+ 
+ ETA3
++        0.00E+00  0.00E+00  1.28E-01
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3   
+ 
+ ETA1
++        2.53E-01
+ 
+ ETA2
++        0.00E+00  1.38E-01
+ 
+ ETA3
++        0.00E+00  0.00E+00  3.58E-01
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1   
+ 
+ EPS1
++        1.00E+00
+ 
+ #CPUT: Total CPU Time in Seconds,        0.163
+Stop Time:
+Wed Oct 12 16:56:13 CEST 2016

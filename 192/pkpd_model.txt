@@ -1,0 +1,14 @@
+DESCRIPTION: 
+PK PD
+
+INPUT:
+parameter = {ka, V, Cl, kout, C50} 
+
+EQUATION:
+Cc = pkmodel(ka, V, Cl)
+E_0 = 0
+Imax=1
+ddt_E = kout*Imax*Cc/(Cc+C50) - kout*E
+
+OUTPUT:
+output = {Cc,E}

@@ -1,0 +1,48 @@
+******************************************************************
+*      hb.mlxtran
+*      November 06, 2013 at 16:52:44
+******************************************************************
+
+Estimation of the population parameters
+
+             parameter     s.e. (lin)   r.s.e.(%) 
+hb0        :      14.3         0.36          3    
+Kout       :     0.124        0.033         27    
+EC50       : 8.28e+003     8.4e+002         10    
+
+omega_hb0  :    0.0853        0.019         22    
+omega_Kout :     0.383         0.45        118    
+omega_EC50 :     0.301        0.087         29    
+
+a          :     0.737        0.073         10    
+
+______________________________________________
+correlation matrix of the estimates(linearization)
+
+hb0       1       
+Kout   0.16       1    
+EC50  -0.21    0.11       1 
+
+Eigenvalues (min, max, max/min): 0.67  1.2  1.8
+
+omega_hb0       1          
+omega_Kout  -0.02       1       
+omega_EC50  -0.05    0.03       1    
+a           -0.05   -0.33   -0.15       1 
+
+Eigenvalues (min, max, max/min): 0.64  1.4  2.2
+
+
+Population parameters and Fisher Information Matrix estimation...
+
+Elapsed time is 22 seconds. 
+CPU time is 28.2 seconds. 
+______________________________________________________________
+
+Log-likelihood Estimation by linearization
+
+-2 x log-likelihood:                   252.93
+Akaike Information Criteria   (AIC):   266.93 
+Bayesian Information Criteria (BIC):   271.88 
+______________________________________________________________
+

@@ -1,0 +1,10 @@
+###### Scenario = 4
+###### PsNversion (if any) = 4.6
+###### Original tool version= NONMEM version 7.3
+###### Input data= Simulated_PK_rats
+###### Executable model= Executable_PK_rats.txt
+###### Output= Output_simulated_PK_rats.lst
+
+
+###### Script used as execution command for NONMEM via PsN: #############
+execute Executable_PK_rats.txt

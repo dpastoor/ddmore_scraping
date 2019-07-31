@@ -1,0 +1,51 @@
+******************************************************************
+*      Executable_Mielosupression_project.mlxtran
+*      May 19, 2016 at 17:27:19
+*      Monolix version: 4.3.2
+******************************************************************
+
+Estimation of the population parameters
+
+               parameter     s.e. (lin)   r.s.e.(%) 
+GAMMA_pop    :    0.553        0.007           1    
+SLOPU_pop    :     20.2          1.9           9    
+CIRC0_pop    :     5.88         0.33           6    
+MTT_pop      :      140            2           1    
+
+omega2_GAMMA :        0          -           -      
+omega2_SLOPU :    0.212        0.071          33    
+omega2_CIRC0 :    0.122        0.029          24    
+omega2_MTT   :  0.00508       0.0016          31    
+
+b            :    0.339        0.012           3    
+
+______________________________________________
+correlation matrix of the estimates(linearization)
+
+GAMMA_pop      1          
+SLOPU_pop  -0.14       1       
+CIRC0_pop  -0.06    0.01       1    
+MTT_pop     0.28   -0.06   -0.01       1 
+
+Eigenvalues (min, max, max/min): 0.7  1.4  1.9
+
+omega2_SLOPU      1          
+omega2_CIRC0  -0.01       1       
+omega2_MTT    -0.01      -0       1    
+b             -0.07   -0.03   -0.06       1 
+
+Eigenvalues (min, max, max/min): 0.9  1.1  1.2
+
+
+Population parameters and Fisher Information Matrix estimation...
+
+Elapsed time is 243 seconds. 
+CPU time is 714 seconds. 
+______________________________________________________________
+
+Log-likelihood Estimation by linearization
+
+-2 x log-likelihood:                   2362.41 
+Akaike Information Criteria   (AIC):   2378.41 
+Bayesian Information Criteria (BIC):   2392.87 
+______________________________________________________________

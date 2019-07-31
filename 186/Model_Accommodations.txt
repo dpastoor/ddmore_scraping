@@ -1,0 +1,18 @@
+# Model represented
+6 different drugs (Docetaxel, Paclitaxel, Etoposide, DMDC, CPT-11, Vinflunine)
+were used to developed the myelosuppression model for neutrophils and leukocites
+as described in the publication. The model available at the repository illustrates
+the myelosuppresion model for the case of leukocites and paclitaxel chemotherapy
+
+# Dataset
+In order to support model estimation in Monolix and NONMEM 7.3, the following
+changes to the dataset were performed. No change to the structure of the model
+was done. Thses changes produced only a minor impact on the OBJ function 
+evaluated as MAXEVAL 0)
+1. EVID column is not supported therefore rows with EVID==2 were removed and 
+EVID==4 was changed to EVID==1 and the column was used as MDV 
+2. Administration of dummy doses to initialise compartments is not supported. 
+Those rows were removed and compartments initialise using the initial
+conditions and note availability (note that model was developed with NONMEM v6, 
+but is no longer needed since NONMEM 7)
+

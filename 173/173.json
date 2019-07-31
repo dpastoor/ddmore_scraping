@@ -1,0 +1,12 @@
+{
+    "files": [
+        "Executable_ColistinMeropenem_Interaction.mod",
+        "Command.txt",
+        "Output_real_ColistinMeropenem_interaction.lst",
+        "Simulated_ColistinMeropenem_Interaction.csv",
+        "DDMODEL00000173.rdf",
+        "ColistinMeropenem_Interaction_original_simulated.mod",
+        "Output_simulated_ColistinMeropenem_Interaction.lst"
+    ],
+    "version": 12
+}

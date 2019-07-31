@@ -1,0 +1,20 @@
+{
+    "files": [
+        "glucoseKinetics.xml",
+        "Executable_glucoseKinetics.mlxtran",
+        "Command.txt",
+        "glucoseKinetics.mdl",
+        "original_model.txt",
+        "glucoseKineticsPLOT.pdf",
+        "Simulated_glucoseKinetics.csv",
+        "Output_simulated_glucoseKinetics.txt",
+        "Model_Accommodations.txt",
+        "Long_technical_model_description_glucoseKinetics.txt",
+        "Executable_glucoseKinetics_algorithms.xmlx",
+        "Executable_glucoseKinetics.txt",
+        "Output_real_glucoseKinetics.txt",
+        "original_project.mlxtran",
+        "DDMODEL00000227.rdf"
+    ],
+    "version": 15
+}

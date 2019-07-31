@@ -1,0 +1,11 @@
+###### Scenario = 4
+###### PsN version = 4.7.0 to run the Executable model
+###### Original tool version 1 = NONMEM version 7.3 to run the Executable model
+###### Original tool version 2 = NONMEM version 5.1 to run the original model
+###### Input data = Simulated_comb2.dta
+###### Executable model = Executable_run111.mod
+###### Output1 = Output_simulated_Executable_run111.lst
+###### Output2 = Output_real_run111.lst 
+###### Script used as execution command for NONMEM via PsN:
+execute Executable_run111.mod
+

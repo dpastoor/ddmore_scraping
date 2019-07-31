@@ -1,0 +1,2 @@
+Is the model implemented as in the original publication?
+Yes, even if among the drugs considered in the paper, only PACLITAXEL has been used

@@ -1,0 +1,14 @@
+###################### if the executable model is written in original language #####
+###################### please specify the block below
+###### Scenario = NONMEM on linux cluster
+###### PsNversion (if any) =  4.5.3
+###### Original tool version =  NONMEM version 7.3
+###### Input data = likert_pain_count_simulated.csv
+###### Executable model = likert_pain_count_original.mod
+###### Output =  likert_pain_count_output_original.lst
+###################### end block
+
+
+###### Script used as execution command for NONMEM via PsN: #############
+
+execute likert_pain_count_original.mod

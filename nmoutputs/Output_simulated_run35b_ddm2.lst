@@ -1,0 +1,741 @@
+27/03/2017 
+03:10
+$PROBLEM GENTAMICIN model
+;data from Nielsen2009, Thomson1988, Estonia_unpub
+$INPUT ID GA GIRL TIME RATE EVID AMT WT CREAT DV PNA PMA TCREA OCC
+;GA in weeks
+;AMT in mg
+;RATE in mg/h
+;CREAT in umol/L
+;PNA in days
+;PMA in weeks
+;WT in g
+;TCREA = typical (for PMA) SCr: TCREA=PMA*(-2.8488)+166.48 [Cuzzolin 2006 and Rudd 1983]
+;OCC=a dose with a subsequent level reported
+$DATA simdataDDM.csv IGNORE=@
+
+$SUBROUTINE ADVAN6 TOL=6
+
+$MODEL
+      COMP=(CENTRAL)
+      COMP=(PERIPH1)
+      COMP=(PERIPH2)
+      COMP=(COVCMT1)           ; PNA time-var. covariate compartment
+      COMP=(COVCMT2)           ; CREATININE t-v. cov. compartment
+
+$PK
+; Three-comp model
+IF(NEWIND.NE.2)OTIM1=0
+IF(NEWIND.NE.2)OCOV1=0
+IF(NEWIND.NE.2)OTIM2=0
+IF(NEWIND.NE.2)OCOV2=0
+;
+STUDY=0
+IF(ID.LT.2000) STUDY=1                     ;Glasgow, Thomson1988
+IF(ID.GE.2000.AND.ID.LT.3000) STUDY=2      ;Uppsala, Nielsen2009
+IF(ID.GE.3000) STUDY=3                     ;Estonia, unpublished
+;
+WTKG = WT/1000
+;
+T50  = THETA(7)
+HILL = THETA(8)
+MF   = PMA**HILL/(PMA**HILL+T50**HILL)
+;
+CREAT2 = CREAT
+IF(CREAT.LT.0) CREAT2 = TCREA       ; when SCr is NA=-99, it is the typical SCr
+;OF = (CREAT2/TCREA)**(THETA(9))
+;
+P50  = THETA(10)
+;PNAF = PNA/(P50+PNA)
+;
+CRPWR = THETA(9)
+;IOV code
+BOVC = 0
+IF(OCC.EQ.1)  BOVC = ETA(7)
+IF(OCC.EQ.2)  BOVC = ETA(8)
+IF(OCC.EQ.3)  BOVC = ETA(9)
+IF(OCC.EQ.4)  BOVC = ETA(10)
+IF(OCC.EQ.5)  BOVC = ETA(11)
+IF(OCC.EQ.6)  BOVC = ETA(12)
+IF(OCC.EQ.7)  BOVC = ETA(13)
+IF(OCC.EQ.8)  BOVC = ETA(14)
+IF(OCC.EQ.9)  BOVC = ETA(15)
+IF(OCC.EQ.10) BOVC = ETA(16)
+IF(OCC.EQ.11) BOVC = ETA(17)
+IF(OCC.EQ.12) BOVC = ETA(18)
+IF(OCC.EQ.13) BOVC = ETA(19)
+IF(OCC.EQ.14) BOVC = ETA(20)
+IF(OCC.EQ.15) BOVC = ETA(21)
+IF(OCC.EQ.16) BOVC = ETA(22)
+IF(OCC.EQ.17) BOVC = ETA(23)
+IF(OCC.EQ.18) BOVC = ETA(24)
+IF(OCC.EQ.19) BOVC = ETA(25)
+IF(OCC.EQ.20) BOVC = ETA(26)
+IF(OCC.EQ.21) BOVC = ETA(27)
+IF(OCC.EQ.22) BOVC = ETA(28)
+;
+TVCL = THETA(1)*MF*(WTKG/70)**(0.632)   ; typical value of CL
+TVV1 = THETA(2)*(WTKG/70)                       ; typical value of V1
+TVQ  = THETA(3)*(WTKG/70)**(0.75)               ; ty. value of intercompartmental CL
+TVV2 = THETA(4)*(WTKG/70)                       ; ty. value of V2
+TVQ2 = THETA(5)*(WTKG/70)**(0.75)               ; ty value of CL3
+TVV3 = THETA(6)*(WTKG/70)                       ; ty value of V3
+;
+CL   = TVCL*EXP(ETA(1)+BOVC)  ; individual value of CL
+V1   = TVV1*EXP(ETA(2))
+Q    = TVQ*EXP(ETA(3))
+V2   = TVV2*EXP(ETA(4))
+Q2   = TVQ2*EXP(ETA(5))
+V3   = TVV3*EXP(ETA(6))
+;
+K    = CL/V1
+K12  = Q/V1
+K21  = Q/V2
+K13  = Q2/V1
+K31  = Q2/V3
+;
+IF(EVID.EQ.1) TM=TIME
+IF(EVID.EQ.1) TAD=0
+IF(EVID.NE.1) TAD=TIME-TM
+;
+SL1 = 0
+IF(TIME.GT.OTIM1) SL1 = (PNA-OCOV1)/(TIME-OTIM1)
+A_0(4) = PNA
+;
+SL2 = 0
+IF(TIME.GT.OTIM2) SL2 = (CREAT2-OCOV2)/(TIME-OTIM2)
+A_0(5) = CREAT2
+;
+$DES
+DADT(4)= SL1
+TCOV1 = A(4)
+
+DADT(5)= SL2
+TCOV2 = A(5)
+
+;PNAF = PNA/(P50+PNA)
+PNAF = TCOV1/(P50+TCOV1)
+;OF = (CREAT2/TCREA)**(THETA(9))
+OF = (TCOV2/TCREA)**CRPWR
+DADT(1) = A(3)*K31+A(2)*K21-A(1)*(K*PNAF*OF+K12+K13)
+DADT(2) = A(1)*K12-A(2)*K21
+DADT(3) = A(1)*K13-A(3)*K31
+
+$ERROR
+ IPRED  = A(1)/V1
+ Y      = IPRED*(1+EPS(1)) + EPS(2)
+
+OCOV1 = PNA
+OTIM1 = TIME
+
+OCOV2 = CREAT2
+OTIM2 = TIME
+
+$THETA  (0,6.20684) ; 1. TVCL (lower bound,initial estimate)
+$THETA  (0,26.5004) ; 2. TVV1  (lower bound,initial estimate)
+$THETA  (0,2.15099) ; 3. TVQ
+$THETA  (0,21.151) ; 4. TVV2
+$THETA  (0,0.270697) ; 5. TVQ2
+$THETA  (0,147.893) ; 6. TVV3
+$THETA  55.4 FIX ; 7. T50
+$THETA  3.33 FIX ; 8. Hill
+$THETA  -0.129934 ; 9. power exponent on creatinine
+$THETA  (0,1.70302) ; 10. PNA50
+$OMEGA  BLOCK(2)
+ 0.175278  ; variance for ETA(1), initial estimate
+ 0.115896 0.112362  ; COvariance ETA(1)-ETA(2), var for ETA(2), initial estimate
+$OMEGA  0  FIX
+$OMEGA  0.131759
+$OMEGA  0  FIX
+$OMEGA  0.177214
+$OMEGA  BLOCK(1)
+ 0.0140684  ;  7. IOV_CL
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$OMEGA  BLOCK(1) SAME
+
+$SIGMA  0.036033  ; variance PROP res error, initial estimate
+$SIGMA  0.0164023
+$ESTIMATION METHOD=1 INTER MAXEVAL=0 PRINT=1  ; calculation method
+;$COVARIANCE                                      ; standard error of estimate is calculated
+
+$TABLE ID TIME IPRED DV CWRES 
+       CL V1 Q V2 Q2 V3 ETA(1) ETA(2) ETA(3) ETA(4) ETA(5) ETA(6)
+       GA GIRL RATE EVID AMT WT CREAT PNA PMA TCREA OCC TAD STUDY 
+       MF OF CREAT2 PNAF BOVC SL2 TCOV2 PNA SL1 TCOV1
+       TVCL TVV1 TVQ TVV2 TVQ2 TVV3                             NOPRINT ONEHEADER FILE=sdtab35b_ddm2
+;$TABLE ID WT GA PNA PMA CREAT TCREA                             NOPRINT NOAPPEND ONEHEADER FILE=cotab32
+;$TABLE ID GIRL STUDY                                            NOPRINT NOAPPEND ONEHEADER FILE=catab32
+;$TABLE ID CL V ETA(1) ETA(2)       NOPRINT NOAPPEND ONEHEADER FILE=patab27
+;$SCAT DV VS PRED UNIT
+
+  
+NM-TRAN MESSAGES 
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  48) DES-DEFINED ITEMS ARE COMPUTED ONLY WHEN EVENT TIME
+ INCREASES. E.G., DISPLAYED VALUES ASSOCIATED WITH THE FIRST EVENT RECORD
+ OF AN INDIVIDUAL RECORD ARE COMPUTED WITH (THE LAST ADVANCE TO) AN EVENT
+ TIME OF THE PRIOR INDIVIDUAL RECORD.
+  
+License Registered to: University of London - University College London
+Expiration Date:    14 MAY 2017
+Current Date:       27 MAR 2017
+Days until program expires :  47
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+
+ PROBLEM NO.:         1
+ GENTAMICIN model
+0DATA CHECKOUT RUN:              NO
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO
+ NO. OF DATA RECS IN DATA SET:     2788
+ NO. OF DATA ITEMS IN DATA SET:  15
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ DEP VARIABLE IS DATA ITEM NO.:  10
+ MDV DATA ITEM IS DATA ITEM NO.: 15
+0INDICES PASSED TO SUBROUTINE PRED:
+   6   4   7   5   0   0   0   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ ID GA GIRL TIME RATE EVID AMT WT CREAT DV PNA PMA TCREA OCC MDV
+0(NONBLANK) LABELS FOR PRED-DEFINED ITEMS:
+ STUDY MF CREAT2 BOVC TVCL TVV1 TVQ TVV2 TVQ2 TVV3 CL V1 Q V2 Q2 V3 TAD SL1 SL2 TCOV1 TCOV2 PNAF OF IPRED
+0FORMAT FOR DATA:
+ (E5.0,E3.0,E2.0,2E7.0,E2.0,2E5.0,E3.0,E11.0,E4.0,E3.0,2E6.0,1F2.0)
+
+ TOT. NO. OF OBS RECS:     1325
+ TOT. NO. OF INDIVIDUALS:    205
+0LENGTH OF THETA:  10
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO
+0OMEGA HAS BLOCK FORM:
+  1
+  1  1
+  0  0  2
+  0  0  0  3
+  0  0  0  0  4
+  0  0  0  0  0  5
+  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  6
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO
+0SIGMA HAS SIMPLE DIAGONAL FORM WITH DIMENSION:   2
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.6207E+01     0.1000E+07
+  0.0000E+00     0.2650E+02     0.1000E+07
+  0.0000E+00     0.2151E+01     0.1000E+07
+  0.0000E+00     0.2115E+02     0.1000E+07
+  0.0000E+00     0.2707E+00     0.1000E+07
+  0.0000E+00     0.1479E+03     0.1000E+07
+  0.5540E+02     0.5540E+02     0.5540E+02
+  0.3330E+01     0.3330E+01     0.3330E+01
+ -0.1000E+07    -0.1299E+00     0.1000E+07
+  0.0000E+00     0.1703E+01     0.1000E+07
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO
+                  0.1753E+00
+                  0.1159E+00   0.1124E+00
+        2                                                                                  YES
+                  0.0000E+00
+        3                                                                                   NO
+                  0.1318E+00
+        4                                                                                  YES
+                  0.0000E+00
+        5                                                                                   NO
+                  0.1772E+00
+        6                                                                                   NO
+                  0.1407E-01
+0INITIAL ESTIMATE OF SIGMA:
+ 0.3603E-01
+ 0.0000E+00   0.1640E-01
+0TABLES STEP OMITTED:    NO
+ NO. OF TABLES:           1
+ SEED NUMBER (SEED):    11456
+ RANMETHOD:
+ MC SAMPLES (ESEED):    300
+ WRES SQUARE ROOT TYPE:            EIGENVALUE
+0-- TABLE   1 --
+ PRINTED:                NO
+ HEADERS:               ONE
+ FILE TO BE FORWARDED:   NO
+ FORMAT:                S1PE11.4
+ LFORMAT:
+ RFORMAT:
+0USER-CHOSEN ITEMS:
+ ID TIME IPRED DV CWRES CL V1 Q V2 Q2 V3 ETA1 ETA2 ETA3 ETA4 ETA5 ETA6 GA GIRL RATE EVID AMT WT CREAT PNA PMA TCREA OCC
+ TAD STUDY MF OF CREAT2 PNAF BOVC SL2 TCOV2 PNA SL1 TCOV1 TVCL TVV1 TVQ TVV2 TVQ2 TVV3
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+
+ GENERAL NONLINEAR KINETICS MODEL (ADVAN6)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:   9
+0COMPARTMENT ATTRIBUTES
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         CENTRAL      ON         YES        YES        YES        YES
+    2         PERIPH1      ON         YES        YES        NO         NO
+    3         PERIPH2      ON         YES        YES        NO         NO
+    4         COVCMT1      ON         YES        YES        NO         NO
+    5         COVCMT2      ON         YES        YES        NO         NO
+    6         OUTPUT       OFF        YES        NO         NO         NO
+0NRD VALUE FROM SUBROUTINE TOL:   6
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG
+    1            *           *           *           *           *
+    2            *           *           *           *           *
+    3            *           *           *           *           *
+    4            *           *           *           *           *
+    5            *           *           *           *           *
+    6            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      6
+   TIME DATA ITEM IS DATA ITEM NO.:          4
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   7
+   DOSE RATE DATA ITEM IS DATA ITEM NO.:     5
+
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES COMPACT STORAGE MODE.
+1
+
+
+ #TBLN:      1
+ #METH: First Order Conditional Estimation with Interaction (Evaluation)
+
+ ESTIMATION STEP OMITTED:                 YES 
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     YES 
+ LAPLACIAN OBJ. FUNC.:                    NO  
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    100         
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   100         
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+ IWRS=IWRESI
+ IPRD=IPREDI
+ IRS=IRESI
+
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************      549.944       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10     
+ 
+         6.21E+00  2.65E+01  2.15E+00  2.12E+01  2.71E-01  1.48E+02  5.54E+01  3.33E+00 -1.30E-01  1.70E+00
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++        1.75E-01
+ 
+ ETA2
++        1.16E-01  1.12E-01
+ 
+ ETA3
++        0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  1.32E-01
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.77E-01
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          1.41E-02
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  1.41E-02
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  1.41E-02
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET18
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET19
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET20
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET21
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET22
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET23
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET24
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+ ET25
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         1.41E-02
+ 
+ ET26
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  1.41E-02
+ 
+ ET27
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  1.41E-02
+ 
+ ET28
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  0.00E+00  1.41E-02
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2   
+ 
+ EPS1
++        3.60E-02
+ 
+1
+
+            EPS1      EPS2   
+ 
+ EPS2
++        0.00E+00  1.64E-02
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ETA1
++        4.19E-01
+ 
+ ETA2
++        8.26E-01  3.35E-01
+ 
+ ETA3
++        0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA4
++        0.00E+00  0.00E+00  0.00E+00  3.63E-01
+ 
+ ETA5
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  4.21E-01
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          1.19E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  1.19E-01
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  1.19E-01
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET18
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET19
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17      ET18      ET19      ET20      ET21      ET22      ET23      ET24   
+            ET25      ET26      ET27      ET28   
+ 
+ ET20
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET21
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET22
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET23
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET24
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+ ET25
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         1.19E-01
+ 
+ ET26
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  1.19E-01
+ 
+ ET27
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  1.19E-01
+ 
+ ET28
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+         0.00E+00  0.00E+00  0.00E+00  1.19E-01
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1      EPS2   
+ 
+ EPS1
++        1.90E-01
+ 
+ EPS2
++        0.00E+00  1.28E-01
+ 
+ #CPUT: Total CPU Time in Seconds,       29.203
+Stop Time: 
+27/03/2017 
+03:11

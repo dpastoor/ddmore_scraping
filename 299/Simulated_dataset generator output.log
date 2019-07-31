@@ -1,0 +1,334 @@
+1    dm 'clear log';
+2    dm 'clear list';
+3    libname output "M:\Astellas\PKMS\Guidances\Conc QT Modeling\Misspecification
+3  ! Example\Outputs";
+NOTE: Libref OUTPUT was successfully assigned as follows:
+      Engine:        V9
+      Physical Name: M:\Astellas\PKMS\Guidances\Conc QT Modeling\Misspecification
+      Example\Outputs
+4    options ls=130;
+5    proc datasets kill;
+NOTE: Writing HTML Body file: sashtml.htm
+WARNING: No matching members in directory.
+5  !                     run;
+
+5  !                          quit;
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           1.36 seconds
+      cpu time            0.42 seconds
+
+
+6    title;
+7    ods listing;
+8
+9    data set1;
+10       do doselabel = 1 to 6;
+11           if doselabel = 1 then dose = 0;
+12           if doselabel = 2 then dose = 100;
+13           if doselabel = 3 then dose = 500;
+14           if doselabel = 4 then dose = 1000;
+15           if doselabel = 5 then dose = 1500;
+16           if doselabel = 6 then dose = 1750;
+17           if dose NE 0 then trt = 1; else trt = 0;
+18           if dose = 0 then trtstr = "Placebo"; else trtstr = "Active";
+19           do subjectctr = 1 to 6;
+20               sid = (doselabel)*100 + subjectctr;
+21               ka = 0.7*exp(rannor(3453434)*0.1);
+22               cl = 12000*exp(rannor(3456)*0.1);
+23               v = 400000*exp(rannor(774)*0.2);
+24
+25               baseline = round(400 + rannor(324323)*12, 0.1);
+26               intercept = -2.5 + rannor(345343)*4;
+27               trteffect = 0 + 0.2*rannor(454);
+28               chgbaseeffect = -0.1 + rannor(234234)*0.02;
+29               chgbase = (baseline - 400);
+30               emax = 20 + rannor(3656)*2;
+31               ec50 = 400*exp(rannor(345343)*0.05);
+32
+33               timeEffect1 = 0 + 0.2*rannor(34534);
+34               timeEffect2 = 0.1 + 0.2*rannor(34534);
+35               timeEffect3 = -0.2 + 0.2*rannor(34534);
+36               timeEffect4 = 0.3 + 0.2*rannor(34534);
+37               timeEffect5 = 0.1 + 0.2*rannor(34534);
+38               timeEffect6 = -0.3 + 0.2*rannor(34534);
+39               timeEffect7 = 0.1 + 0.2*rannor(34534);
+40               timeEffect8 = 0.05 + 0.2*rannor(34534);
+41               timeEffect9 = -0.2 + 0.2*rannor(34534);
+42
+43               do timectr = 1 to 9;
+44                   if timectr = 1 then nomtime = 0.5;
+45                   if timectr = 2 then nomtime = 1;
+46                   if timectr = 3 then nomtime = 2;
+47                   if timectr = 4 then nomtime = 3;
+48                   if timectr = 5 then nomtime = 4;
+49                   if timectr = 6 then nomtime = 6;
+50                   if timectr = 7 then nomtime = 8;
+51                   if timectr = 8 then nomtime = 12;
+52                   if timectr = 9 then nomtime = 24;
+53                   time1 = 0; time2 = 0; time3 = 0; time4 = 0; time5 = 0; time6 = 0; time7 = 0; time8 = 0; time9 = 0;
+54                   if nomtime = 0.5 then time1 = 1;
+55                   if nomtime = 1 then time2 = 1;
+56                   if nomtime = 2 then time3 = 1;
+57                   if nomtime = 3 then time4 = 1;
+58                   if nomtime = 4 then time5 = 1;
+59                   if nomtime = 6 then time6 = 1;
+60                   if nomtime = 8 then time7 = 1;
+61                   if nomtime = 12 then time8 = 1;
+62                   if nomtime = 24 then time9 = 1;
+63                   timestr = put(nomtime, 5.1);
+64                   if dose = 0 then trueconc = 0;
+65                       else trueconc = dose*1E6/v * (ka/(ka-(cl/v))) * (exp(-(cl/v)*nomtime) - exp(-ka*nomtime));
+66                   conc = trueconc * exp(rannor(24454)*0.01);
+67                   drugeffect = emax*trueconc/(ec50 + trueconc);
+68                   dqtcf =  intercept + trteffect + timeEffect1*time1 - timeEffect2*time2 + timeEffect3*time3
+69                       + timeEffect4*time4 - timeEffect5*time5 + timeEffect6*time6 + timeEffect7*time7 + timeEffect8*time8 +
+69 ! timeEffect9*time9
+70                       + chgbaseeffect*chgbase + drugeffect + rannor(2432)*4;
+71                   conc = round(conc, 0.01);
+72                   dqtcf = round(dqtcf, 0.01);
+73                   total = baseline + dqtcf;
+74                   output;
+75               end;
+76           end;
+77       end;
+78       drop cl v ka emax ec50 subjectctr timectr intercept trteffect;
+79       label trt = "Treatment";
+80       label timestr = "Nominal Time (h)";
+81       label trtstr = "Treatment";
+82       label dqtcf = "Observed Change From Baseline QTcF (msec)";
+83       label conc = "Drug Concentration";
+84       label sid = "Subject Identifier";
+85       label baseline = "Baseline QTcF Interval (msec)";
+86       label nomtime = "Nominal Time (h)";
+87       label dose = "Dose";
+
+NOTE: The data set WORK.SET1 has 324 observations and 33 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.26 seconds
+      cpu time            0.10 seconds
+
+
+88   proc sort; by sid; run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set WORK.SET1 has 324 observations and 33 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.08 seconds
+      cpu time            0.03 seconds
+
+
+88 !                         quit;
+89   data output.concqt; set set1;run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set OUTPUT.CONCQT has 324 observations and 33 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.03 seconds
+
+
+89 !                                   quit;
+90
+91
+92   proc sort; by sid dose; run;
+
+NOTE: There were 324 observations read from the data set OUTPUT.CONCQT.
+NOTE: The data set OUTPUT.CONCQT has 324 observations and 33 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.03 seconds
+
+
+92 !                              quit;
+93   proc means max noprint; var conc; by sid dose; output out=cmax max=cmax; run;
+
+NOTE: There were 324 observations read from the data set OUTPUT.CONCQT.
+NOTE: The data set WORK.CMAX has 36 observations and 5 variables.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.14 seconds
+      cpu time            0.03 seconds
+
+
+93 !                                                                               quit;
+94   proc sort data=cmax; by dose; run;
+
+NOTE: There were 36 observations read from the data set WORK.CMAX.
+NOTE: The data set WORK.CMAX has 36 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+94 !                                    quit;
+95   proc means; var cmax; by dose; run;
+
+NOTE: There were 36 observations read from the data set WORK.CMAX.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+
+
+95 !                                     quit;
+96   proc freq; tables nomtime*dose; run;
+ERROR: Variable NOMTIME not found.
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+97
+
+
+98   proc sort data=set1; by dose; run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set WORK.SET1 has 324 observations and 33 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+98 !                                    quit;
+99   proc means data=set1; var dqtcf baseline total; by dose; run;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+99 !                                                               quit;
+100
+101
+102  data unique;
+103      set set1;
+104      by sid;
+105      if first.sid then output;
+
+NOTE: There were 324 observations read from the data set WORK.SET1.
+NOTE: The data set WORK.UNIQUE has 36 observations and 33 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+106  proc sort; by dose; run;
+
+NOTE: There were 36 observations read from the data set WORK.UNIQUE.
+NOTE: The data set WORK.UNIQUE has 36 observations and 33 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+106!                          quit;
+107  proc freq; table dose; run;
+
+NOTE: There were 36 observations read from the data set WORK.UNIQUE.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+
+
+107!                             quit;
+108  proc means; var baseline; run;
+
+NOTE: There were 36 observations read from the data set WORK.UNIQUE.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+
+
+108!                                quit;
+109  proc corr; var baseline chgbaseeffect; run;
+
+NOTE: PROCEDURE CORR used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+
+
+110
+111
+112  proc nlmixed data=set1;
+113      parms theta1=-3.5, theta2=12, theta3=0, theta4=0, theta5=0, theta6=0, theta7=0, theta8=0, theta9=0, theta10=0,
+113! theta11=0.1, theta12=20, theta13=2, std1=2.2, std2=0.001, sigma=5;
+114      bounds std1>0, std2>0, sigma > 0;
+115      intercept = theta1 + eta1;
+116      emax = theta12 + eta2;
+117      ec50 = theta13;
+118      dv = conc;
+119      if conc = 0 then drugeffect = 0;
+120          else drugeffect = emax*dv/(ec50 + dv);
+121      pred = intercept + theta2*trt + theta3*time1 + theta4*time2 + theta5*time3 + theta6*time4
+122          + theta7*time5 + theta8*time6 + theta9*time7 + theta10*time8 + theta11*chgbase + drugeffect;
+123      residuals = pred - dqtcf;
+124      model dqtcf ~ normal(pred, sigma*sigma);
+125      estimate 'Emax' theta12;
+126      estimate 'EC50' theta13;
+127      estimate 'Variance(ETA1)' std1*std1;
+128      estimate 'Variance(ETA2)' std2*std2;
+129      estimate 'Residual Variance' sigma*sigma;
+130      random eta1 eta2  ~ normal([0,0], [std1*std1, 0, std2*std2]) subject=sid;
+131  run;
+
+
+NOTE: Convergence criterion (GCONV=1E-8) satisfied.
+NOTE: PROCEDURE NLMIXED used (Total process time):
+      real time           1.33 seconds
+      cpu time            0.79 seconds
+
+
+131!      quit;
+132
+133
+134  ods graphics on/ reset width=6 in border=off reset=index;
+135  ods html style=statistical image_dpi =200;
+136      proc sgplot data=set1;
+137          title;
+138          refline 0 / axis=y  lineattrs=(color=gray thickness=1 pattern=2);
+139          scatter x=conc y=dqtcf / group=dose;
+140          loess x=conc y=dqtcf / lineattrs=(color=black thickness=2) legendlabel="LOESS Fit" nomarkers;
+141          reg x=conc y=dqtcf / nomarkers;
+142          keylegend / across=1 position=se location=inside;
+143          xaxis label = "Drug Concentration (ng/mL)";
+144          yaxis label = "Observed Change From Baseline QTcF Interval (msec)";
+145      run;
+
+145!          quit;
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           2.77 seconds
+      cpu time            0.82 seconds
+
+NOTE: Listing image output written to SGPlot1.png.
+NOTE: There were 324 observations read from the data set WORK.SET1.
+
+146
+147      proc sgpanel data=set1  noautolegend;
+148          panelby dose / columns=3 rows=2;
+149          series x=nomtime y=dqtcf / group=sid markers;
+150      run;
+
+150!          quit;
+NOTE: PROCEDURE SGPANEL used (Total process time):
+      real time           1.93 seconds
+      cpu time            0.11 seconds
+
+NOTE: Listing image output written to SGPanel1.png.
+NOTE: There were 324 observations read from the data set WORK.SET1.
+
+151      proc sgpanel data=set1 noautolegend;
+152          panelby dose / columns=3 rows=2;
+153          series x=nomtime y=conc / group=sid markers;
+154      run;
+
+154!          quit;
+NOTE: PROCEDURE SGPANEL used (Total process time):
+      real time           0.95 seconds
+      cpu time            0.12 seconds
+
+NOTE: Listing image output written to SGPanel3.png.
+NOTE: There were 324 observations read from the data set WORK.SET1.
+
+155  ods html close;

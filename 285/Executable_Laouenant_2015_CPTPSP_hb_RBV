@@ -1,0 +1,28 @@
+DESCRIPTION:  Model for hb-RBV Modcupic
+
+INPUT:
+
+parameter = {hb0,Kout,EC50}
+regressor = {css_mode,k_mode}
+
+EQUATION:
+
+if t <= 0
+	riba = 0
+else
+	riba = css_mode*(1-exp(-k_mode*t))
+end
+
+hb_0 = hb0
+
+ddt_hb = hb0*Kout*(1-(riba/(riba+EC50)))-Kout*hb
+
+OUTPUT:
+output = hb
+
+
+
+
+
+
+

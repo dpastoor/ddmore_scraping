@@ -1,0 +1,162 @@
+$PROBLEM PD DOSERINGSSTUDY EN IV STUDY, PK GEFIXT NAAR PK MODEL
+$INPUT NR ID DO STUD AMT RATE EVID TIME DV MDV CMT WT
+;$DATA 20100301PRLSIM2.prn
+$DATA Simulated_PK_rats.csv IGNORE=@
+;IGNORE(STUD.EQ.1)
+;IGNORE(ID.EQ.316)
+$SUBROUTINE ADVAN9 TOL=3
+$MODEL
+   COMP=(ABSORB,INITIALOFF) ;IN TOEDIENING, NVT, GEFIXT
+   COMP=(ABSORB,INITIALOFF) ;IN TOEDIENING, NVT, GEFIXT
+   COMP=(CENTRAL,DEFDOSE);PK PLASMA DATA, GEFIXT
+   COMP=(PERIPH) ;PK MICRODIALYSE DATA, GEFIXT
+   COMP=(PERIPH) ;PK PERIPHERAL CMT, GEFIXT
+   COMP=(PERIPH) ; LACTOTROPH
+   COMP=(EFFECT,DEFOBS) ; PK PRL EFFECT VAN REM OP PRL IS DUS DATASET PRL IN MUG/L
+$PRIOR  NWPRI
+        NTHETA= 19
+        NETA= 3
+        NEPS= 2
+        NTHP= 2
+        NETP= 0
+        NPEXP=1
+$PK
+"FIRST
+" COMMON/PRCOMG/IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+"INTEGER IDUM1,IDUM2,IMAX,IDUM4,IDUM5
+"IMAX=10000000
+CL3  = THETA(3)   ;L/H PLASMA CMT
+V3   = THETA(4)  ;L/KG
+Q4   = THETA(5)  ; 4E CMT IS MD CMT
+V4   = THETA(6)
+Q5   = THETA(7)
+V5   = THETA(8)
+FK40 = THETA(9)
+KA   = THETA(10)
+FTOT = THETA(11)
+F1   = FTOT*THETA(12)
+F2   = FTOT - F1
+K24  = THETA(13)/1000
+K30 = CL3/V3
+K40 = FK40*K30
+K34 = Q4/V3
+K43 = Q4/V4
+K35 = Q5/V3
+K53 = Q5/V5
+IF(K30.LT.K40) EXIT 1 200
+IF(KA.LT.K24) EXIT 1 400
+S3 = V3
+S4 = V4
+;-------------------------------------------  PD ---------------------------------------
+IF (STUD.EQ.3) THEN
+        STDY = 1
+ELSE
+        STDY = 0
+ENDIF
+TBSL    = THETA(14)*(1+THETA(17)*STDY)
+BSL    = TBSL*EXP(ETA(1))
+;BSL    = THETA(12)*EXP(ETA(1))
+K67    = THETA(18)*EXP((ETA(3)))
+K70    = THETA(1)
+EMAX   = THETA(15)
+EC50   = THETA(2)
+STDM    = THETA(16)*EXP(ETA(2))
+GAMMA  = THETA(19)
+STD50  = THETA(20)
+A_0(6) = (BSL*K70)/K67
+A_0(7) = BSL
+KF     = BSL*K70;/(STDM*BSL/(STD50+BSL))
+;
+ET1 = ETA(1)
+ET2 = ETA(2)
+ET3 = ETA(3)
+;
+$DES
+DADT(1) = -A(1)*KA  
+DADT(2) =           - A(2)*K24
+DADT(3) =  A(1)*KA                - A(3)*K34 + A(4)*K43 - A(3)*K35 + A(5)*K53 - A(3)*K30
+DADT(4) =             A(2)*K24    + A(3)*K34 - A(4)*K43                       - A(4)*K40 
+;-----------------------------------
+IF (A(4).GT.0)THEN
+CP = (A(4)/V4)
+EFF     = 1 + ((EMAX*(CP**GAMMA))/((EC50**GAMMA)+(CP**GAMMA)))
+ELSE
+CP = 0
+EFF = 1
+ENDIF
+;-----------------------------------
+DADT(5) = A(3)*K35 - A(5)*K53      ; de (REM-)concentratie effect relatie wordt omschreven door 
+IF (A(7).LT.BSL) THEN                ; een EMAX relatie
+  LNA7 = BSL
+ELSE
+  LNA7 = A(7)
+ENDIF
+;-----------------------------------
+STD     = STDM*(LNA7-BSL);/(STD50+(LNA7-BSL)));/(STDM*BSL/(STD50+BSL));               ; synthese PRL (STD) is afhankelijk van [PRLmicrodial.]=LNA7
+KFT     = KF*(1+STD)              ; systeem (PRL-)concentratie effect(synthese) relatie
+DADT(6) = KFT - A(6)*K67*EFF        ; wordt omschreven door LOG van A(7); LNA7
+DADT(7) =      A(6)*K67*EFF - A(7)*K70
+CONC = A(4)/V4
+;
+$ERROR
+IPRED=A(7)
+Y = IPRED*(1+EPS(1)) + EPS(2)
+IF(IPRED.EQ.0) IPRED=0.0001
+IRES = DV-IPRED
+IF(IRES.EQ.0) IRES=0.0001
+IWRES = IRES/IPRED
+;
+$THETA 
+;Parameters with PRIOR
+( 0 , 5.72 , 1000000 ) 
+;----------------------------------
+( 0 , 0.0804 , 1000000 ) 
+;----------------------------------
+; PK parameters
+1.12 FIX         ;3  CL3 L/H
+0.0881 FIX       ;4  V3 L/KG
+0.7 FIX          ;5  Q4
+0.873 FIX        ;6  V
+1.2 FIX          ;7  Q5
+0.417 FIX        ;8  V5
+0.302 FIX        ;9  FK40, K40=FK40*CL3/V3
+1.54 FIX         ;10  KA
+0.892 FIX        ;11  FTOT
+0.249 FIX        ;12 F1  = FTOT*THETA(10)*EXP(ETA(10))
+33.1 FIX         ;13 K24*1000
+;----------------------------------
+;PD parameters
+( 1 , 6.24 , 1000000 ) 
+( 0 , 25 , 1000000 ) 
+( 0 , 3.74 , 1000000 ) 
+( -0.1 ) 
+( 0 , 0.8496 , 1000000 ) 
+( 1 FIX   )   ; TH19 GAMMA
+;( 0 , 12.4 , 1000000 ) 
+;
+$OMEGA 
+0.05           ;1 BSL (BEIDE)
+0.0 FIX        ;2 STDM
+$OMEGA
+0.0 FIX            ;3 EMAX
+$SIGMA
+0.07              ; CMT7 PROP
+8              ; CMT7 ADD
+;----------------------------------
+;---------------------------------------------------------------------------------------------------------------------
+; prior information 
+$THETA
+(  6    FIX    )   ; TH1
+( 0.0419 FIX  )   ; TH2 EC50
+;----------------------prior uncertainty for theta -------------------------------------------------------------------
+$OMEGA 
+0.167  FIX  
+0.002584 FIX                       
+$EST METHOD=1 INTERACTION ;SLOW;No CWRES
+NOABORT MAXEVAL=9999 PRINT=1 SIGDIG=3  POSTHOC ;No CWRES
+;$SIM (20100526 NEW) ONLYSIM SUBPROBLEM=250
+$COV MATRIX=R COMP
+$TABLE ID TIME STUD CMT DO EFF CONC EC50 EMAX GAMMA
+PRED BSL ET1 ET2 ET3 STD IPRED IWRES MDV
+ONEHEADER NOPRINT 
+FILE=J.COMB.EMAX.LIN.FOCE.ETABSL.r.1.par

@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.ddmore.org/ontologies/webannotationtool#"
+    xmlns:j.1="http://www.pharmml.org/ontology/"
+    xmlns:j.2="http://www.pharmml.org/2013/10/PharmMLMetadata#" > 
+  <rdf:Description rdf:about="http://repository.ddmore.foundation//model/DDMODEL00000268">
+    <j.2:model-has-description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The aim of this investigation was to develop a mechanism-based pharmacokinetic-pharmacodynamic (PK-PD) model for the biological system prolactin response following a dopamine inhibition challenge using remoxipride as a paradigm compound. After assessment of baseline variation in prolactin concentrations, the prolactin response of remoxipride was measured following 1) single intravenous doses of 4, 8 and 16 mg/kg and 2) following double dosing of 3.8 mg/kg with different time intervals. The mechanistic PK-PD model consisted of; i) a PK model for remoxipride concentrations in brain extracellular fluid; ii) a pool model incorporating prolactin synthesis, storage in lactotrophs, release into- and elimination from plasma; iii) a positive feedback component interconnecting prolactin plasma concentrations and prolactin synthesis; and iv) a dopamine antagonism component interconnecting remoxipride brain extracellular fluid concentrations and stimulation of prolactin release. The most important finding was the positive feedback on prolactin synthesis in the lactotrophs, in contrast to the negative feedback in the previous models on the PK-PD correlation of remoxipride. An external validation was performed using a dataset obtained in rats following intranasal administration of 4, 8, or 16 mg/kg remoxipride. Following simulation of human remoxipride brain extracellular fluid concentrations, pharmacodynamics extrapolation from rat to humans was performed, using allometric scaling in combination with independent information on the values of biological system specific parameters as prior knowledge. The PK-PD model successfully predicted the system prolactin response in humans, indicating that positive feedback on prolactin synthesis and allometric scaling thereof could be a new feature in describing complex homeostatic mechanisms.</j.2:model-has-description>
+    <j.0:model-origin-of-code-in-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-origin-of-code-in-literature-controlled>
+    <j.2:model-research-stage rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006008"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006001"/>
+    <j.2:model-tasks-in-scope rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006000"/>
+    <j.2:model-field-purpose rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0001023"/>
+    <j.0:model-implementation-conforms-to-literature-controlled rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yes</j.0:model-implementation-conforms-to-literature-controlled>
+    <j.2:model-has-description-long rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20120910- DDMORE-WP1.3. Specificationdocument_remoxipride ECMdL</j.2:model-has-description-long>
+    <j.0:model-implementation-source-discrepancies-freetext rdf:datatype="http://www.w3.org/2001/XMLSchema#string">No</j.0:model-implementation-source-discrepancies-freetext>
+    <rdf:type rdf:resource="http://www.pharmml.org/ontology/PHARMMLO_0000001"/>
+    <j.2:model-modelling-question rdf:resource="http://www.ddmore.org/ontologies/ontology/pkpd-ontology#pkpd_0006026"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,23 @@
+{
+    "files": [
+        "Executable_runCOMPEV1_101.mod",
+        "Executable_runCOMPEV2_005.mod",
+        "Executable_runEV2_105.ctl",
+        "BAST_PTTE_modelling.pdf",
+        "Model_Accommodations.txt",
+        "BAST_surv_functions.R",
+        "Command.txt",
+        "VPC_EV1_1.png",
+        "VPC_EV1_1_dis.png",
+        "DDMODEL00000243.rdf",
+        "Executable_runEV1_201.mod",
+        "Output_simulated_runEV1_201.res",
+        "Output_simulated_runEV2_105.res",
+        "Output_simulated_runCOMPEV1_101.res",
+        "Executable_runEV2_105.mod",
+        "VPCs.R",
+        "Simulated_event_data.csv",
+        "Output_simulated_runCOMPEV2_005.res"
+    ],
+    "version": 13
+}

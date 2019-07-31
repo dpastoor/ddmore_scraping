@@ -1,0 +1,704 @@
+Fri Oct  7 16:12:09 CEST 2016
+$PROBLEM    BDQ and M2 popPK in patients plus time-varying albumin and
+;           weight
+$INPUT      ID OCC TIME TAD EVID MDV AMT FLAG DV L2 SEX RACE AGE WT
+            ALB HIV TBTYPE
+$DATA      Simulated_data_BDQ_M2_PK_plus_WT_ALB_in_MDR-TB_patients.csv
+            IGNORE=@
+$SUBROUTINE ADVAN13 TOL=6
+$MODEL      NCOMPARTMENTS=8 COMP=(DEPOT DEFDOSE) COMP=(BDQC)
+            COMP=(BDQPERI1) COMP=(BDQPERI2) COMP=(M2) COMP=(TRANSI1)
+            COMP=(TRANSI2) COMP=(ALBUMIN)
+$PK 
+;--- Model for Albumin
+
+TVX0 	= THETA(1)
+TVXSS	= THETA(2)
+TVREP 	= THETA(3)
+
+BSVX0  	= ETA(1)
+BSVXSS 	= ETA(2)
+BSVREP 	= ETA(3)
+
+SHPX0 	= THETA(4)		
+PHIX0   = EXP(BSVX0)		
+PHI2X0  =(PHIX0**SHPX0-1)/SHPX0				; Box-cox transformation 
+
+SHPXSS 	= THETA(5)		
+PHIXSS  = EXP(BSVXSS)		
+PHI2XSS =(PHIXSS**SHPXSS-1)/SHPXSS          ; Box-cox transformation 
+
+X0 		= TVX0*EXP(PHI2X0)
+XSS		= TVXSS*EXP(PHI2XSS)
+REP 	= TVREP*EXP(BSVREP)
+HL      = LOG(2)/REP
+
+A_0(8) = X0
+
+;--- Model for WT
+
+TVWT0 	= THETA(6)
+TVWT120 = THETA(7)
+
+BSVWT0  = ETA(4)
+BSVWT120 = ETA(5)
+
+SHPWT120 	= THETA(8)		
+PHIWT120  = EXP(BSVWT120)		
+PHI2WT120 =(PHIWT120**SHPWT120-1)/SHPWT120    ; Box-cox transformation 
+
+WT0 	= TVWT0*EXP(BSVWT0)
+WT120 	= TVWT120*EXP(PHI2WT120)
+
+SLOPE = (WT120 - WT0)/(120*7*24) ; TIME in hours, 120 weeks 
+
+;--- BDQ and M2 PK                
+;--- Typical values fixed effects, some 
+
+TVMAT =		THETA(9)   
+TVFR =		THETA(10)   
+TVCL=		THETA(11)
+TVV=		THETA(12)
+TVQ1 =		THETA(13)
+TVVP1 = 	THETA(14)
+TVQ2 =		THETA(15)
+TVVP2 = 	THETA(16)
+TVCLM2 = 	THETA(17)
+TVVM2 = 	THETA(18)
+
+;--- Typical values variability
+
+BOVF = ETA(6)
+IF(OCC.EQ.2) BOVF = ETA(7)
+BOVMAT =	ETA(8)
+IF(OCC.EQ.2) BOVMAT =	ETA(9)
+BSVF = 		ETA(10)
+BSVCL=		ETA(11)
+BSVCLM2=	ETA(12)
+BSVV=		ETA(13)
+BSVQ1=		ETA(14)
+BSVVM2=		ETA(15)
+
+;--- Covaraiate model
+;--- Mechanistic
+; Allomertic scaling and albumin effects coded in $DES and $ERROR since they are time changing
+
+;--- Empiric
+; Effect of Black race on CL
+BLACK = 0
+IF(RACE.EQ.2) BLACK=1
+BLACKCL = 1 + BLACK*THETA(23) 
+
+; AGE on CL 
+AGECL = 1 + (32-AGE)*(THETA(24))
+
+;--- Parameters
+
+PHI =		LOG(TVMAT/(1-TVMAT))+BOVMAT
+MAT   =		6*EXP(PHI)/(EXP(PHI)+1)    	; Mean absorption time, overall time for both delay and 90% complete absorption, logit transformed to retain constraines even with BOV in MAT
+FR    = 	TVFR   						; Fraction of MAT that is delay
+MTT = 		MAT*FR
+KAHL= 		MAT*(1-FR)/3.3 
+KA =		LOG(2)/KAHL
+KTR=		2/MTT
+F1= 		1.8002*EXP(BOVF+BSVF)      	; AMT in mg in input file, MW TMC207 555.5 g/mol, DV as nmol/mL = µmol/L --> (AMT/1000)/(555.5)*1000000 = AMT*1.8002 µmol
+
+CLB = 		TVCL*BLACKCL*AGECL*EXP(BSVCL)
+VB = 		TVV*EXP(BSVV)
+Q1B= 		TVQ1*EXP(BSVQ1)
+VP1B = 		TVVP1
+Q2B = 		TVQ2
+VP2B= 		TVVP2
+CLM2B = 	TVCLM2*BLACKCL*AGECL*EXP(BSVCLM2)
+VM2B= 		TVVM2*EXP(BSVVM2)
+
+$DES                  
+; --- Albumin
+DADT(8) = LOG(2)/(HL*7*24)*A(8)*(1- A(8)/XSS) ; Time in hours, unit of half life: weeks
+; --- Body weight
+WTTIME = WT0 + T*SLOPE				    ; Predicted individual WT at time T´
+
+; --- Time varying covariates
+ALBRELI = A(8)/XSS						; Time varying individual albumin relative individual value albumin at SS
+COVALBI = (ALBRELI)**THETA(22)			; Albumin effect on hepatic function --> CL
+FM = (ALBRELI)**(-THETA(22)) 			; Albumin effect on hepatic function --> fm
+
+ALLCL = (WTTIME/70)**THETA(19)			; Allometric scaling CL/Q
+ALLV= (WTTIME/70)**THETA(20)			; Allometric scaling V/VP
+
+; --- BDQ and M2 PK
+CL = 	CLB*COVALBI*ALLCL
+V = 	VB*ALLV
+Q1 = 	Q1B*ALLCL
+VP1 = 	VP1B*ALLV
+Q2 = 	Q2B*ALLCL
+VP2 = 	VP2B*ALLV
+CLM2 = 	CLM2B/FM*COVALBI*ALLCL
+VM2  = 	VM2B/FM*ALLV
+
+
+DADT(1)= -KTR*A(1)
+DADT(2) = A(7)*KA - A(2)*CL/V - A(2)*Q1/V + A(3)*Q1/VP1 - A(2)*Q2/V + A(4)*Q2/VP2 ; BDQ
+DADT(3) = A(2)*Q1/V - A(3)*Q1/VP1
+DADT(4) = A(2)*Q2/V - A(4)*Q2/VP2
+DADT(5) = A(2)*CL/V - A(5)*CLM2/VM2 		; M2
+DADT(6) = A(1)*KTR - A(6)*KTR				; transit1
+DADT(7) = A(6)*KTR - A(7)*KA				; transit2
+
+
+$ERROR      
+; --- Body weight
+WTTIMEE = WT0 + TIME*SLOPE
+
+; --- Time varying covariates
+FURELIP = THETA(2)/A(8)				; Time varying individual fraction unbound relative typical population value at SS (inversely proportional to albumin)
+COVFUIP = (FURELIP)**THETA(21) 		; Fu effect on V
+
+ALBRELIE = A(8)/XSS					; Time varying individual albumin relative individual value albumin at SS
+FME = (ALBRELIE)**(-THETA(22))		; Albumin effect on hepatic function --> fm
+
+ALLCLE = (WTTIMEE/70)**THETA(19)	; Allometric scaling CL/Q
+ALLVE= (WTTIMEE/70)**THETA(20)		; Allometric scaling V/VP
+
+; --- BDQ and M2 PK
+VE = 	VB*ALLVE*COVFUIP
+VM2E  = VM2B/FME*ALLVE*COVFUIP
+
+; FLAG 1 = BDQ PK, 2= M2 PK, 3= Albumin, 4= Body weight 
+DEL= 1E-12
+IPRED=LOG(A(2)/VE+DEL)
+IF(FLAG.EQ.2) IPRED=LOG(A(5)/VM2E+DEL)
+IF(FLAG.EQ.3) IPRED = A(8)
+IF(FLAG.EQ.4) IPRED = WTTIMEE
+
+; Error additive on log scale for PK, proportional for albumin and weight
+BSVRUV1= ETA(16)
+BSVRUV2= ETA(17)
+W = 1*EXP(BSVRUV1)
+IF(FLAG.EQ.2) W = 1*EXP(BSVRUV2)
+IF(FLAG.EQ.3) W = IPRED
+IF(FLAG.EQ.4) W = IPRED
+IF(W.EQ.0) W=1
+
+IRES=DV-IPRED
+IWRES=IRES/W
+
+Y = IPRED + W*EPS(3)
+IF(FLAG.EQ.2) Y = IPRED + W*EPS(4)
+IF(FLAG.EQ.3) Y = IPRED + W*EPS(1)
+IF(FLAG.EQ.4) Y = IPRED + W*EPS(2)
+
+$THETA  (0,3.64865) ; 1 X0 g/dl
+ (0,4.04068) ; 2 Xss g/dl
+ (0,0.03399109) ; 3 Rate constant return to normal 1/week
+ -2.43936 ; 4 shape factor BSVX0 boxcox
+ -5.37749 ; 5 shape factor BSVXSS boxcox
+ (0,56.6371) ; 6 WT0 kg
+ (0,62.6425) ; 7 WT120 kg
+ -0.416034 ; 8 Boxcox BSV WT120
+ (1E-06,0.662045,1) ; 9 MAT
+ (1E-06,0.466443,1) ; 10 FR
+ (1E-06,2.61592) ; 11 CL
+ (1E-06,198.34) ; 12 V
+ (1E-06,3.658) ; 13 Q1
+ (1E-06,8549.06) ; 14 VP1
+ (1E-06,7.33504) ; 15 Q2
+ (1E-06,2690.91) ; 16 VP2
+ (1E-06,10.0496) ; 17 CLM2
+ (1E-06,2203.71) ; 18 VM2
+ (1E-06,0.180912) ; 19 Allometric scaling baseline CL
+ (1E-06,1) FIX ; 20  Allometric scaling V
+ (1E-06,1) FIX ; 21 Time varying FU on BDQ+M2 disp
+ (-10,1.64021,10) ; 22 Individual time varying effect of ALB BDQ+M2 CL
+ (0,0.838743) ; 23 Effect of black race on CL/CM2
+ (0,0.00880756,10) ; 24 AGE effect on CL/CLM2
+; --- Albumin
+; --- Body weight
+; --- BDQ and M2 PK
+; --- Covariates
+$OMEGA  BLOCK(5)
+ 0.0253964  ;    1 BSVX0
+ 0.00787165 0.00965573  ;   2 BSVXSS
+ -0.0831085 0.00887115 0.979314  ;   3 BSVREP
+ 0.0117627 0.00499615 -0.0379866 0.0421083  ;   4 BSVWT0
+ 0.00559706 0.00649501 -0.00226264 0.0369625 0.0494914  ; 5 BSVRWT120
+$OMEGA  BLOCK(1)
+ 0.0382322  ;  6   BOV F
+$OMEGA  BLOCK(1) SAME
+$OMEGA  BLOCK(1)
+ 1.16205  ; 8   BOV MAT
+$OMEGA  BLOCK(1) SAME
+$OMEGA  0.0803271  ; 10   BSV F
+$OMEGA  BLOCK(2)
+ 0.152776  ; 11   BSV CL
+ 0.13486 0.212124  ; 12 BSV CLM2
+$OMEGA  0.171909  ; 13   BSV V
+ 0.181182  ; 14  BSV Q1
+ 0.150223  ; 15  BSV VM2
+$OMEGA  BLOCK(2)
+ 0.05392  ; 16 BSV RUVBDQ
+ 0.0295137 0.0522882  ; 17 BSV RUVM2
+$SIGMA  0.00500974  ; 1 Prop error ALB
+ 0.00114573  ; 2 Prop error WT
+$SIGMA  BLOCK(2)
+ 0.0518161  ; 3 Prop error TMC
+ 0.0189319 0.0366836  ; 4 Prop error M2
+;$SIM ONLYSIM (8759)
+$ESTIMATION METHOD=1 MAXEVAL=0 PRINT=1 SIGL=9 NSIG=3 NOABORT
+            INTERACTION MSFO=runXXX.msf
+;$COVARIANCE UNCONDITIONAL
+
+;$TABLE ID OCC TIME TAD EVID MDV AMT FLAG DV L2 SEX RACE AGE WT ALB HIV TBTYPE  NOPRINT ONEHEADER NOAPPEND FILE=simdata
+
+
+NM-TRAN MESSAGES
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+             
+ (WARNING  97) A RANDOM QUANTITY IS RAISED TO A POWER. IF THE RESULT AFFECTS
+ THE VALUE OF THE OBJECTIVE FUNCTION, THE USER SHOULD ENSURE THAT THE
+ RANDOM QUANTITY IS NEVER 0 WHEN THE POWER IS < 1.
+
+License Registered to: Uppsala University
+Expiration Date:    14 MAR 2017
+Current Date:        7 OCT 2016
+Days until program expires : 162
+1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0
+ ORIGINALLY DEVELOPED BY STUART BEAL, LEWIS SHEINER, AND ALISON BOECKMANN
+ CURRENT DEVELOPERS ARE ROBERT BAUER, ICON DEVELOPMENT SOLUTIONS,
+ AND ALISON BOECKMANN. IMPLEMENTATION, EFFICIENCY, AND STANDARDIZATION
+ PERFORMED BY NOUS INFOSYSTEMS.
+ 
+ PROBLEM NO.:         1
+ BDQ and M2 popPK in patients plus time-varying albumin and              
+0DATA CHECKOUT RUN:              NO 
+ DATA SET LOCATED ON UNIT NO.:    2
+ THIS UNIT TO BE REWOUND:        NO 
+ NO. OF DATA RECS IN DATA SET:    39611
+ NO. OF DATA ITEMS IN DATA SET:  17
+ ID DATA ITEM IS DATA ITEM NO.:   1
+ L2 DATA ITEM IS DATA ITEM NO.:  10
+ DEP VARIABLE IS DATA ITEM NO.:   9
+ MDV DATA ITEM IS DATA ITEM NO.:  6
+0INDICES PASSED TO SUBROUTINE PRED:
+   5   3   7   0   0   0   0   0   0   0   0
+0LABELS FOR DATA ITEMS:
+ ID OCC TIME TAD EVID MDV AMT FLAG DV L2 SEX RACE AGE WT ALB HIV TBTYPE
+0FORMAT FOR DATA:
+ (E4.0,E3.0,E7.0,E8.0,2E1.0,E3.0,E1.0,E11.0,E7.0,2E3.0,5E3.0)                    
+ 
+ TOT. NO. OF OBS RECS:    15797
+ TOT. NO. OF INDIVIDUALS:    331
+0LENGTH OF THETA:  24
+0DEFAULT THETA BOUNDARY TEST OMITTED:    NO 
+0OMEGA HAS BLOCK FORM:
+  1
+  1  1
+  1  1  1
+  1  1  1  1
+  1  1  1  1  1
+  0  0  0  0  0  2
+  0  0  0  0  0  0  2
+  0  0  0  0  0  0  0  3
+  0  0  0  0  0  0  0  0  3
+  0  0  0  0  0  0  0  0  0  4
+  0  0  0  0  0  0  0  0  0  0  5
+  0  0  0  0  0  0  0  0  0  0  5  5
+  0  0  0  0  0  0  0  0  0  0  0  0  6
+  0  0  0  0  0  0  0  0  0  0  0  0  0  7
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  8
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  9
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  9  9
+0DEFAULT OMEGA BOUNDARY TEST OMITTED:    NO 
+0SIGMA HAS BLOCK FORM:
+  1
+  0  2
+  0  0  3
+  0  0  3  3
+0DEFAULT SIGMA BOUNDARY TEST OMITTED:    NO 
+0INITIAL ESTIMATE OF THETA:
+ LOWER BOUND    INITIAL EST    UPPER BOUND
+  0.0000E+00     0.3649E+01     0.1000E+07
+  0.0000E+00     0.4041E+01     0.1000E+07
+  0.0000E+00     0.3399E-01     0.1000E+07
+ -0.1000E+07    -0.2439E+01     0.1000E+07
+ -0.1000E+07    -0.5377E+01     0.1000E+07
+  0.0000E+00     0.5664E+02     0.1000E+07
+  0.0000E+00     0.6264E+02     0.1000E+07
+ -0.1000E+07    -0.4160E+00     0.1000E+07
+  0.1000E-05     0.6620E+00     0.1000E+01
+  0.1000E-05     0.4664E+00     0.1000E+01
+  0.1000E-05     0.2616E+01     0.1000E+07
+  0.1000E-05     0.1983E+03     0.1000E+07
+  0.1000E-05     0.3658E+01     0.1000E+07
+  0.1000E-05     0.8549E+04     0.1000E+07
+  0.1000E-05     0.7335E+01     0.1000E+07
+  0.1000E-05     0.2691E+04     0.1000E+07
+  0.1000E-05     0.1005E+02     0.1000E+07
+  0.1000E-05     0.2204E+04     0.1000E+07
+  0.1000E-05     0.1809E+00     0.1000E+07
+  0.1000E+01     0.1000E+01     0.1000E+01
+  0.1000E+01     0.1000E+01     0.1000E+01
+ -0.1000E+02     0.1640E+01     0.1000E+02
+  0.0000E+00     0.8387E+00     0.1000E+07
+  0.0000E+00     0.8808E-02     0.1000E+02
+0INITIAL ESTIMATE OF OMEGA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.2540E-01
+                  0.7872E-02   0.9656E-02
+                 -0.8311E-01   0.8871E-02   0.9793E+00
+                  0.1176E-01   0.4996E-02  -0.3799E-01   0.4211E-01
+                  0.5597E-02   0.6495E-02  -0.2263E-02   0.3696E-01   0.4949E-01
+        2                                                                                   NO 
+                  0.3823E-01
+        3                                                                                   NO 
+                  0.1162E+01
+        4                                                                                   NO 
+                  0.8033E-01
+        5                                                                                   NO 
+                  0.1528E+00
+                  0.1349E+00   0.2121E+00
+        6                                                                                   NO 
+                  0.1719E+00
+        7                                                                                   NO 
+                  0.1812E+00
+        8                                                                                   NO 
+                  0.1502E+00
+        9                                                                                   NO 
+                  0.5392E-01
+                  0.2951E-01   0.5229E-01
+0INITIAL ESTIMATE OF SIGMA:
+ BLOCK SET NO.   BLOCK                                                                    FIXED
+        1                                                                                   NO 
+                  0.5010E-02
+        2                                                                                   NO 
+                  0.1146E-02
+        3                                                                                   NO 
+                  0.5182E-01
+                  0.1893E-01   0.3668E-01
+1DOUBLE PRECISION PREDPP VERSION 7.3.0
+ 
+ GENERAL NONLINEAR KINETICS MODEL USING LSODA (ADVAN13)
+0MODEL SUBROUTINE USER-SUPPLIED - ID NO. 9999
+0MAXIMUM NO. OF BASIC PK PARAMETERS:  14
+0COMPARTMENT ATTRIBUTES 
+ COMPT. NO.   FUNCTION   INITIAL    ON/OFF      DOSE      DEFAULT    DEFAULT
+                         STATUS     ALLOWED    ALLOWED    FOR DOSE   FOR OBS.
+    1         DEPOT        ON         YES        YES        YES        YES
+    2         BDQC         ON         YES        YES        NO         NO 
+    3         BDQPERI1     ON         YES        YES        NO         NO 
+    4         BDQPERI2     ON         YES        YES        NO         NO 
+    5         M2           ON         YES        YES        NO         NO 
+    6         TRANSI1      ON         YES        YES        NO         NO 
+    7         TRANSI2      ON         YES        YES        NO         NO 
+    8         ALBUMIN      ON         YES        YES        NO         NO 
+    9         OUTPUT       OFF        YES        NO         NO         NO 
+0NRD VALUE(S) FROM SUBROUTINE TOL:   6
+1
+ ADDITIONAL PK PARAMETERS - ASSIGNMENT OF ROWS IN GG
+ COMPT. NO.                             INDICES
+              SCALE      BIOAVAIL.   ZERO-ORDER  ZERO-ORDER  ABSORB
+                         FRACTION    RATE        DURATION    LAG  
+    1            *          15           *           *           *
+    2            *           *           *           *           *
+    3            *           *           *           *           *
+    4            *           *           *           *           *
+    5            *           *           *           *           *
+    6            *           *           *           *           *
+    7            *           *           *           *           *
+    8            *           *           *           *           *
+    9            *           -           -           -           -
+             - PARAMETER IS NOT ALLOWED FOR THIS MODEL
+             * PARAMETER IS NOT SUPPLIED BY PK SUBROUTINE;
+               WILL DEFAULT TO ONE IF APPLICABLE
+0DATA ITEM INDICES USED BY PRED ARE:
+   EVENT ID DATA ITEM IS DATA ITEM NO.:      5
+   TIME DATA ITEM IS DATA ITEM NO.:          3
+   DOSE AMOUNT DATA ITEM IS DATA ITEM NO.:   7
+ 
+0PK SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+ PK SUBROUTINE NOT CALLED AT NONEVENT (ADDITIONAL OR LAGGED) DOSE TIMES.
+0PK SUBROUTINE INDICATES THAT COMPARTMENT AMOUNTS ARE INITIALIZED.
+0ERROR SUBROUTINE CALLED WITH EVERY EVENT RECORD.
+0ERROR SUBROUTINE INDICATES THAT DERIVATIVES OF COMPARTMENT AMOUNTS ARE USED.
+0DES SUBROUTINE USES FULL STORAGE MODE.
+1
+
+
+ #TBLN:      1
+ #METH: First Order Conditional Estimation with Interaction (Evaluation)
+
+ ESTIMATION STEP OMITTED:                 YES 
+ ANALYSIS TYPE:                           POPULATION
+ CONDITIONAL ESTIMATES USED:              YES 
+ CENTERED ETA:                            NO  
+ EPS-ETA INTERACTION:                     YES 
+ LAPLACIAN OBJ. FUNC.:                    NO  
+ NUMERICAL DERIVATIVE 
+       FILE REQUEST (NUMDER):             NONE
+ MAP (ETAHAT) ESTIMATION METHOD (OPTMAP): 0           
+ ETA HESSIAN EVALUATION METHOD (ETADER):  0           
+ INITIAL ETA FOR MAP ESTIMATION (MCETA):  0           
+ SIGDIGITS FOR MAP ESTIMATION (SIGLO):    9           
+ GRADIENT SIGDIGITS OF 
+       FIXED EFFECTS PARAMETERS (SIGL):   9           
+ EXCLUDE TITLE (NOTITLE):                 NO 
+ EXCLUDE COLUMN LABELS (NOLABEL):         NO 
+ NOPRIOR SETTING (NOPRIOR):               OFF
+ NOCOV SETTING (NOCOV):                   OFF
+ DERCONT SETTING (DERCONT):               OFF
+ ABSOLUTE TOLERANCE-ADVAN 9,13 ONLY(ATOL):-100        
+ FINAL ETA RE-EVALUATION (FNLETA):        ON 
+ EXCLUDE NON-INFLUENTIAL (NON-INFL.) ETAS 
+       IN SHRINKAGE (ETASTYPE):           NO 
+ NON-INFL. ETA CORRECTION (NONINFETA):    OFF
+ FORMAT FOR ADDITIONAL FILES (FORMAT):    S1PE12.5
+ PARAMETER ORDER FOR OUTPUTS (ORDER):     TSOL
+ ADDITIONAL CONVERGENCE TEST (CTYPE=4)?:  NO
+ EM OR BAYESIAN METHOD USED:                NONE
+
+
+ THE FOLLOWING LABELS ARE EQUIVALENT
+ PRED=PREDI
+ RES=RESI
+ WRES=WRESI
+ IWRS=IWRESI
+ IPRD=IPREDI
+ IRS=IRESI
+
+1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ #OBJT:**************                       MINIMUM VALUE OF OBJECTIVE FUNCTION                      ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+
+
+
+ #OBJV:********************************************     1204.651       **************************************************
+1
+ ************************************************************************************************************************
+ ********************                                                                                ********************
+ ********************         FIRST ORDER CONDITIONAL ESTIMATION WITH INTERACTION (EVALUATION)       ********************
+ ********************                             FINAL PARAMETER ESTIMATE                           ********************
+ ********************                                                                                ********************
+ ************************************************************************************************************************
+ 
+
+
+ THETA - VECTOR OF FIXED EFFECTS PARAMETERS   *********
+
+
+         TH 1      TH 2      TH 3      TH 4      TH 5      TH 6      TH 7      TH 8      TH 9      TH10      TH11      TH12     
+          TH13      TH14      TH15      TH16      TH17      TH18      TH19      TH20      TH21      TH22      TH23      TH24     
+
+ 
+         3.65E+00  4.04E+00  3.40E-02 -2.44E+00 -5.38E+00  5.66E+01  6.26E+01 -4.16E-01  6.62E-01  4.66E-01  2.62E+00  1.98E+02
+          3.66E+00  8.55E+03  7.34E+00  2.69E+03  1.00E+01  2.20E+03  1.81E-01  1.00E+00  1.00E+00  1.64E+00  8.39E-01  8.81E-03
+ 
+
+
+ OMEGA - COV MATRIX FOR RANDOM EFFECTS - ETAS  ********
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17   
+ 
+ ETA1
++        2.54E-02
+ 
+ ETA2
++        7.87E-03  9.66E-03
+ 
+ ETA3
++       -8.31E-02  8.87E-03  9.79E-01
+ 
+ ETA4
++        1.18E-02  5.00E-03 -3.80E-02  4.21E-02
+ 
+ ETA5
++        5.60E-03  6.50E-03 -2.26E-03  3.70E-02  4.95E-02
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.82E-02
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.82E-02
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.16E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.16E+00
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  8.03E-02
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.53E-01
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.35E-01  2.12E-01
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          1.72E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  1.81E-01
+ 
+1
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17   
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  1.50E-01
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  5.39E-02
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  2.95E-02  5.23E-02
+ 
+
+
+ SIGMA - COV MATRIX FOR RANDOM EFFECTS - EPSILONS  ****
+
+
+            EPS1      EPS2      EPS3      EPS4   
+ 
+ EPS1
++        5.01E-03
+ 
+ EPS2
++        0.00E+00  1.15E-03
+ 
+ EPS3
++        0.00E+00  0.00E+00  5.18E-02
+ 
+ EPS4
++        0.00E+00  0.00E+00  1.89E-02  3.67E-02
+ 
+1
+
+
+ OMEGA - CORR MATRIX FOR RANDOM EFFECTS - ETAS  *******
+
+
+            ETA1      ETA2      ETA3      ETA4      ETA5      ETA6      ETA7      ETA8      ETA9      ET10      ET11      ET12   
+             ET13      ET14      ET15      ET16      ET17   
+ 
+ ETA1
++        1.59E-01
+ 
+ ETA2
++        5.03E-01  9.83E-02
+ 
+ ETA3
++       -5.27E-01  9.12E-02  9.90E-01
+ 
+ ETA4
++        3.60E-01  2.48E-01 -1.87E-01  2.05E-01
+ 
+ ETA5
++        1.58E-01  2.97E-01 -1.03E-02  8.10E-01  2.22E-01
+ 
+ ETA6
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.96E-01
+ 
+ ETA7
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.96E-01
+ 
+ ETA8
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.08E+00
+ 
+ ETA9
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  1.08E+00
+ 
+ ET10
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  2.83E-01
+ 
+ ET11
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  3.91E-01
+ 
+ ET12
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  7.49E-01  4.61E-01
+ 
+ ET13
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          4.15E-01
+ 
+ ET14
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  4.26E-01
+ 
+ ET15
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  3.88E-01
+ 
+ ET16
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  2.32E-01
+ 
+ ET17
++        0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00  0.00E+00
+          0.00E+00  0.00E+00  0.00E+00  5.56E-01  2.29E-01
+ 
+
+
+ SIGMA - CORR MATRIX FOR RANDOM EFFECTS - EPSILONS  ***
+
+
+            EPS1      EPS2      EPS3      EPS4   
+ 
+ EPS1
++        7.08E-02
+ 
+1
+
+            EPS1      EPS2      EPS3      EPS4   
+ 
+ EPS2
++        0.00E+00  3.38E-02
+ 
+ EPS3
++        0.00E+00  0.00E+00  2.28E-01
+ 
+ EPS4
++        0.00E+00  0.00E+00  4.34E-01  1.92E-01
+ 
+ #CPUT: Total CPU Time in Seconds,     4693.153
+Stop Time:
+Fri Oct  7 17:30:29 CEST 2016

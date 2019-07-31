@@ -1,0 +1,11 @@
+{
+    "files": [
+        "Executable_Rif_PK.mod",
+        "Output_simulated_Rif_PK.lst",
+        "Output_real_Rif_PK.lst",
+        "Simulated_Rif_PK_data.csv",
+        "DDMODEL00000244.rdf",
+        "Command.txt"
+    ],
+    "version": 3
+}

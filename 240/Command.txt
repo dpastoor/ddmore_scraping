@@ -1,0 +1,11 @@
+###### Prepared and run by Oskar Clewe
+##### Scenario= 4
+##### PsN version= 4.5.3
+##### Original tool version=nm_7.3.0_g
+##### Input data= Original data not shared
+##### Executable model=Executable_MTP.mod
+##### Output=Output_real_MTP.lst
+######## end block
+
+###### Script used as execution command for NONMEM via PsN: ##########
+execute Executable_MTP.mod
